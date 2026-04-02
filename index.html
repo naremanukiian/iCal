@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>CalorieAI — Know What You Eat</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.hero{padding:48px 24px 28px;display:flex;flex-direction:column;gap:18px}
+.app-icon{width:82px;height:82px;background:var(--grad);border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;box-shadow:var(--sh-acc);margin-bottom:4px}
+.hero h1{font-size:2.75rem;line-height:1.08;letter-spacing:-.03em}
+.hero-sub{font-size:1.02rem;line-height:1.65;color:var(--txt2)}
+.stats{display:flex;gap:10px;padding:0 20px}
+.stat{flex:1;padding:18px 12px;text-align:center}
+.stat-n{font-family:var(--font-d);font-size:1.65rem;font-weight:800;display:block;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-l{font-size:.72rem;color:var(--txt3);display:block;margin-top:2px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.features{padding:0 20px;display:flex;flex-direction:column;gap:10px}
+.feat{display:flex;align-items:center;gap:16px;padding:18px 20px}
+.fi{width:50px;height:50px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.fi-b{background:rgba(79,142,247,.12)}.fi-g{background:rgba(52,199,89,.12)}.fi-p{background:rgba(124,92,247,.12)}.fi-o{background:rgba(255,149,0,.12)}
+.feat h4{font-size:.92rem;margin-bottom:3px}
+.feat p{font-size:.8rem;line-height:1.45;margin:0}
+.cta{padding:20px 20px 36px;display:flex;flex-direction:column;gap:11px}
+.foot-note{text-align:center;font-size:.76rem;color:var(--txt3);padding:0 24px}
+.nav-actions{display:flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div id="toast"></div>
+<div class="app">
+
+  <nav class="nav fu">
+    <span class="logo">CalorieAI</span>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost" style="font-size:.84rem;padding:9px 14px">Login</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="app-icon fu">🍎</div>
+    <h1 class="fu d1">Know <span class="tg">exactly</span><br>what you eat</h1>
+    <p class="hero-sub fu d2">Snap a photo of any meal. Our AI instantly identifies every food item and calculates the exact calories — no manual logging ever again.</p>
+  </section>
+
+  <div class="stats fu d2">
+    <div class="card stat"><span class="stat-n">60k+</span><span class="stat-l">Foods in DB</span></div>
+    <div class="card stat"><span class="stat-n">2s</span><span class="stat-l">Analysis</span></div>
+    <div class="card stat"><span class="stat-n">GPT-4o</span><span class="stat-l">AI Engine</span></div>
+  </div>
+
+  <section class="features mt20">
+    <div class="card feat fu d2">
+      <div class="fi fi-b">📸</div>
+      <div><h4>Instant Food Detection</h4><p>AI scans your plate and identifies every item at once</p></div>
+    </div>
+    <div class="card feat fu d3">
+      <div class="fi fi-g">🔥</div>
+      <div><h4>Real Calorie Database</h4><p>60,000 foods with accurate per-serving calorie data</p></div>
+    </div>
+    <div class="card feat fu d4">
+      <div class="fi fi-p">📊</div>
+      <div><h4>Meal History</h4><p>Every meal saved — track patterns and daily totals</p></div>
+    </div>
+    <div class="card feat fu d5">
+      <div class="fi fi-o">🎯</div>
+      <div><h4>Personal Goals</h4><p>Set lose / maintain / gain targets and stay on track</p></div>
+    </div>
+  </section>
+
+  <section class="cta mt8">
+    <a href="register.html" class="btn btn-primary btn-full btn-lg fu">Get Started — It's Free</a>
+    <a href="login.html"    class="btn btn-secondary btn-full fu d1">I already have an account</a>
+  </section>
+
+  <p class="foot-note mb24">No credit card · Private & secure · Works on any meal 🌍</p>
+</div>
+<script src="script.js"></script>
+<script>
+  if (localStorage.getItem('token')) window.location.href = 'dashboard.html';
+</script>
+</body>
+</html>

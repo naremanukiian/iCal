@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Dashboard — CalorieAI</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+/* ── top bar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0}
+.greeting{font-size:.8rem;color:var(--txt3);margin-bottom:2px}
+.uname{font-family:var(--font-d);font-size:1.15rem;font-weight:700}
+.avatar{width:44px;height:44px;background:var(--grad);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;font-weight:800;cursor:pointer;position:relative;flex-shrink:0;box-shadow:var(--sh-acc)}
+.av-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface-hi);backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--sh-lg);min-width:160px;overflow:hidden;z-index:200;display:none}
+.av-menu.open{display:block}
+.av-item{padding:13px 16px;font-size:.86rem;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;color:var(--txt)}
+.av-item:hover{background:rgba(0,0,0,.04)}
+.av-item.danger{color:var(--red)}
+
+/* ── content ── */
+.content{padding:16px 20px;display:flex;flex-direction:column;gap:16px}
+
+/* ── today strip ── */
+.today-strip{background:var(--grad);border-radius:var(--r-lg);padding:20px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh-acc)}
+.today-lbl{color:rgba(255,255,255,.8);font-size:.82rem;font-weight:600;margin-bottom:4px}
+.today-num{font-family:var(--font-d);font-size:2rem;font-weight:800;color:#fff;line-height:1}
+.today-unit{font-size:.75rem;color:rgba(255,255,255,.7)}
+.today-icon{font-size:2.2rem;opacity:.85}
+
+/* ── upload zone ── */
+.upload-zone{border:2px dashed rgba(79,142,247,.38);border-radius:var(--r-lg);padding:30px 20px;text-align:center;cursor:pointer;transition:all .22s ease;background:rgba(79,142,247,.03);position:relative;overflow:hidden}
+.upload-zone.drag{border-color:var(--accent);background:rgba(79,142,247,.08);transform:scale(1.01)}
+.upload-zone.has-img{border-style:solid;border-color:var(--accent)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:1}
+.up-icon{font-size:2.8rem;margin-bottom:10px;display:block;transition:transform .3s}
+.upload-zone:hover .up-icon{transform:scale(1.1)}
+.up-title{font-family:var(--font-d);font-size:1rem;font-weight:700;margin-bottom:5px}
+.up-sub{font-size:.8rem;color:var(--txt3);margin:0}
+.up-types{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.preview-img{width:100%;max-height:240px;object-fit:cover;border-radius:var(--r-md);margin-top:14px;display:none}
+.preview-img.show{display:block}
+.change-btn{background:none;border:none;color:var(--accent);font-size:.82rem;font-weight:600;cursor:pointer;margin-top:10px;display:none;font-family:var(--font-b)}
+.change-btn.show{display:inline-block}
+
+/* ── analyzing ── */
+.scanning{display:none;text-align:center;padding:30px 20px}
+.scanning.show{display:block}
+.scanner-ring{width:72px;height:72px;border:3px solid rgba(79,142,247,.18);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 16px}
+.scanning p{font-size:.86rem;color:var(--txt2);margin-top:8px}
+
+/* ── results ── */
+.results-card{display:none}
+.results-card.show{display:block}
+.res-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.res-title{font-size:1rem;font-weight:700}
+.food-list{display:flex;flex-direction:column;gap:9px}
+.food-row{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:var(--surface-hi);border-radius:var(--r-md);border:1px solid var(--border-dim);animation:fadeUp .3s ease both}
+.food-left{display:flex;align-items:center;gap:12px}
+.food-ico{width:42px;height:42px;background:rgba(79,142,247,.09);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.food-name{font-weight:600;font-size:.9rem}
+.food-srv{font-size:.73rem;color:var(--txt3);margin-top:2px}
+.food-kcal{font-family:var(--font-d);font-size:1rem;font-weight:800;color:var(--accent)}
+.food-kcal span{font-size:.68rem;font-weight:400;font-family:var(--font-b);color:var(--txt3)}
+.total-bar{background:var(--grad);border-radius:var(--r-md);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:12px;box-shadow:var(--sh-acc)}
+.total-lbl{color:rgba(255,255,255,.82);font-size:.85rem;font-weight:600}
+.total-val{font-family:var(--font-d);font-size:2rem;font-weight:800;color:#fff}
+.total-unit{font-size:.76rem;color:rgba(255,255,255,.7)}
+
+/* ── history ── */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sec-title{font-size:1rem;font-weight:700}
+.refresh-btn{font-size:.8rem;color:var(--accent);font-weight:700;cursor:pointer;background:none;border:none;font-family:var(--font-b)}
+.hist-list{display:flex;flex-direction:column;gap:9px}
+.hist-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--border-dim);border-radius:var(--r-md);transition:transform .15s,box-shadow .15s;cursor:pointer}
+.hist-item:hover{transform:translateX(3px);box-shadow:var(--sh-md)}
+.hist-ico{width:44px;height:44px;background:rgba(124,92,247,.1);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.hist-info{flex:1;min-width:0}
+.hist-foods{font-size:.87rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-time{font-size:.73rem;color:var(--txt3);margin-top:2px}
+.hist-kcal{font-family:var(--font-d);font-size:1.05rem;font-weight:800;color:var(--accent2);flex-shrink:0}
+.empty{text-align:center;padding:32px 16px;color:var(--txt3)}
+.empty .em{font-size:2.5rem;display:block;margin-bottom:12px}
+.empty p{font-size:.86rem}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div id="toast"></div>
+
+<div class="app">
+
+  <!-- Top bar -->
+  <div class="topbar fu">
+    <div>
+      <p class="greeting" id="greeting">Good day 👋</p>
+      <p class="uname"    id="uname">—</p>
+    </div>
+    <div class="avatar" id="av-btn">
+      <span id="av-init">?</span>
+      <div class="av-menu" id="av-menu">
+        <div class="av-item" id="logout-btn">🚪 Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Today's total -->
+    <div class="card today-strip fu d1" id="today-strip" style="display:none">
+      <div>
+        <p class="today-lbl">Today's Calories</p>
+        <span class="today-num" id="today-num">0</span>
+        <span class="today-unit"> kcal</span>
+      </div>
+      <span class="today-icon">🔥</span>
+    </div>
+
+    <!-- Upload zone -->
+    <div class="upload-zone fu d1" id="upload-zone">
+      <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/heic" aria-label="Upload food image"/>
+      <span class="up-icon" id="up-icon">🍽️</span>
+      <p  class="up-title"  id="up-title">Drop your meal photo here</p>
+      <p  class="up-sub"    id="up-sub">or tap to choose from your gallery</p>
+      <div class="up-types">
+        <span class="pill pill-blue">JPEG</span>
+        <span class="pill pill-blue">PNG</span>
+        <span class="pill pill-blue">WebP</span>
+      </div>
+      <img id="preview" class="preview-img" alt="Food preview"/>
+    </div>
+    <button class="change-btn" id="change-btn">🔄 Change photo</button>
+
+    <!-- Analyze button -->
+    <button id="analyze-btn" class="btn btn-primary btn-full btn-lg fu d2" disabled>
+      <div class="sp"></div><span class="bt">🔍 Analyze Calories</span>
+    </button>
+
+    <!-- Scanning state -->
+    <div class="card scanning" id="scanning">
+      <div class="scanner-ring"></div>
+      <h4>Scanning your meal…</h4>
+      <p>GPT-4o is identifying food items and checking our 60k database</p>
+    </div>
+
+    <!-- Results -->
+    <div class="card results-card" id="results-card">
+      <div class="res-header">
+        <h3 class="res-title">🎯 Analysis Results</h3>
+        <button class="btn btn-ghost" style="padding:6px 11px;font-size:.78rem" id="clear-btn">✕ Clear</button>
+      </div>
+      <div class="food-list" id="food-list"></div>
+      <div class="total-bar">
+        <span class="total-lbl">Total Calories</span>
+        <div><span class="total-val" id="total-num">0</span><span class="total-unit"> kcal</span></div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="fu d3">
+      <div class="sec-header">
+        <h3 class="sec-title">Recent Meals</h3>
+        <button class="refresh-btn" id="refresh-btn">↻ Refresh</button>
+      </div>
+      <div class="hist-list" id="hist-list">
+        <div class="card empty"><span class="em">🥗</span><p>No meals yet.<br>Upload your first photo above!</p></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<script src="script.js"></script>
+<script>
+/* ── Auth guard ── */
+const token = localStorage.getItem('token');
+if (!token) window.location.href = 'login.html';
+
+/* ── Greeting ── */
+const hr = new Date().getHours();
+const greetings = {night:'Good night 🌙', morning:'Good morning ☀️', afternoon:'Good afternoon 🌤', evening:'Good evening 🌆'};
+const gKey = hr < 5 ? 'night' : hr < 12 ? 'morning' : hr < 18 ? 'afternoon' : 'evening';
+document.getElementById('greeting').textContent = greetings[gKey];
+
+/* ── User ── */
+const email = localStorage.getItem('user_email') || 'user@example.com';
+document.getElementById('uname').textContent   = email.split('@')[0];
+document.getElementById('av-init').textContent = email[0].toUpperCase();
+
+/* ── Avatar menu ── */
+document.getElementById('av-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('av-menu').classList.toggle('open');
+});
+document.addEventListener('click', () => document.getElementById('av-menu').classList.remove('open'));
+
+/* ── Logout ── */
+document.getElementById('logout-btn').addEventListener('click', () => {
+  localStorage.clear();
+  window.location.href = 'index.html';
+});
+
+/* ── DOM refs ── */
+const fileInput   = document.getElementById('file-input');
+const uploadZone  = document.getElementById('upload-zone');
+const preview     = document.getElementById('preview');
+const upIcon      = document.getElementById('up-icon');
+const upTitle     = document.getElementById('up-title');
+const upSub       = document.getElementById('up-sub');
+const changeBtn   = document.getElementById('change-btn');
+const analyzeBtn  = document.getElementById('analyze-btn');
+const scanning    = document.getElementById('scanning');
+const resultsCard = document.getElementById('results-card');
+const foodList    = document.getElementById('food-list');
+const totalNum    = document.getElementById('total-num');
+const histList    = document.getElementById('hist-list');
+const todayStrip  = document.getElementById('today-strip');
+const todayNum    = document.getElementById('today-num');
+
+let selectedFile = null;
+
+/* ── File handling ── */
+function applyFile(file) {
+  if (!file) return;
+  const validTypes = ['image/jpeg','image/png','image/webp','image/heic','image/gif'];
+  if (!validTypes.includes(file.type)) {
+    showToast('⚠ Please select a JPEG, PNG or WebP image', 'error'); return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    showToast('⚠ Image too large (max 10 MB)', 'error'); return;
+  }
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    preview.src = ev.target.result;
+    preview.classList.add('show');
+    upIcon.style.display  = 'none';
+    upTitle.textContent   = '✅ Photo ready!';
+    upSub.textContent     = file.name;
+    changeBtn.classList.add('show');
+    uploadZone.classList.add('has-img');
+    analyzeBtn.disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+fileInput.addEventListener('change', () => applyFile(fileInput.files[0]));
+
+uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', ()  => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop',      e  => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag');
+  applyFile(e.dataTransfer.files[0]);
+});
+
+changeBtn.addEventListener('click', () => {
+  selectedFile = null;
+  fileInput.value = '';
+  preview.src = '';
+  preview.classList.remove('show');
+  upIcon.style.display = 'block';
+  upTitle.textContent  = 'Drop your meal photo here';
+  upSub.textContent    = 'or tap to choose from your gallery';
+  changeBtn.classList.remove('show');
+  uploadZone.classList.remove('has-img','drag');
+  analyzeBtn.disabled = true;
+  resultsCard.classList.remove('show');
+});
+
+/* ── Analyze ── */
+analyzeBtn.addEventListener('click', async () => {
+  if (!selectedFile) return;
+  setLoading(analyzeBtn, true);
+  scanning.classList.add('show');
+  resultsCard.classList.remove('show');
+
+  const fd = new FormData();
+  fd.append('image', selectedFile);
+
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/analyze`, {
+      method:  'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body:    fd,
+    });
+  } catch {
+    showToast('Cannot reach server. Is the backend running?', 'error');
+    scanning.classList.remove('show');
+    setLoading(analyzeBtn, false);
+    return;
+  }
+
+  scanning.classList.remove('show');
+  setLoading(analyzeBtn, false);
+
+  if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    showToast('⚠ ' + (data.detail || 'Analysis failed'), 'error'); return;
+  }
+
+  renderResults(data);
+  showToast('✅ Analysis complete!', 'success');
+  setTimeout(loadHistory, 600);
+});
+
+function renderResults(data) {
+  foodList.innerHTML = '';
+  data.foods.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'food-row';
+    div.style.animationDelay = `${i * 0.07}s`;
+    div.innerHTML = `
+      <div class="food-left">
+        <div class="food-ico">${foodEmoji(item.name)}</div>
+        <div>
+          <div class="food-name">${item.name}</div>
+          <div class="food-srv">${item.serving || '1 serving'}</div>
+        </div>
+      </div>
+      <div class="food-kcal">${item.kcal}<span> kcal</span></div>`;
+    foodList.appendChild(div);
+  });
+
+  totalNum.textContent = '0';
+  animateCount(totalNum, data.total_kcal, 800);
+  resultsCard.classList.add('show');
+  resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.getElementById('clear-btn').addEventListener('click', () => resultsCard.classList.remove('show'));
+
+/* ── History ── */
+async function loadHistory() {
+  try {
+    const data = await api('/history?limit=15');
+    renderHistory(data.sessions || []);
+
+    const kcalToday = data.total_kcal_today || 0;
+    if (kcalToday > 0) {
+      todayStrip.style.display = 'flex';
+      animateCount(todayNum, kcalToday, 600);
+    }
+  } catch (e) {
+    console.warn('History load failed:', e.message);
+  }
+}
+
+function renderHistory(sessions) {
+  if (!sessions.length) {
+    histList.innerHTML = '<div class="card empty"><span class="em">🥗</span><p>No meals yet.<br>Upload your first photo above!</p></div>';
+    return;
+  }
+  histList.innerHTML = '';
+  sessions.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'hist-item card fu';
+    div.style.animationDelay = `${i * 0.05}s`;
+    const foods = s.food_summary || 'Meal';
+    div.innerHTML = `
+      <div class="hist-ico">🍽️</div>
+      <div class="hist-info">
+        <div class="hist-foods">${foods}</div>
+        <div class="hist-time">${timeAgo(s.created_at)}</div>
+      </div>
+      <div class="hist-kcal">${s.total_calories}<br><small style="font-size:.62rem;font-weight:400;color:var(--txt3)">kcal</small></div>`;
+    histList.appendChild(div);
+  });
+}
+
+document.getElementById('refresh-btn').addEventListener('click', loadHistory);
+
+/* ── Init ── */
+loadHistory();
+</script>
+</body>
+</html>
