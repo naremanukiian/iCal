@@ -2,7 +2,7 @@
    CalorieAI — Shared Frontend Utilities
    ═══════════════════════════════════════════════ */
 
-const API_BASE = 'http://localhost:8000';   // ← change for production
+const API_BASE = 'https://calorie-ai-backend-dyko.onrender.com';   // ← change for production
 
 /* ── API helper ───────────────────────────────── */
 async function api(path, method = 'GET', body = null) {
