@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Create Account — CalorieAI</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.auth-wrap{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 20px 48px;gap:24px;min-height:100dvh}
+.auth-head{text-align:center;padding:0 12px}
+.auth-head .ico{font-size:3rem;display:block;margin-bottom:14px}
+.auth-head h2{font-size:1.95rem;margin-bottom:8px}
+.auth-foot{text-align:center;font-size:.88rem;color:var(--txt2)}
+.auth-foot a{color:var(--accent);font-weight:700}
+.back{display:flex;align-items:center;gap:6px;font-size:.86rem;color:var(--txt2);font-weight:500;padding:18px 20px 0;width:fit-content;transition:color .15s}
+.back:hover{color:var(--accent)}
+.form-stack{display:flex;flex-direction:column;gap:16px}
+.opt{font-size:.7rem;color:var(--txt3);font-weight:400;text-transform:none;margin-left:4px}
+.terms{font-size:.73rem;color:var(--txt3);text-align:center;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div id="toast"></div>
+<div class="app">
+
+  <a href="index.html" class="back fu">← Back</a>
+
+  <div class="auth-wrap">
+    <div class="auth-head fu">
+      <span class="ico">🌱</span>
+      <h2>Create account</h2>
+      <p>Start tracking your nutrition today</p>
+    </div>
+
+    <div class="card card-lg fu d1">
+      <div id="err-box" class="alert alert-error mb16 hidden"></div>
+
+      <form id="reg-form" class="form-stack" novalidate>
+
+        <!-- Email -->
+        <div class="fg">
+          <label class="fl" for="email">Email</label>
+          <input id="email" type="email" class="fc" placeholder="you@example.com" autocomplete="email" required/>
+          <span id="email-err" class="fe hidden"></span>
+        </div>
+
+        <!-- Password -->
+        <div class="fg">
+          <label class="fl" for="password">Password</label>
+          <div class="pw-wrap">
+            <input id="password" type="password" class="fc" placeholder="Min. 6 characters" autocomplete="new-password" required/>
+            <button type="button" class="pw-eye" id="eye-btn">👁</button>
+          </div>
+          <div class="str-track"><div class="str-bar" id="str-bar"></div></div>
+          <span id="pw-err" class="fe hidden"></span>
+        </div>
+
+        <!-- Weight (optional) -->
+        <div class="fg">
+          <label class="fl" for="weight">Weight <span class="opt">(optional, kg)</span></label>
+          <input id="weight" type="number" class="fc" placeholder="e.g. 70" min="20" max="400" step="0.1"/>
+        </div>
+
+        <!-- Goal (optional) -->
+        <div class="fg">
+          <label class="fl">Goal <span class="opt">(optional)</span></label>
+          <div class="goal-grid">
+            <div>
+              <input type="radio" name="goal" value="lose"     id="g-lose"     class="goal-radio"/>
+              <label for="g-lose"     class="goal-lbl"><span class="em">📉</span>Lose weight</label>
+            </div>
+            <div>
+              <input type="radio" name="goal" value="maintain" id="g-maintain" class="goal-radio"/>
+              <label for="g-maintain" class="goal-lbl"><span class="em">⚖️</span>Maintain</label>
+            </div>
+            <div>
+              <input type="radio" name="goal" value="gain"     id="g-gain"     class="goal-radio"/>
+              <label for="g-gain"     class="goal-lbl"><span class="em">💪</span>Gain muscle</label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" id="reg-btn" class="btn btn-primary btn-full btn-lg">
+          <div class="sp"></div><span class="bt">Create Account</span>
+        </button>
+
+        <p class="terms">By registering you agree to our Terms of Service and Privacy Policy.</p>
+      </form>
+
+      <div class="divider mt20 mb16">already have an account?</div>
+      <p class="auth-foot"><a href="login.html">Sign in →</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+if (localStorage.getItem('token')) window.location.href = 'dashboard.html';
+
+const form    = document.getElementById('reg-form');
+const emailEl = document.getElementById('email');
+const pwEl    = document.getElementById('password');
+const btn     = document.getElementById('reg-btn');
+const errBox  = document.getElementById('err-box');
+const strBar  = document.getElementById('str-bar');
+
+// Password strength
+const STR_COLORS = ['','#ff3b30','#ff9500','#ffcc00','#34c759','#4f8ef7'];
+pwEl.addEventListener('input', () => {
+  const s = pwStrength(pwEl.value);
+  strBar.style.width   = (s * 20) + '%';
+  strBar.style.background = STR_COLORS[s] || 'transparent';
+});
+
+// Toggle pw
+document.getElementById('eye-btn').addEventListener('click', () => {
+  const vis = pwEl.type === 'text';
+  pwEl.type = vis ? 'password' : 'text';
+  document.getElementById('eye-btn').textContent = vis ? '👁' : '🙈';
+});
+
+function showErr(msg) {
+  errBox.textContent = '⚠ ' + msg;
+  errBox.classList.remove('hidden');
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  errBox.classList.add('hidden');
+
+  const ok1 = markField(emailEl, 'email-err', validateEmail(emailEl.value), 'Enter a valid email address');
+  const ok2 = markField(pwEl,    'pw-err',    validateMin(pwEl.value, 6),    'Password must be at least 6 characters');
+  if (!ok1 || !ok2) return;
+
+  const goal   = document.querySelector('input[name="goal"]:checked')?.value ?? null;
+  const weight = document.getElementById('weight').value;
+
+  setLoading(btn, true);
+  try {
+    const body = { email: emailEl.value.trim(), password: pwEl.value };
+    if (weight)  body.weight = parseFloat(weight);
+    if (goal)    body.goal   = goal;
+
+    const data = await api('/register', 'POST', body);
+    localStorage.setItem('token',      data.token);
+    localStorage.setItem('user_email', data.email);
+    localStorage.setItem('user_id',    data.user_id);
+    window.location.href = 'dashboard.html';
+  } catch (err) {
+    showErr(err.message);
+    setLoading(btn, false);
+  }
+});
+</script>
+</body>
+</html>

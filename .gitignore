@@ -1,0 +1,7 @@
+backend/.env
+backend/food_data.json
+backend/venv/
+backend/__pycache__/
+**/*.pyc
+.DS_Store
+*.swp
