@@ -5,3 +5,4 @@ backend/__pycache__/
 **/*.pyc
 .DS_Store
 *.swp
+backend/.env
