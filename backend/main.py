@@ -52,7 +52,7 @@ def health():
                 cur.execute("SELECT 1")
         return {"status": "healthy", "db": "connected"}
     except Exception as e:
-        return JSONResponse(503, {"status": "unhealthy", "error": str(e)})
+        return JSONResponse(status_code=503, content={"status": "unhealthy", "error": str(e)})
 
 
 # ── Auth ───────────────────────────────────────────
@@ -95,15 +95,17 @@ def get_me(current_user: dict = Depends(get_current_user)):
             u = cur.fetchone()
     if not u:
         raise HTTPException(404, "User not found.")
-    return UserProfile(id=u["id"], email=u["email"],
-                       weight=float(u["weight"]) if u["weight"] else None,
-                       goal=u["goal"], calorie_goal=u["calorie_goal"] or 2000,
-                       created_at=u["created_at"].isoformat())
+    return UserProfile(
+        id=u["id"], email=u["email"],
+        weight=float(u["weight"]) if u["weight"] else None,
+        goal=u["goal"], calorie_goal=u["calorie_goal"] or 2000,
+        created_at=u["created_at"].isoformat()
+    )
 
 
 # ── Analyze ────────────────────────────────────────
 
-ALLOWED = {"image/jpeg","image/png","image/webp","image/heic","image/gif"}
+ALLOWED = {"image/jpeg", "image/png", "image/webp", "image/heic", "image/gif"}
 
 @app.post("/analyze", response_model=AnalyzeResponse)
 async def analyze(
@@ -113,7 +115,7 @@ async def analyze(
 ):
     ct = (image.content_type or "").lower()
     if ct not in ALLOWED:
-        raise HTTPException(415, f"Unsupported file type '{ct}'. Please upload JPEG, PNG or WebP.")
+        raise HTTPException(415, f"Unsupported file type. Please upload JPEG, PNG or WebP.")
 
     image_bytes = await image.read()
     if not image_bytes:
@@ -136,7 +138,7 @@ async def analyze(
     food_summary  = ", ".join(f["name"] for f in foods)
     user_id       = int(current_user["sub"])
 
-    valid_types = {"breakfast","lunch","dinner","snacks","other"}
+    valid_types = {"breakfast", "lunch", "dinner", "snacks", "other"}
     if meal_type not in valid_types:
         meal_type = "other"
 
@@ -184,8 +186,13 @@ def get_history(limit: int = 30, current_user: dict = Depends(get_current_user))
             sessions = [dict(r) for r in cur.fetchall()]
 
             if not sessions:
-                return HistoryResponse(sessions=[], total_kcal_today=0,
-                                       total_carbs_today=0, total_fat_today=0, total_protein_today=0)
+                return HistoryResponse(
+                    sessions=[],
+                    total_kcal_today=0,
+                    total_carbs_today=0.0,
+                    total_fat_today=0.0,
+                    total_protein_today=0.0
+                )
 
             sids = [s["id"] for s in sessions]
             cur.execute(
@@ -195,20 +202,29 @@ def get_history(limit: int = 30, current_user: dict = Depends(get_current_user))
             )
             logs = [dict(r) for r in cur.fetchall()]
 
+            # Today's totals using individual column aliases
             today = date.today().isoformat()
             cur.execute(
-                """SELECT COALESCE(SUM(total_calories),0),COALESCE(SUM(total_carbs),0),
-                          COALESCE(SUM(total_fat),0),COALESCE(SUM(total_protein),0)
-                   FROM meal_sessions WHERE user_id=%s AND created_at::date=%s""",
+                """SELECT
+                     COALESCE(SUM(total_calories),0) AS kcal_sum,
+                     COALESCE(SUM(total_carbs),0)    AS carbs_sum,
+                     COALESCE(SUM(total_fat),0)      AS fat_sum,
+                     COALESCE(SUM(total_protein),0)  AS protein_sum
+                   FROM meal_sessions
+                   WHERE user_id=%s AND created_at::date=%s""",
                 (user_id, today)
             )
-            row = cur.fetchone()
-            total_kcal_today    = int(row["coalesce"])
-            totals = list(row.values())
-            total_kcal_today    = int(totals[0])
-            total_carbs_today   = float(totals[1])
-            total_fat_today     = float(totals[2])
-            total_protein_today = float(totals[3])
+            totals_row = cur.fetchone()
+            if totals_row:
+                total_kcal_today    = int(totals_row["kcal_sum"])
+                total_carbs_today   = float(totals_row["carbs_sum"])
+                total_fat_today     = float(totals_row["fat_sum"])
+                total_protein_today = float(totals_row["protein_sum"])
+            else:
+                total_kcal_today    = 0
+                total_carbs_today   = 0.0
+                total_fat_today     = 0.0
+                total_protein_today = 0.0
 
     logs_by_session = {}
     for log in logs:
@@ -218,15 +234,21 @@ def get_history(limit: int = 30, current_user: dict = Depends(get_current_user))
     out = []
     for s in sessions:
         items = [
-            FoodLogItem(id=lg["id"], food_name=lg["food_name"],
-                        calories=lg["calories"], carbs=float(lg["carbs"]),
-                        fat=float(lg["fat"]), protein=float(lg["protein"]),
-                        serving=lg.get("serving"),
-                        created_at=lg["created_at"].isoformat())
+            FoodLogItem(
+                id=lg["id"],
+                food_name=lg["food_name"],
+                calories=lg["calories"],
+                carbs=float(lg["carbs"]),
+                fat=float(lg["fat"]),
+                protein=float(lg["protein"]),
+                serving=lg.get("serving"),
+                created_at=lg["created_at"].isoformat()
+            )
             for lg in logs_by_session.get(s["id"], [])
         ]
         out.append(MealSessionOut(
-            id=s["id"], meal_type=s["meal_type"] or "other",
+            id=s["id"],
+            meal_type=s["meal_type"] or "other",
             total_calories=s["total_calories"],
             total_carbs=float(s["total_carbs"]),
             total_fat=float(s["total_fat"]),
@@ -236,11 +258,13 @@ def get_history(limit: int = 30, current_user: dict = Depends(get_current_user))
             items=items,
         ))
 
-    return HistoryResponse(sessions=out,
-                           total_kcal_today=total_kcal_today,
-                           total_carbs_today=total_carbs_today,
-                           total_fat_today=total_fat_today,
-                           total_protein_today=total_protein_today)
+    return HistoryResponse(
+        sessions=out,
+        total_kcal_today=total_kcal_today,
+        total_carbs_today=total_carbs_today,
+        total_fat_today=total_fat_today,
+        total_protein_today=total_protein_today
+    )
 
 
 @app.delete("/history/{session_id}")
@@ -248,17 +272,21 @@ def delete_session(session_id: int, current_user: dict = Depends(get_current_use
     user_id = int(current_user["sub"])
     with get_db() as conn:
         with conn.cursor() as cur:
-            cur.execute("DELETE FROM meal_sessions WHERE id=%s AND user_id=%s RETURNING id",
-                        (session_id, user_id))
+            cur.execute(
+                "DELETE FROM meal_sessions WHERE id=%s AND user_id=%s RETURNING id",
+                (session_id, user_id)
+            )
             if not cur.fetchone():
                 raise HTTPException(404, "Session not found.")
     return {"message": "Deleted."}
 
 
+# ── Error handlers ──────────────────────────────────
+
 @app.exception_handler(404)
 async def not_found(req, exc):
-    return JSONResponse(404, {"detail": "Not found."})
+    return JSONResponse(status_code=404, content={"detail": "Not found."})
 
 @app.exception_handler(500)
 async def server_error(req, exc):
-    return JSONResponse(500, {"detail": "Server error. Please try again."})
+    return JSONResponse(status_code=500, content={"detail": "Server error. Please try again."})
