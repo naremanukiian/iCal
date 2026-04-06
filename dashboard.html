@@ -353,8 +353,8 @@
         <button class="filter-chip" data-filter="low-cal">Under 400 kcal</button>
         <button class="filter-chip" data-filter="high-protein">High Protein</button>
       </div>
-      <div class="explore-grid fu d2" id="explore-grid">
-        <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--txt3)">Loading meals…</div>
+      <div id="explore-grid" style="display:flex;flex-direction:column;gap:12px" class="fu d2">
+        <div style="text-align:center;padding:32px;color:var(--txt3)">Loading meals…</div>
       </div>
     </div>
   </div>
@@ -860,41 +860,23 @@ async function loadFeed() {
 // ══ EXPLORE ══
 async function loadExplore(filter, search) {
   const grid=document.getElementById('explore-grid');
-  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--txt3)">Loading…</div>';
+  grid.innerHTML='<div style="text-align:center;padding:32px;color:var(--txt3)">Loading…</div>';
   let url='/posts/explore?limit=30';
-  if (filter==='low-cal')      url+='&max_cal=400';
+  if (filter==='low-cal')           url+='&max_cal=400';
   else if (filter==='high-protein') url+='&min_cal=0';
   else if (filter && !['low-cal','high-protein'].includes(filter)) url+=`&meal_type=${filter}`;
   if (search) url+=`&search=${encodeURIComponent(search)}`;
   try {
     const data=await api(url);
     if (!data.posts?.length) {
-      grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--txt3)">No meals found. Be the first to share!</div>';
+      grid.innerHTML='<div style="text-align:center;padding:48px 20px;color:var(--txt3)"><div style="font-size:3rem;margin-bottom:12px">🍽️</div><div style="font-weight:700;margin-bottom:6px">No meals found</div><div style="font-size:.84rem">Be the first to share a meal!</div></div>';
       return;
     }
     grid.innerHTML='';
     let posts=data.posts;
     if (filter==='high-protein') posts=posts.sort((a,b)=>b.total_protein-a.total_protein);
-    posts.forEach(p => {
-      const authorName=p.author_email?p.author_email.split('@')[0]:'User';
-      const card=document.createElement('div'); card.className='explore-card';
-      card.innerHTML=`
-        <div class="explore-card-body">
-          <div class="explore-card-foods">${p.food_summary||'Meal'}</div>
-          <div class="explore-card-kcal">${p.total_calories} kcal</div>
-          <div class="explore-card-macros">
-            <span class="explore-card-macro" style="background:rgba(96,165,250,.12);color:var(--carbs)">${parseFloat(p.total_carbs).toFixed(0)}g C</span>
-            <span class="explore-card-macro" style="background:rgba(248,113,113,.12);color:var(--fat)">${parseFloat(p.total_fat).toFixed(0)}g F</span>
-            <span class="explore-card-macro" style="background:rgba(74,222,128,.12);color:var(--protein)">${parseFloat(p.total_protein).toFixed(0)}g P</span>
-          </div>
-        </div>
-        <div class="explore-card-footer">
-          <span class="explore-card-author">@${authorName}</span>
-          <span class="explore-card-likes"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>${p.like_count||0}</span>
-        </div>`;
-      grid.appendChild(card);
-    });
-  } catch(e) { grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--red)">${e.message}</div>`; }
+    posts.forEach(p => grid.appendChild(buildPostCard(p)));
+  } catch(e) { grid.innerHTML=`<div style="text-align:center;padding:32px;color:var(--red)">${e.message}</div>`; }
 }
 
 // Filter chips
