@@ -1,25 +1,19 @@
-"""
-models.py — Pydantic schemas with full macro support
-"""
-
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 
-
-# ── Auth ───────────────────────────────────────────
-
 class RegisterRequest(BaseModel):
     email:        EmailStr
-    password:     str = Field(min_length=6, max_length=128)
-    weight:       Optional[float] = Field(default=None, gt=0, lt=500)
+    password:     str = Field(min_length=6)
+    username:     Optional[str] = None
+    weight:       Optional[float] = None
     goal:         Optional[str] = None
     calorie_goal: Optional[int] = Field(default=2000, gt=0, lt=10000)
 
     @field_validator("goal")
     @classmethod
     def validate_goal(cls, v):
-        if v is not None and v not in ("lose", "maintain", "gain"):
-            raise ValueError("goal must be 'lose', 'maintain', or 'gain'")
+        if v and v not in ("lose","maintain","gain"):
+            raise ValueError("goal must be lose, maintain, or gain")
         return v
 
 class LoginRequest(BaseModel):
@@ -30,18 +24,18 @@ class TokenResponse(BaseModel):
     token:        str
     user_id:      int
     email:        str
+    username:     str
     calorie_goal: int
 
 class UserProfile(BaseModel):
     id:           int
     email:        str
+    username:     str
+    bio:          Optional[str]
     weight:       Optional[float]
     goal:         Optional[str]
     calorie_goal: int
     created_at:   str
-
-
-# ── Food ───────────────────────────────────────────
 
 class FoodItem(BaseModel):
     name:    str
@@ -51,7 +45,6 @@ class FoodItem(BaseModel):
     protein: float
     serving: Optional[str] = None
 
-
 class AnalyzeResponse(BaseModel):
     foods:         List[FoodItem]
     total_kcal:    int
@@ -59,9 +52,6 @@ class AnalyzeResponse(BaseModel):
     total_fat:     float
     total_protein: float
     session_id:    int
-
-
-# ── History ────────────────────────────────────────
 
 class FoodLogItem(BaseModel):
     id:         int
@@ -85,8 +75,8 @@ class MealSessionOut(BaseModel):
     items:          List[FoodLogItem]
 
 class HistoryResponse(BaseModel):
-    sessions:          List[MealSessionOut]
-    total_kcal_today:  int
-    total_carbs_today: float
-    total_fat_today:   float
+    sessions:            List[MealSessionOut]
+    total_kcal_today:    int
+    total_carbs_today:   float
+    total_fat_today:     float
     total_protein_today: float
