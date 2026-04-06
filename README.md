@@ -2,7 +2,7 @@
 
 > Snap a photo of any meal. Get instant calories, carbs, fat and protein. Share with friends.
 
-**Live site:** https://naremanukiian.github.io/CalorieAI  
+**Live site:** https://naremanukiian.github.io/iCal  
 **Backend API:** https://calorie-ai-backend-dyko.onrender.com
 
 ---
