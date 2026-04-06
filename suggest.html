@@ -171,7 +171,7 @@
 
     <!-- Hero -->
     <div class="hero-section fu d1">
-      <div class="hero-badge">🤖 Powered by Claude AI</div>
+      <div class="hero-badge">🤖 Powered by GPT-4o</div>
       <h1 class="hero-title">What should I <span class="tg">eat?</span></h1>
       <p class="hero-sub">Tell the AI your preferences and get a personalized meal suggestion with full recipe, exact macros and cooking steps.</p>
     </div>
@@ -517,7 +517,7 @@ Rules:
 
 // ── Generate ──
 const thinkingTexts = [
-  'Claude is crafting your meal…',
+  'GPT-4o is crafting your meal…',
   'Calculating exact macros…',
   'Optimizing ingredients…',
   'Writing the recipe…',
@@ -538,18 +538,33 @@ async function generate() {
   }, 1800);
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const OPENAI_KEY = localStorage.getItem('openai_key') || '';
+    if (!OPENAI_KEY) {
+      const key = prompt('Enter your OpenAI API key to use AI meal suggestions:\n(It will be saved locally on your device only)');
+      if (!key) throw new Error('OpenAI API key is required.');
+      localStorage.setItem('openai_key', key.trim());
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('openai_key')}`,
+      },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'gpt-4o',
         max_tokens: 1000,
         messages: [{ role: 'user', content: buildPrompt() }],
       }),
     });
 
+    if (response.status === 401) {
+      localStorage.removeItem('openai_key');
+      throw new Error('Invalid OpenAI API key. Please try again.');
+    }
+
     const data = await response.json();
-    const raw  = data.content?.[0]?.text || '';
+    const raw  = data.choices?.[0]?.message?.content || '';
 
     // Parse JSON
     const clean = raw.replace(/```json|```/g, '').trim();
