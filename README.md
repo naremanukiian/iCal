@@ -1,145 +1,198 @@
-# 🍎 CalorieAI v2 — AI Food Calorie Tracker
+# iCal — AI Calorie & Macro Tracker
 
-> GPT-4o Vision + 60,000-item food database + PostgreSQL + JWT auth
+> Snap a photo of any meal. Get instant calories, carbs, fat and protein. Share with friends.
 
----
-
-## ⚡ Quick Start (5 minutes)
-
-### Step 1 — Get a free PostgreSQL database (Neon.tech)
-1. Go to **https://neon.tech** → Sign up free (no credit card)
-2. Create a project named `calorieai`
-3. Copy your connection string — looks like:
-   ```
-   postgresql://user:pass@ep-something.us-east-2.aws.neon.tech/neondb?sslmode=require
-   ```
-4. In the Neon dashboard → **SQL Editor** → run the contents of `db/schema.sql`
-
-### Step 2 — Configure the backend
-```bash
-cd backend
-# The .env file is already filled in — just update DATABASE_URL:
-nano .env    # or open in any text editor
-```
-Set `DATABASE_URL` to your Neon connection string.
-
-### Step 3 — Install Python dependencies
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate        # Mac/Linux
-venv\Scripts\activate           # Windows
-
-pip install -r requirements.txt
-```
-
-### Step 4 — Download the food database
-```bash
-# Still in backend/ with venv active:
-python download_dataset.py
-```
-This downloads `food_data.json` (~15 MB, 60,000 foods) from GitHub.
-
-### Step 5 — Run the backend
-```bash
-uvicorn main:app --reload --port 8000
-```
-
-You should see:
-```
-✅  Food database loaded: 60,000 items from 'food_data.json'
-✅  Database tables ready.
-🚀  CalorieAI API is live at http://localhost:8000
-📖  Swagger docs:  http://localhost:8000/docs
-```
-
-### Step 6 — Run the frontend
-Open a second terminal:
-```bash
-cd frontend
-python -m http.server 3000
-```
-Open **http://localhost:3000** in your browser.
+**Live site:** https://naremanukiian.github.io/CalorieAI  
+**Backend API:** https://calorie-ai-backend-dyko.onrender.com
 
 ---
 
-## 📁 Project Structure
+## What it does
+
+- 📸 **Photo analysis** — Upload a meal photo, GPT-4o Vision identifies every food item
+- 🔥 **Macro tracking** — Real calories, carbs, fat and protein from a 60,000-item food database
+- 📊 **Daily dashboard** — Calorie ring, macro cards, weekly bar chart, streak counter
+- 🤖 **AI meal suggestions** — ChatGPT generates personalized meal ideas with full recipes
+- 👥 **Social feed** — Share meals publicly, follow users, like and save posts
+- 🔍 **Explore** — Discover public meals from other users, filter by type or macros
+- 🔒 **Privacy control** — Toggle any post between Public and Private at any time
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Vanilla HTML / CSS / JS — GitHub Pages |
+| Backend | FastAPI (Python 3.11) — Render |
+| Database | PostgreSQL — Neon.tech |
+| AI Vision | OpenAI GPT-4o Vision API |
+| Food Data | 60,000-item JSON dataset |
+| Auth | JWT + bcrypt |
+
+---
+
+## Project Structure
 
 ```
-calorie-ai/
-├── frontend/
-│   ├── index.html       ← Landing page
-│   ├── login.html       ← Login
-│   ├── register.html    ← Registration
-│   ├── dashboard.html   ← Main app
-│   ├── style.css        ← Complete design system
-│   └── script.js        ← Shared utilities
+CalorieAI/
 │
-├── backend/
-│   ├── main.py              ← FastAPI app + all routes
-│   ├── auth.py              ← JWT + bcrypt
-│   ├── database.py          ← PostgreSQL pool (Neon-compatible)
-│   ├── models.py            ← Pydantic schemas
-│   ├── analyzer.py          ← GPT-4o Vision + 60k food DB
-│   ├── download_dataset.py  ← One-click dataset downloader
-│   ├── food_data.json       ← 60k food database (after download)
-│   ├── requirements.txt
-│   └── .env                 ← Your config (never commit this!)
+├── frontend/                   # Deployed to GitHub Pages
+│   ├── index.html              # Landing page
+│   ├── login.html              # Login page
+│   ├── register.html           # Sign up page
+│   ├── dashboard.html          # Main app (SPA)
+│   ├── suggest.html            # AI meal suggestions
+│   ├── style.css               # Full design system
+│   └── script.js               # Shared utilities
 │
-└── db/
-    └── schema.sql       ← Database schema
+├── backend/                    # Deployed to Render
+│   ├── main.py                 # FastAPI routes
+│   ├── social.py               # Social features (posts, feed, follow)
+│   ├── analyzer.py             # GPT-4o + food DB lookup
+│   ├── auth.py                 # JWT + bcrypt
+│   ├── database.py             # PostgreSQL connection pool
+│   ├── models.py               # Pydantic schemas
+│   ├── download_dataset.py     # Downloads 60k food database
+│   ├── requirements.txt        # Python dependencies
+│   └── .env                    # Environment variables (never commit)
+│
+└── database/
+    └── schema.sql              # Full DB schema (reference only)
 ```
 
 ---
 
-## 🔌 API Endpoints
+## Environment Variables
 
-| Method | Path              | Auth | Description                     |
-|--------|-------------------|------|---------------------------------|
-| GET    | /                 | No   | Health check                    |
-| GET    | /health           | No   | DB connectivity check           |
-| POST   | /register         | No   | Create account                  |
-| POST   | /login            | No   | Login, get JWT                  |
-| GET    | /me               | Yes  | Get user profile                |
-| POST   | /analyze          | Yes  | Upload image → get calories     |
-| GET    | /history          | Yes  | Get meal history + today total  |
-| DELETE | /history/{id}     | Yes  | Delete a meal session           |
+Set these in **Render → Environment**:
 
-**Auth:** Send `Authorization: Bearer <token>` header.
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | Your Neon PostgreSQL connection string |
+| `OPENAI_API_KEY` | Your OpenAI API key |
+| `JWT_SECRET` | Any long random string |
+| `FOOD_DB_PATH` | `food_data.json` |
 
 ---
 
-## 🧠 How the AI pipeline works
+## API Endpoints
 
-1. **Image upload** → sent to GPT-4o Vision API
-2. **GPT-4o** → identifies food items + estimates portion sizes
-3. **60k food database** → looks up real calorie values by name
-4. **Fallback** → if not found in DB, uses AI's estimate (if reasonable)
-5. **Result saved** → to PostgreSQL with full meal session
+### Auth
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/register` | Create account |
+| `POST` | `/login` | Login, returns JWT token |
+| `GET` | `/me` | Get current user profile |
+| `PATCH` | `/me` | Update profile |
+
+### Meals
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/analyze` | Upload photo → get macros |
+| `GET` | `/history` | Get meal history |
+| `DELETE` | `/history/{id}` | Delete meal session |
+
+### Social
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/posts` | Share a meal as a post |
+| `GET` | `/posts/feed` | Get social feed |
+| `GET` | `/posts/explore` | Browse public posts |
+| `GET` | `/posts/profile/{id}` | Get user's posts |
+| `PATCH` | `/posts/{id}/status` | Toggle public/private |
+| `DELETE` | `/posts/{id}` | Delete post |
+| `POST` | `/posts/{id}/like` | Like a post |
+| `DELETE` | `/posts/{id}/like` | Unlike a post |
+| `POST` | `/posts/{id}/save` | Save a post |
+| `DELETE` | `/posts/{id}/save` | Unsave a post |
+
+### Users
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/users/search?q=` | Search users by username |
+| `GET` | `/users/{id}/profile` | View user profile |
+| `POST` | `/follow/{id}` | Follow a user |
+| `DELETE` | `/follow/{id}` | Unfollow a user |
+
+### AI
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/suggest` | Generate AI meal idea via ChatGPT |
 
 ---
 
-## 🔧 Troubleshooting
+## Database Schema
 
-| Problem | Fix |
-|---------|-----|
-| `Cannot connect to server` | Start backend: `uvicorn main:app --reload --port 8000` |
-| `Database connection error` | Check `DATABASE_URL` in `.env` |
-| `sslmode required` error | Add `?sslmode=require` to your DATABASE_URL |
-| `food_data.json not found` | Run `python download_dataset.py` in `backend/` |
-| OpenAI error 401 | Check your `OPENAI_API_KEY` in `.env` |
-| CORS error in browser | Make sure backend is on port 8000 and `API_BASE` in script.js matches |
-| Port 3000 busy | Use `python -m http.server 3001`, open `http://localhost:3001` |
-
----
-
-## 🔒 Security Note
-
-**Your OpenAI API key is in `.env`** — never commit this file to GitHub.
-Add `.env` to your `.gitignore`:
 ```
-echo ".env" >> .gitignore
+users           — id, email, username, password_hash, bio, weight, goal, calorie_goal
+meal_sessions   — id, user_id, meal_type, total_calories, total_carbs, total_fat, total_protein
+food_logs       — id, user_id, session_id, food_name, calories, carbs, fat, protein
+posts           — id, user_id, session_id, caption, status (public/private), macros, items_json
+follows         — follower_id, following_id
+likes           — user_id, post_id
+saves           — user_id, post_id
 ```
 
+---
+
+## How to Deploy
+
+### Backend (Render)
+1. Push code to GitHub
+2. Go to **render.com** → New Web Service → connect your repo
+3. Set Root Directory: `backend`
+4. Build command: `pip install -r requirements.txt && python download_dataset.py`
+5. Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+6. Add all environment variables
+7. Deploy — tables are created automatically on startup
+
+### Frontend (GitHub Pages)
+1. Go to **GitHub repo → Settings → Pages**
+2. Source: Deploy from branch `main`, folder `/` (root)
+3. Save — site is live at `https://yourusername.github.io/CalorieAI`
+
+---
+
+## How to Push Updates
+
+```bash
+# Extract downloaded zip
+powershell.exe -command "Expand-Archive -Path 'C:\Users\narem\Downloads\files.zip' -DestinationPath 'C:\Users\narem\Downloads\update' -Force"
+
+# Copy files
+cd /mnt/c/Users/narem/workspace/CalorieAI
+cp /mnt/c/Users/narem/Downloads/update/*.html .
+cp /mnt/c/Users/narem/Downloads/update/*.css .
+cp /mnt/c/Users/narem/Downloads/update/*.js .
+cp /mnt/c/Users/narem/Downloads/update/*.py backend/
+
+# Push
+git add .
+git commit -m "Your update description"
+git push
+```
+
+---
+
+## Features by Phase
+
+| Phase | Features |
+|---|---|
+| **v1** | Photo analysis, calorie tracking, macro breakdown, user auth |
+| **v2** | Bottom nav, analytics page, profile page, clickable date history, weekly charts |
+| **v3 (current)** | Social feed, explore, follow system, post sharing, like/save, user search, post privacy toggle, delete posts, AI meal suggestions via ChatGPT |
+
+---
+
+## Known Limitations
+
+- **Render free tier** sleeps after 15 min of inactivity — first request after sleep takes ~30 seconds. The app automatically retries.
+- **Explore** only shows meals that have been shared publicly. Log a meal → Share → set Public to populate it.
+- **AI suggestions** use your OpenAI API key stored in Render env vars — no key is ever exposed to the browser.
+
+---
+
+## License
+
+MIT — build on it freely.
