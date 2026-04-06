@@ -150,28 +150,8 @@ saves           — user_id, post_id
 ### Frontend (GitHub Pages)
 1. Go to **GitHub repo → Settings → Pages**
 2. Source: Deploy from branch `main`, folder `/` (root)
-3. Save — site is live at `https://yourusername.github.io/CalorieAI`
+3. Save — site is live at `https://yourusername.github.io/iCal`
 
----
-
-## How to Push Updates
-
-```bash
-# Extract downloaded zip
-powershell.exe -command "Expand-Archive -Path 'C:\Users\narem\Downloads\files.zip' -DestinationPath 'C:\Users\narem\Downloads\update' -Force"
-
-# Copy files
-cd /mnt/c/Users/narem/workspace/CalorieAI
-cp /mnt/c/Users/narem/Downloads/update/*.html .
-cp /mnt/c/Users/narem/Downloads/update/*.css .
-cp /mnt/c/Users/narem/Downloads/update/*.js .
-cp /mnt/c/Users/narem/Downloads/update/*.py backend/
-
-# Push
-git add .
-git commit -m "Your update description"
-git push
-```
 
 ---
 
@@ -191,8 +171,3 @@ git push
 - **Explore** only shows meals that have been shared publicly. Log a meal → Share → set Public to populate it.
 - **AI suggestions** use your OpenAI API key stored in Render env vars — no key is ever exposed to the browser.
 
----
-
-## License
-
-MIT — build on it freely.
