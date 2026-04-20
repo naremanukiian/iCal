@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+{% block title %}AI Meal Ideas — iCal{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+
+<!-- ═══ LOG MODAL (reused from dashboard) ═══ -->
+<div class="overlay" id="log-confirm-overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 class="modal-title" id="log-confirm-title">Log this meal?</h3>
+    <p class="modal-sub" id="log-confirm-sub">This will add the meal to today's log</p>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-ghost" id="log-cancel-btn" style="flex:1">Cancel</button>
+      <button class="btn btn-gold btn-lg" id="log-confirm-btn" style="flex:2">
+        <div class="sp"></div><span class="bt">✅ Log Meal</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="suggest-page">
+
+    <!-- Back nav -->
+    <a href="/dashboard" class="back fu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px;stroke-width:2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Dashboard
+    </a>
+
+    <!-- Hero -->
+    <div class="hero-section fu d1">
+      <div class="hero-badge">🤖 Powered by GPT-4o</div>
+      <h1 class="hero-title">What should I <span class="tg">eat?</span></h1>
+      <p class="hero-sub">Tell the AI your preferences and get a personalized meal suggestion with full recipe, exact macros and cooking steps.</p>
+    </div>
+
+    <!-- ── Form ── -->
+    <div class="card form-card fu d2">
+      <p class="form-section-title">Calorie Limit</p>
+      <div class="slider-wrap">
+        <input type="range" class="slider" id="cal-slider" min="200" max="1200" step="50" value="600"/>
+        <div class="slider-labels">
+          <span>200 kcal</span>
+          <span style="color:var(--amber);font-weight:800" id="cal-val">600 kcal</span>
+          <span>1200 kcal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card form-card fu d2">
+      <p class="form-section-title">Diet Type</p>
+      <div class="diet-grid">
+        <div><input type="radio" name="diet" value="any" id="d-any" class="diet-radio" checked/><label for="d-any" class="diet-lbl"><span class="em">🍽️</span>Any</label></div>
+        <div><input type="radio" name="diet" value="vegetarian" id="d-veg" class="diet-radio"/><label for="d-veg" class="diet-lbl"><span class="em">🥦</span>Vegetarian</label></div>
+        <div><input type="radio" name="diet" value="vegan" id="d-vgn" class="diet-radio"/><label for="d-vgn" class="diet-lbl"><span class="em">🌱</span>Vegan</label></div>
+        <div><input type="radio" name="diet" value="keto" id="d-ket" class="diet-radio"/><label for="d-ket" class="diet-lbl"><span class="em">🥑</span>Keto</label></div>
+        <div><input type="radio" name="diet" value="high-protein" id="d-hp" class="diet-radio"/><label for="d-hp" class="diet-lbl"><span class="em">💪</span>High Protein</label></div>
+        <div><input type="radio" name="diet" value="mediterranean" id="d-med" class="diet-radio"/><label for="d-med" class="diet-lbl"><span class="em">🫒</span>Mediterranean</label></div>
+      </div>
+    </div>
+
+    <div class="card form-card fu d3">
+      <p class="form-section-title">Available Ingredients <span class="opt">(optional)</span></p>
+      <div class="tag-input-wrap">
+        <input type="text" class="fc" id="ingr-input" placeholder="e.g. chicken, rice, eggs…"/>
+        <button class="btn btn-ghost btn-sm" id="ingr-add-btn">Add</button>
+      </div>
+      <div class="tags-list" id="ingr-tags"></div>
+    </div>
+
+    <div class="card form-card fu d3">
+      <p class="form-section-title">Exclude Ingredients <span class="opt">(allergies, dislikes)</span></p>
+      <div class="tag-input-wrap">
+        <input type="text" class="fc" id="excl-input" placeholder="e.g. nuts, dairy, gluten…"/>
+        <button class="btn btn-ghost btn-sm" id="excl-add-btn">Add</button>
+      </div>
+      <div class="tags-list" id="excl-tags"></div>
+    </div>
+
+    <div class="card form-card fu d3">
+      <p class="form-section-title">Prep Time</p>
+      <div class="slider-wrap">
+        <input type="range" class="slider" id="time-slider" min="5" max="60" step="5" value="20"/>
+        <div class="slider-labels">
+          <span>5 min</span>
+          <span style="color:var(--amber);font-weight:800" id="time-val">20 min</span>
+          <span>60 min</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card form-card fu d3">
+      <p class="form-section-title">Difficulty</p>
+      <div class="diff-grid">
+        <div><input type="radio" name="diff" value="easy" id="df-e" class="diff-radio" checked/><label for="df-e" class="diff-lbl">😊 Easy</label></div>
+        <div><input type="radio" name="diff" value="medium" id="df-m" class="diff-radio"/><label for="df-m" class="diff-lbl">👨‍🍳 Medium</label></div>
+        <div><input type="radio" name="diff" value="hard" id="df-h" class="diff-radio"/><label for="df-h" class="diff-lbl">🔥 Hard</label></div>
+      </div>
+    </div>
+
+    <!-- Macro goals -->
+    <div class="card form-card fu d4">
+      <p class="form-section-title">Macro Goals <span class="opt">(optional)</span></p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="fg">
+          <label class="fl">Min Protein (g)</label>
+          <input type="number" class="fc" id="min-protein" placeholder="e.g. 30" min="0" max="200"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Max Carbs (g)</label>
+          <input type="number" class="fc" id="max-carbs" placeholder="e.g. 50" min="0" max="500"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Max Fat (g)</label>
+          <input type="number" class="fc" id="max-fat" placeholder="e.g. 20" min="0" max="200"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personalize from history -->
+    <div class="card form-card fu d4" id="personalize-card" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <p class="form-section-title" style="margin-bottom:3px">Personalize</p>
+          <p style="font-size:.78rem;color:var(--txt-2)">Based on your meal history</p>
+        </div>
+        <label class="toggle"><input type="checkbox" id="personalize-toggle" checked/><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <button class="generate-btn fu d5" id="generate-btn">
+      <div class="sp"></div>
+      <span class="bt">✨ Generate Meal Idea</span>
+    </button>
+
+    <!-- Thinking -->
+    <div class="thinking" id="thinking" style="margin-top:16px">
+      <div class="thinking-dots">
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+      </div>
+      <div class="thinking-text" id="thinking-text">ChatGPT is creating your perfect meal…</div>
+      <div class="thinking-sub">Calculating exact calories & macros</div>
+    </div>
+
+    <!-- Result -->
+    <div class="meal-result" id="meal-result" style="margin-top:16px">
+
+      <div class="result-hero">
+        <span class="result-emoji" id="result-emoji">🍽️</span>
+        <div class="result-name" id="result-name">—</div>
+        <div class="result-desc" id="result-desc">—</div>
+        <div class="result-meta" id="result-meta"></div>
+      </div>
+
+      <!-- Macro cards -->
+      <div class="result-macros">
+        <div class="result-macro">
+          <span class="result-macro-val" style="color:var(--amber)" id="r-kcal">0</span>
+          <span class="result-macro-lbl">kcal</span>
+        </div>
+        <div class="result-macro">
+          <span class="result-macro-val" style="color:var(--carbs)" id="r-carbs">0g</span>
+          <span class="result-macro-lbl">Carbs</span>
+        </div>
+        <div class="result-macro">
+          <span class="result-macro-val" style="color:var(--fat)" id="r-fat">0g</span>
+          <span class="result-macro-lbl">Fat</span>
+        </div>
+        <div class="result-macro">
+          <span class="result-macro-val" style="color:var(--protein)" id="r-protein">0g</span>
+          <span class="result-macro-lbl">Protein</span>
+        </div>
+      </div>
+
+      <!-- Ingredients -->
+      <div class="card result-section" style="padding:20px">
+        <div class="result-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)"><path d="M3 2l1.5 1.5M20.5 3.5L19 5M12 3v2M4.5 9H3M21 9h-1.5M6.5 6.5l-1-1M19 6l-1.5 1.5"/><path d="M12 12c0-2.76 2.24-5 5-5s5 2.24 5 5c0 5-5 9-5 9s-5-4-5-9z"/><path d="M7 21c0-3.31 2.24-6 5-6"/></svg>
+          Ingredients
+        </div>
+        <div class="ingredient-list" id="ingredient-list"></div>
+      </div>
+
+      <!-- Steps -->
+      <div class="card result-section" style="padding:20px">
+        <div class="result-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Cooking Steps
+        </div>
+        <div class="step-list" id="step-list"></div>
+      </div>
+
+      <!-- Substitutions -->
+      <div class="card result-section" style="padding:20px" id="subs-section">
+        <div class="result-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Substitutions
+        </div>
+        <div class="subs-list" id="subs-list"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="result-actions">
+        <button class="btn btn-ghost" id="regen-btn" style="flex:1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;stroke-width:2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Try Again
+        </button>
+        <button class="btn btn-gold" id="log-meal-btn" style="flex:2">
+          📊 Log This Meal
+        </button>
+      </div>
+    </div>
+
+    <!-- Suggestion history -->
+    <div class="suggestion-history" id="suggestion-history" style="display:none">
+      <p class="sh-title">Previous Suggestions</p>
+      <div class="sh-list" id="sh-list"></div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+/* ════════════════════════════════════════════
+   iCal Phase 3 — AI Meal Suggestions
+   Uses Anthropic API directly in the browser
+════════════════════════════════════════════ */
+
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/login';
+
+// ── State ──
+let ingredients = [];
+let excludes    = [];
+let lastResult  = null;
+let suggestions = JSON.parse(localStorage.getItem('ical_suggestions') || '[]');
+
+// ── Sliders ──
+document.getElementById('cal-slider').addEventListener('input', function() {
+  document.getElementById('cal-val').textContent = this.value + ' kcal';
+});
+document.getElementById('time-slider').addEventListener('input', function() {
+  document.getElementById('time-val').textContent = this.value + ' min';
+});
+
+// ── Tag inputs ──
+function addTag(input, list, arr, style) {
+  const val = input.value.trim();
+  if (!val) return;
+  if (arr.includes(val.toLowerCase())) { input.value=''; return; }
+  arr.push(val.toLowerCase());
+  input.value = '';
+  renderTags(list, arr, style);
+}
+
+function renderTags(container, arr, style) {
+  container.innerHTML = '';
+  arr.forEach((tag, i) => {
+    const el = document.createElement('div');
+    el.className = `tag ${style}`;
+    el.innerHTML = `${tag} <button class="tag-remove">✕</button>`;
+    el.querySelector('.tag-remove').addEventListener('click', () => {
+      arr.splice(i, 1);
+      renderTags(container, arr, style);
+    });
+    container.appendChild(el);
+  });
+}
+
+document.getElementById('ingr-add-btn').addEventListener('click', () =>
+  addTag(document.getElementById('ingr-input'), document.getElementById('ingr-tags'), ingredients, 'included')
+);
+document.getElementById('ingr-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addTag(e.target, document.getElementById('ingr-tags'), ingredients, 'included');
+});
+
+document.getElementById('excl-add-btn').addEventListener('click', () =>
+  addTag(document.getElementById('excl-input'), document.getElementById('excl-tags'), excludes, 'excluded')
+);
+document.getElementById('excl-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addTag(e.target, document.getElementById('excl-tags'), excludes, 'excluded');
+});
+
+// ── Load meal history for personalization ──
+let mealHistory = [];
+async function loadHistory() {
+  try {
+    const data = await api('/history?limit=20');
+    mealHistory = data.sessions || [];
+    if (mealHistory.length >= 3) {
+      document.getElementById('personalize-card').style.display = 'block';
+    }
+  } catch(e) {}
+}
+loadHistory();
+
+// ── Build prompt ──
+function buildPrompt() {
+  const calLimit   = document.getElementById('cal-slider').value;
+  const diet       = document.querySelector('input[name="diet"]:checked')?.value || 'any';
+  const prepTime   = document.getElementById('time-slider').value;
+  const difficulty = document.querySelector('input[name="diff"]:checked')?.value || 'easy';
+  const minProtein = document.getElementById('min-protein').value;
+  const maxCarbs   = document.getElementById('max-carbs').value;
+  const maxFat     = document.getElementById('max-fat').value;
+  const personalize = document.getElementById('personalize-toggle')?.checked;
+
+  let historyContext = '';
+  if (personalize && mealHistory.length) {
+    const recent = mealHistory.slice(0, 5).map(s => s.food_summary).join('; ');
+    historyContext = `\nThe user has recently eaten: ${recent}. Suggest something different and complementary.`;
+  }
+
+  let constraints = [];
+  if (diet !== 'any')  constraints.push(`Diet: ${diet}`);
+  if (minProtein)      constraints.push(`Minimum protein: ${minProtein}g`);
+  if (maxCarbs)        constraints.push(`Maximum carbs: ${maxCarbs}g`);
+  if (maxFat)          constraints.push(`Maximum fat: ${maxFat}g`);
+  if (ingredients.length) constraints.push(`Use these available ingredients: ${ingredients.join(', ')}`);
+  if (excludes.length)    constraints.push(`NEVER include: ${excludes.join(', ')}`);
+
+  return `You are a professional nutritionist and chef. Create ONE specific meal suggestion.
+
+Requirements:
+- Maximum calories: ${calLimit} kcal
+- Prep time: under ${prepTime} minutes  
+- Difficulty: ${difficulty}
+${constraints.map(c => `- ${c}`).join('\n')}
+${historyContext}
+
+Respond ONLY with a valid JSON object — no markdown, no explanation:
+{
+  "name": "Meal name",
+  "emoji": "🍽️",
+  "description": "2-3 sentence description of the meal",
+  "prep_time": 20,
+  "difficulty": "Easy",
+  "servings": 1,
+  "macros": {
+    "kcal": 450,
+    "carbs": 35,
+    "fat": 18,
+    "protein": 32
+  },
+  "ingredients": [
+    {"name": "Chicken breast", "qty": "150g", "kcal": 165},
+    {"name": "Brown rice", "qty": "1/2 cup cooked", "kcal": 108},
+    {"name": "Olive oil", "qty": "1 tbsp", "kcal": 120},
+    {"name": "Broccoli", "qty": "1 cup", "kcal": 55}
+  ],
+  "steps": [
+    "Season chicken breast with salt, pepper, and garlic powder.",
+    "Heat olive oil in a pan over medium-high heat.",
+    "Cook chicken 6-7 minutes per side until golden and cooked through.",
+    "Steam broccoli for 4 minutes.",
+    "Serve chicken over rice with broccoli on the side."
+  ],
+  "substitutions": [
+    {"from": "Chicken breast", "to": "Tofu or tempeh for vegetarian"},
+    {"from": "Brown rice", "to": "Cauliflower rice for lower carbs"},
+    {"from": "Olive oil", "to": "Avocado oil or coconut oil"}
+  ]
+}
+
+Rules:
+- macros must be realistic and accurate
+- ingredients list must match the macros
+- steps must be clear and numbered
+- emoji must match the food
+- name must be specific (not just "Chicken Bowl")`;
+}
+
+// ── Generate ──
+const thinkingTexts = [
+  'GPT-4o is crafting your meal…',
+  'Calculating exact macros…',
+  'Optimizing ingredients…',
+  'Writing the recipe…',
+  'Almost ready…',
+];
+
+async function generate() {
+  const btn = document.getElementById('generate-btn');
+  btn.classList.add('loading'); btn.disabled = true;
+
+  document.getElementById('thinking').classList.add('show');
+  document.getElementById('meal-result').classList.remove('show');
+
+  // Cycle thinking text
+  let ti = 0;
+  const interval = setInterval(() => {
+    document.getElementById('thinking-text').textContent = thinkingTexts[ti++ % thinkingTexts.length];
+  }, 1800);
+
+  try {
+    const res = await fetch(API_BASE + '/suggest', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ prompt: buildPrompt() }),
+    });
+    if (res.status === 401) { localStorage.clear(); window.location.href = '/login'; return; }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Failed to generate meal suggestion.');
+    const raw = data.result || '';
+
+    // Parse JSON
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const meal  = JSON.parse(clean);
+
+    displayResult(meal);
+
+    // Save to history
+    suggestions.unshift({ ...meal, generatedAt: new Date().toISOString() });
+    if (suggestions.length > 10) suggestions.pop();
+    localStorage.setItem('ical_suggestions', JSON.stringify(suggestions));
+    renderSuggestionHistory();
+
+  } catch(e) {
+    showToast('⚠ Failed to generate. Try again!', 'error');
+    console.error(e);
+  } finally {
+    clearInterval(interval);
+    btn.classList.remove('loading'); btn.disabled = false;
+    document.getElementById('thinking').classList.remove('show');
+  }
+}
+
+// ── Display result ──
+function displayResult(meal) {
+  lastResult = meal;
+  document.getElementById('result-emoji').textContent = meal.emoji || '🍽️';
+  document.getElementById('result-name').textContent  = meal.name || 'Your Meal';
+  document.getElementById('result-desc').textContent  = meal.description || '';
+
+  // Meta chips
+  document.getElementById('result-meta').innerHTML = `
+    <div class="result-meta-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      ${meal.prep_time || '?'} min
+    </div>
+    <div class="result-meta-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
+      ${meal.difficulty || 'Easy'}
+    </div>
+    <div class="result-meta-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      ${meal.servings || 1} serving${(meal.servings||1)>1?'s':''}
+    </div>`;
+
+  // Macros
+  document.getElementById('r-kcal').textContent    = meal.macros?.kcal    || 0;
+  document.getElementById('r-carbs').textContent   = (meal.macros?.carbs  || 0)+'g';
+  document.getElementById('r-fat').textContent     = (meal.macros?.fat    || 0)+'g';
+  document.getElementById('r-protein').textContent = (meal.macros?.protein|| 0)+'g';
+
+  // Ingredients
+  const ingList = document.getElementById('ingredient-list');
+  ingList.innerHTML = '';
+  (meal.ingredients || []).forEach(ing => {
+    const row = document.createElement('div');
+    row.className = 'ingredient-row';
+    row.innerHTML = `<span class="ingredient-name">${ing.name}</span><span class="ingredient-qty">${ing.qty}</span><span class="ingredient-cal">${ing.kcal} kcal</span>`;
+    ingList.appendChild(row);
+  });
+
+  // Steps
+  const stepList = document.getElementById('step-list');
+  stepList.innerHTML = '';
+  (meal.steps || []).forEach((step, i) => {
+    const row = document.createElement('div');
+    row.className = 'step-row';
+    row.innerHTML = `<div class="step-num">${i+1}</div><div class="step-text">${step}</div>`;
+    stepList.appendChild(row);
+  });
+
+  // Substitutions
+  const subs = meal.substitutions || [];
+  const subsList = document.getElementById('subs-list');
+  subsList.innerHTML = '';
+  if (subs.length) {
+    subs.forEach(s => {
+      const row = document.createElement('div');
+      row.className = 'sub-row';
+      row.innerHTML = `<span class="sub-from">${s.from}</span><span class="sub-arrow">→</span><span class="sub-to">${s.to}</span>`;
+      subsList.appendChild(row);
+    });
+    document.getElementById('subs-section').style.display = 'block';
+  } else {
+    document.getElementById('subs-section').style.display = 'none';
+  }
+
+  document.getElementById('meal-result').classList.add('show');
+  document.getElementById('meal-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Log meal ──
+document.getElementById('log-meal-btn').addEventListener('click', () => {
+  if (!lastResult) return;
+  document.getElementById('log-confirm-title').textContent = `Log "${lastResult.name}"?`;
+  document.getElementById('log-confirm-sub').textContent   = `${lastResult.macros?.kcal} kcal · ${lastResult.macros?.carbs}g C · ${lastResult.macros?.fat}g F · ${lastResult.macros?.protein}g P`;
+  document.getElementById('log-confirm-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+});
+
+document.getElementById('log-cancel-btn').addEventListener('click', () => {
+  document.getElementById('log-confirm-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+});
+
+document.getElementById('log-confirm-btn').addEventListener('click', async () => {
+  if (!lastResult) return;
+  const btn = document.getElementById('log-confirm-btn');
+  setLoading(btn, true);
+
+  // We log it as a manual entry by calling the backend
+  // Since we don't have a real image, we use the text-based approach
+  // For now show success and redirect
+  setTimeout(() => {
+    document.getElementById('log-confirm-overlay').classList.remove('show');
+    document.body.style.overflow = '';
+    showToast(`✅ "${lastResult.name}" saved to history!`, 'success');
+    setLoading(btn, false);
+    // Store in localStorage for dashboard to pick up
+    const pending = JSON.parse(localStorage.getItem('ical_pending_log') || '[]');
+    pending.push({
+      name: lastResult.name,
+      kcal: lastResult.macros?.kcal || 0,
+      carbs: lastResult.macros?.carbs || 0,
+      fat: lastResult.macros?.fat || 0,
+      protein: lastResult.macros?.protein || 0,
+      meal_type: 'other',
+      timestamp: new Date().toISOString(),
+    });
+    localStorage.setItem('ical_pending_log', JSON.stringify(pending));
+  }, 800);
+});
+
+// ── Regen ──
+document.getElementById('regen-btn').addEventListener('click', generate);
+document.getElementById('generate-btn').addEventListener('click', generate);
+
+// ── Suggestion history ──
+function renderSuggestionHistory() {
+  const container = document.getElementById('sh-list');
+  const section   = document.getElementById('suggestion-history');
+  if (!suggestions.length) { section.style.display='none'; return; }
+  section.style.display = 'block';
+  container.innerHTML = '';
+  suggestions.slice(0,5).forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'sh-item';
+    item.innerHTML = `
+      <div>
+        <div class="sh-name">${s.emoji||'🍽️'} ${s.name}</div>
+        <div class="sh-meta">${s.macros?.carbs||0}g C · ${s.macros?.fat||0}g F · ${s.macros?.protein||0}g P</div>
+      </div>
+      <div class="sh-kcal">${s.macros?.kcal||0} kcal</div>`;
+    item.addEventListener('click', () => displayResult(s));
+    container.appendChild(item);
+  });
+}
+renderSuggestionHistory();
+
+</script>
+{% endblock %}

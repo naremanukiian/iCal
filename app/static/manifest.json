@@ -1,0 +1,43 @@
+{
+  "name": "iCal — AI Calorie Tracker",
+  "short_name": "iCal",
+  "description": "Track calories and macros with AI. Snap a photo of any meal.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0c0d11",
+  "background_color": "#0c0d11",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Log Meal",
+      "short_name": "Log",
+      "description": "Quickly log a new meal",
+      "url": "/dashboard",
+      "icons": [{ "src": "/static/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Suggestions",
+      "short_name": "Suggest",
+      "description": "Get AI meal ideas",
+      "url": "/suggest",
+      "icons": [{ "src": "/static/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["health", "fitness", "food"],
+  "lang": "en"
+}

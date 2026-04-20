@@ -1,0 +1,1362 @@
+{% extends "base.html" %}
+{% block title %}iCal — Dashboard{% endblock %}
+
+{% block body %}
+<!-- Upload Sheet -->
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Log a Meal</h3>
+    <p class="sheet-sub">Select meal type then upload a photo</p>
+    <div class="mt-grid">
+      <div><input type="radio" name="mt" value="breakfast" id="mt-b" class="mt-radio" checked/>
+        <label for="mt-b" class="mt-lbl"><span class="mt-ico">☀️</span>Breakfast</label></div>
+      <div><input type="radio" name="mt" value="lunch" id="mt-l" class="mt-radio"/>
+        <label for="mt-l" class="mt-lbl"><span class="mt-ico">🌤️</span>Lunch</label></div>
+      <div><input type="radio" name="mt" value="dinner" id="mt-d" class="mt-radio"/>
+        <label for="mt-d" class="mt-lbl"><span class="mt-ico">🌙</span>Dinner</label></div>
+      <div><input type="radio" name="mt" value="snacks" id="mt-s" class="mt-radio"/>
+        <label for="mt-s" class="mt-lbl"><span class="mt-ico">🍎</span>Snacks</label></div>
+    </div>
+    <div class="upload-zone" id="uz">
+      <input type="file" id="fi" accept="image/jpeg,image/png,image/webp,image/heic"/>
+      <div class="upload-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <div class="upload-title" id="up-title">Tap to upload photo</div>
+      <div class="upload-sub" id="up-sub">JPEG, PNG or WebP — max 10MB</div>
+      <img id="preview" class="preview-img" alt=""/>
+    </div>
+    <button class="change-img-btn" id="change-btn">Change photo</button>
+    <div class="scanning" id="scanning">
+      <div class="scan-ring"></div>
+      <div class="scan-text">Analyzing your meal...</div>
+      <div class="scan-sub">GPT-4o + 60k food database</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px" id="modal-actions">
+      <button class="btn btn-ghost" id="cancel-btn" style="flex:1">Cancel</button>
+      <button class="btn btn-amber btn-lg" id="analyze-btn" style="flex:2" disabled>
+        <div class="sp"></div><span class="bt">Analyze Meal</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Sheet -->
+<div class="overlay" id="share-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Meal Logged</h3>
+    <p class="sheet-sub">Share this to your profile?</p>
+    <div class="share-preview">
+      <div class="share-preview-name" id="share-name">—</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="display:flex;gap:5px;flex-wrap:wrap" id="share-macros"></div>
+        <div class="share-preview-kcal" id="share-kcal">0 kcal</div>
+      </div>
+      <div class="share-preview-foods" id="share-foods">—</div>
+    </div>
+    <div class="fg" style="margin-bottom:14px">
+      <label class="fl">Caption (optional)</label>
+      <textarea id="share-caption" class="fc" rows="2" placeholder="What did you think of this meal?" style="resize:none;min-height:72px"></textarea>
+    </div>
+    <label class="fl" style="margin-bottom:8px;display:block">Visibility</label>
+    <div class="priv-grid">
+      <div><input type="radio" name="priv" value="public" id="priv-pub" class="priv-radio" checked/>
+        <label for="priv-pub" class="priv-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Public</label></div>
+      <div><input type="radio" name="priv" value="private" id="priv-priv" class="priv-radio"/>
+        <label for="priv-priv" class="priv-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Private</label></div>
+      <div><input type="radio" name="priv" value="skip" id="priv-skip" class="priv-radio"/>
+        <label for="priv-skip" class="priv-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Skip</label></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" id="skip-share-btn" style="flex:1">Skip</button>
+      <button class="btn btn-amber btn-lg" id="do-share-btn" style="flex:2">
+        <div class="sp"></div><span class="bt">Post to Profile</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Dialog -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Are you sure?</div>
+    <div class="confirm-sub" id="confirm-sub">This cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost btn-full" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-danger btn-full" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Day Panel -->
+<div class="slide-panel" id="day-panel">
+  <div class="panel-header">
+    <button class="panel-back" id="day-panel-back" aria-label="Go back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div>
+      <div class="panel-title" id="day-panel-title">—</div>
+      <div class="panel-sub" id="day-panel-sub">—</div>
+    </div>
+  </div>
+  <div class="panel-body" id="day-panel-body"></div>
+</div>
+
+<!-- User Profile Panel -->
+<div class="slide-panel" id="user-panel">
+  <div class="panel-header">
+    <button class="panel-back" id="user-panel-back" aria-label="Go back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div>
+      <div class="panel-title" id="user-panel-title">Profile</div>
+    </div>
+  </div>
+  <div class="panel-body" id="user-panel-body"></div>
+</div>
+
+<!-- App -->
+<div class="app">
+
+  <!-- HOME -->
+  <div class="page active" id="page-home">
+    <div class="top-bar">
+      <div class="fade-up">
+        <div class="top-bar-sub" id="greeting">Good day</div>
+        <div class="top-bar-title" id="uname">—</div>
+      </div>
+      <div class="av-wrap fade-up">
+        <div class="avatar-btn" id="av-btn" role="button" aria-label="Profile menu"><span id="av-init">?</span></div>
+        <div class="av-menu" id="av-menu">
+          <div class="av-user-info">
+            <div class="av-user-name" id="av-name">—</div>
+            <div class="av-user-email" id="av-email">—</div>
+          </div>
+          <div class="av-item" id="av-profile-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Profile
+          </div>
+          <div class="av-item" id="av-settings-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Settings
+          </div>
+          <div class="av-divider"></div>
+          <div class="av-item" id="av-switch-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            Switch Account
+          </div>
+          <div class="av-item danger" id="av-logout-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="date-strip fade-up d1" id="date-strip"></div>
+
+    <div class="content" style="padding-top:4px">
+
+      <!-- Ring card -->
+      <div class="card ring-card fade-up d2">
+        <div class="ring-layout">
+          <div class="ring-wrap">
+            <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#f59e0b"/>
+                  <stop offset="100%" stop-color="#d97706"/>
+                </linearGradient>
+              </defs>
+              <circle class="ring-track" cx="50" cy="50" r="42"/>
+              <circle class="ring-fill"  cx="50" cy="50" r="42" id="ring-fill" stroke-dasharray="264" stroke-dashoffset="264"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-pct" id="ring-pct">0%</span>
+              <span class="ring-lbl">of goal</span>
+            </div>
+          </div>
+          <div class="ring-info">
+            <div class="ring-section-label">Calories Today</div>
+            <div class="ring-kcal"><span id="today-kcal">0</span></div>
+            <div class="ring-goal">/ <span id="goal-display">2000</span> kcal</div>
+            <div class="rem-chip" id="rem-chip">2000 remaining</div>
+          </div>
+        </div>
+        <div class="macro-row">
+          <div class="macro-card">
+            <span class="macro-val" style="color:var(--carbs)" id="m-carbs">0g</span>
+            <span class="macro-name">Carbs</span>
+            <div class="macro-bar"><div class="macro-bar-fill" id="mb-carbs" style="background:var(--carbs);width:0%"></div></div>
+          </div>
+          <div class="macro-card">
+            <span class="macro-val" style="color:var(--fat)" id="m-fat">0g</span>
+            <span class="macro-name">Fat</span>
+            <div class="macro-bar"><div class="macro-bar-fill" id="mb-fat" style="background:var(--fat);width:0%"></div></div>
+          </div>
+          <div class="macro-card">
+            <span class="macro-val" style="color:var(--protein)" id="m-protein">0g</span>
+            <span class="macro-name">Protein</span>
+            <div class="macro-bar"><div class="macro-bar-fill" id="mb-protein" style="background:var(--protein);width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Banner -->
+      <a href="/suggest" class="ai-banner fade-up d3">
+        <div class="ai-banner-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div>
+          <div class="ai-banner-title">AI Meal Suggestions</div>
+          <div class="ai-banner-sub">ChatGPT generates personalized meal ideas</div>
+        </div>
+        <div class="ai-banner-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </a>
+
+      <!-- Meals -->
+      <div style="display:flex;flex-direction:column;gap:10px" class="fade-up d4">
+        <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--txt-2);text-transform:uppercase;letter-spacing:0.04em">Today's Meals</div>
+
+        <div class="card meal-card breakfast" id="card-breakfast">
+          <div class="meal-header" onclick="toggleMeal('breakfast')">
+            <div class="meal-left">
+              <div class="meal-ico">☀️</div>
+              <div><div class="meal-name">Breakfast</div><div class="meal-time">6:00 – 10:00 AM</div></div>
+            </div>
+            <div class="meal-right">
+              <div class="meal-badge" id="badge-breakfast">0 kcal</div>
+              <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px;stroke-width:2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+          </div>
+          <div class="meal-body">
+            <div class="meal-macro-row" id="mmr-breakfast" style="display:none">
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mmr-c-breakfast">0g</span> C</span>
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mmr-f-breakfast">0g</span> F</span>
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mmr-p-breakfast">0g</span> P</span>
+            </div>
+            <div class="food-list" id="foods-breakfast"><div class="meal-empty">No foods logged yet</div></div>
+            <button class="add-meal-btn" onclick="openModal('breakfast')">+ Add food photo</button>
+          </div>
+        </div>
+
+        <div class="card meal-card lunch" id="card-lunch">
+          <div class="meal-header" onclick="toggleMeal('lunch')">
+            <div class="meal-left">
+              <div class="meal-ico">🌤️</div>
+              <div><div class="meal-name">Lunch</div><div class="meal-time">11 AM – 2:00 PM</div></div>
+            </div>
+            <div class="meal-right">
+              <div class="meal-badge" id="badge-lunch">0 kcal</div>
+              <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px;stroke-width:2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+          </div>
+          <div class="meal-body">
+            <div class="meal-macro-row" id="mmr-lunch" style="display:none">
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mmr-c-lunch">0g</span> C</span>
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mmr-f-lunch">0g</span> F</span>
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mmr-p-lunch">0g</span> P</span>
+            </div>
+            <div class="food-list" id="foods-lunch"><div class="meal-empty">No foods logged yet</div></div>
+            <button class="add-meal-btn" onclick="openModal('lunch')">+ Add food photo</button>
+          </div>
+        </div>
+
+        <div class="card meal-card dinner" id="card-dinner">
+          <div class="meal-header" onclick="toggleMeal('dinner')">
+            <div class="meal-left">
+              <div class="meal-ico">🌙</div>
+              <div><div class="meal-name">Dinner</div><div class="meal-time">5:00 – 9:00 PM</div></div>
+            </div>
+            <div class="meal-right">
+              <div class="meal-badge" id="badge-dinner">0 kcal</div>
+              <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px;stroke-width:2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+          </div>
+          <div class="meal-body">
+            <div class="meal-macro-row" id="mmr-dinner" style="display:none">
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mmr-c-dinner">0g</span> C</span>
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mmr-f-dinner">0g</span> F</span>
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mmr-p-dinner">0g</span> P</span>
+            </div>
+            <div class="food-list" id="foods-dinner"><div class="meal-empty">No foods logged yet</div></div>
+            <button class="add-meal-btn" onclick="openModal('dinner')">+ Add food photo</button>
+          </div>
+        </div>
+
+        <div class="card meal-card snacks" id="card-snacks">
+          <div class="meal-header" onclick="toggleMeal('snacks')">
+            <div class="meal-left">
+              <div class="meal-ico">🍎</div>
+              <div><div class="meal-name">Snacks</div><div class="meal-time">Anytime</div></div>
+            </div>
+            <div class="meal-right">
+              <div class="meal-badge" id="badge-snacks">0 kcal</div>
+              <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px;stroke-width:2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+          </div>
+          <div class="meal-body">
+            <div class="meal-macro-row" id="mmr-snacks" style="display:none">
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mmr-c-snacks">0g</span> C</span>
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mmr-f-snacks">0g</span> F</span>
+              <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mmr-p-snacks">0g</span> P</span>
+            </div>
+            <div class="food-list" id="foods-snacks"><div class="meal-empty">No foods logged yet</div></div>
+            <button class="add-meal-btn" onclick="openModal('snacks')">+ Add food photo</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div class="page" id="page-feed">
+    <div class="top-bar">
+      <div><div class="top-bar-sub">Social</div><div class="top-bar-title">Feed</div></div>
+    </div>
+    <div class="content" id="feed-list">
+      <div style="text-align:center;padding:40px 0;color:var(--txt-3)">Loading...</div>
+    </div>
+  </div>
+
+  <!-- EXPLORE -->
+  <div class="page" id="page-explore">
+    <div class="top-bar">
+      <div><div class="top-bar-sub">Discover</div><div class="top-bar-title">Explore</div></div>
+    </div>
+    <div class="content">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="explore-search" placeholder="Search meals or @username..."/>
+      </div>
+      <div class="filter-strip" id="filter-strip">
+        <button class="filter-chip active" data-filter="">All</button>
+        <button class="filter-chip" data-filter="breakfast">Breakfast</button>
+        <button class="filter-chip" data-filter="lunch">Lunch</button>
+        <button class="filter-chip" data-filter="dinner">Dinner</button>
+        <button class="filter-chip" data-filter="snacks">Snacks</button>
+        <button class="filter-chip" data-filter="low-cal">Under 400 kcal</button>
+        <button class="filter-chip" data-filter="high-protein">High Protein</button>
+      </div>
+      <div id="user-results" style="display:none;margin-bottom:4px"></div>
+      <div id="explore-grid" style="display:flex;flex-direction:column;gap:0">
+        <div style="text-align:center;padding:40px 0;color:var(--txt-3)">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS -->
+  <div class="page" id="page-analytics">
+    <div class="top-bar">
+      <div><div class="top-bar-sub">Weekly</div><div class="top-bar-title">Analytics</div></div>
+    </div>
+    <div class="content">
+      <div class="card fade-up">
+        <div class="label" style="margin-bottom:14px">This Week</div>
+        <div class="stat-grid">
+          <div class="stat-card hi"><span class="stat-val" id="an-total">—</span><span class="stat-lbl">Total</span></div>
+          <div class="stat-card"><span class="stat-val" id="an-avg">—</span><span class="stat-lbl">Daily Avg</span></div>
+          <div class="stat-card"><span class="stat-val" id="an-best">—</span><span class="stat-lbl">Best Day</span></div>
+          <div class="stat-card"><span class="stat-val" id="an-streak">—</span><span class="stat-lbl">Streak</span></div>
+        </div>
+        <div class="bar-chart" id="analytics-chart"></div>
+      </div>
+      <div class="card fade-up">
+        <div class="label" style="margin-bottom:14px">Weekly Macros</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600">
+              <span style="color:var(--carbs)">Carbs</span><span style="color:var(--txt-2)" id="wm-carbs">0g</span>
+            </div>
+            <div class="macro-bar"><div class="macro-bar-fill" id="wmb-carbs" style="background:var(--carbs);width:0%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600">
+              <span style="color:var(--fat)">Fat</span><span style="color:var(--txt-2)" id="wm-fat">0g</span>
+            </div>
+            <div class="macro-bar"><div class="macro-bar-fill" id="wmb-fat" style="background:var(--fat);width:0%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600">
+              <span style="color:var(--protein)">Protein</span><span style="color:var(--txt-2)" id="wm-protein">0g</span>
+            </div>
+            <div class="macro-bar"><div class="macro-bar-fill" id="wmb-protein" style="background:var(--protein);width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div style="font-family:var(--font-display);font-size:15px;font-weight:700;margin-bottom:12px;color:var(--txt-2);text-transform:uppercase;letter-spacing:0.04em">History</div>
+        <div id="history-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="page" id="page-profile">
+    <div class="profile-top fade-up">
+      <div class="profile-av" id="profile-av">?</div>
+      <div class="profile-name" id="profile-name">—</div>
+      <div class="profile-bio">Tracking my nutrition</div>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <span class="profile-stat-num" id="ps-meals">0</span>
+          <span class="profile-stat-lbl">Meals</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-num" id="ps-posts">0</span>
+          <span class="profile-stat-lbl">Posts</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-num" id="ps-streak">0</span>
+          <span class="profile-stat-lbl">Streak</span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn btn-ghost btn-full btn-sm" id="profile-logout-btn">Sign Out</button>
+        <button class="btn btn-outline btn-full btn-sm" id="profile-switch-btn">Switch Account</button>
+      </div>
+    </div>
+
+    <div class="profile-tabs fade-up d1">
+      <div class="profile-tab active" data-tab="stats">Stats</div>
+      <div class="profile-tab" data-tab="posts">Posts</div>
+      <div class="profile-tab" data-tab="saved">Saved</div>
+    </div>
+
+    <div class="profile-tab-content active" id="ptab-stats">
+      <div class="streak-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" style="width:36px;height:36px;stroke-width:1.5;flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
+        <div>
+          <div class="streak-num" id="streak-num">0</div>
+          <div class="streak-lbl">Day streak</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px">
+        <div class="card" style="padding:14px"><span style="font-family:var(--font-display);font-size:20px;font-weight:700;display:block" id="psg-meals">0</span><span style="font-size:11px;color:var(--txt-3);text-transform:uppercase;letter-spacing:0.04em">Total Meals</span></div>
+        <div class="card" style="padding:14px"><span style="font-family:var(--font-display);font-size:20px;font-weight:700;display:block" id="psg-avg">0</span><span style="font-size:11px;color:var(--txt-3);text-transform:uppercase;letter-spacing:0.04em">Avg kcal/day</span></div>
+        <div class="card" style="padding:14px"><span style="font-family:var(--font-display);font-size:20px;font-weight:700;display:block" id="psg-best">0</span><span style="font-size:11px;color:var(--txt-3);text-transform:uppercase;letter-spacing:0.04em">Best Day</span></div>
+        <div class="card" style="padding:14px"><span style="font-family:var(--font-display);font-size:20px;font-weight:700;display:block" id="psg-days">0</span><span style="font-size:11px;color:var(--txt-3);text-transform:uppercase;letter-spacing:0.04em">Days Logged</span></div>
+      </div>
+      <div class="card" style="padding:18px">
+        <div class="label" style="margin-bottom:12px">All-Time Macros</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:600;color:var(--carbs)">Carbs</span><span style="font-family:var(--font-display);font-size:16px;font-weight:700" id="at-carbs">0g</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:600;color:var(--fat)">Fat</span><span style="font-family:var(--font-display);font-size:16px;font-weight:700" id="at-fat">0g</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:600;color:var(--protein)">Protein</span><span style="font-family:var(--font-display);font-size:16px;font-weight:700" id="at-protein">0g</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-tab-content" id="ptab-posts">
+      <div id="my-posts-list"><p style="text-align:center;color:var(--txt-3);padding:24px;font-size:14px">No posts yet.</p></div>
+    </div>
+    <div class="profile-tab-content" id="ptab-saved">
+      <div id="saved-posts-list"><p style="text-align:center;color:var(--txt-3);padding:24px;font-size:14px">No saved posts yet.</p></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="top-bar">
+      <div><div class="top-bar-sub">App</div><div class="top-bar-title">Settings</div></div>
+    </div>
+    <div class="content" style="padding-top:4px">
+      <div class="settings-section fade-up">
+        <div class="settings-title">Account</div>
+        <div class="settings-row" id="s-profile">
+          <div class="settings-row-left">
+            <div class="settings-ico" style="background:rgba(245,158,11,0.1);color:var(--amber)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div><span class="settings-lbl">My Profile</span><span class="settings-sub" id="s-email">—</span></div>
+          </div>
+          <div class="settings-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-ico" style="background:rgba(59,130,246,0.1);color:var(--blue)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div><span class="settings-lbl">Calorie Goal</span><span class="settings-sub" id="s-goal">2000 kcal/day</span></div>
+          </div>
+          <div class="settings-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </div>
+      <div class="settings-section fade-up d1">
+        <div class="settings-title">Preferences</div>
+        <div class="settings-row" style="cursor:default">
+          <div class="settings-row-left">
+            <div class="settings-ico" style="background:rgba(139,92,246,0.1);color:var(--purple)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            </div>
+            <div><span class="settings-lbl">Notifications</span><span class="settings-sub">Meal reminders</span></div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+        </div>
+        <div class="settings-row" style="cursor:default">
+          <div class="settings-row-left">
+            <div class="settings-ico" style="background:rgba(16,185,129,0.1);color:var(--green)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div><span class="settings-lbl">Show Macros</span><span class="settings-sub">Carbs, fat, protein</span></div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+      <div class="settings-section fade-up d2">
+        <div class="settings-title">Session</div>
+        <div class="settings-row" id="settings-switch-btn">
+          <div class="settings-row-left">
+            <div class="settings-ico" style="background:rgba(59,130,246,0.1);color:var(--blue)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div><span class="settings-lbl">Switch Account</span><span class="settings-sub">Sign into another account</span></div>
+          </div>
+        </div>
+        <div class="settings-row" id="settings-logout-btn">
+          <div class="settings-row-left">
+            <div class="settings-ico" style="background:rgba(239,68,68,0.1);color:var(--red)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </div>
+            <div><span class="settings-lbl" style="color:var(--red)">Sign Out</span><span class="settings-sub">Log out of iCal</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <div class="nav-item active" data-page="home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </div>
+  <div class="nav-item" data-page="feed">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    Feed
+  </div>
+  <div class="nav-fab" id="nav-log-btn" aria-label="Log meal">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#000"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </div>
+  <div class="nav-item" data-page="explore">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Explore
+  </div>
+  <div class="nav-item" data-page="profile">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profile
+  </div>
+</nav>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+/* iCal Dashboard Logic */
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/login';
+
+const GOAL     = parseInt(localStorage.getItem('calorie_goal') || '2000');
+const MY_ID    = parseInt(localStorage.getItem('user_id') || '0');
+const email    = localStorage.getItem('user_email') || '';
+const username = localStorage.getItem('username') || email.split('@')[0];
+const initial  = (username[0] || '?').toUpperCase();
+
+// Init user info
+document.getElementById('uname').textContent        = username;
+document.getElementById('av-name').textContent      = username;
+document.getElementById('av-email').textContent     = email;
+document.getElementById('av-init').textContent      = initial;
+document.getElementById('profile-av').textContent   = initial;
+document.getElementById('profile-name').textContent = username;
+document.getElementById('goal-display').textContent = GOAL;
+document.getElementById('s-email').textContent      = email;
+document.getElementById('s-goal').textContent       = GOAL + ' kcal/day';
+
+// Greeting
+const hr = new Date().getHours();
+document.getElementById('greeting').textContent =
+  hr < 5 ? 'Good night' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+
+// State
+const meals = {
+  breakfast: { foods: [], kcal: 0, carbs: 0, fat: 0, protein: 0 },
+  lunch:     { foods: [], kcal: 0, carbs: 0, fat: 0, protein: 0 },
+  dinner:    { foods: [], kcal: 0, carbs: 0, fat: 0, protein: 0 },
+  snacks:    { foods: [], kcal: 0, carbs: 0, fat: 0, protein: 0 },
+};
+let sessions    = [];
+let pendShare   = null;
+let activeMeal  = 'breakfast';
+let selFile     = null;
+let xFilter     = '';
+let xTimer      = null;
+let confirmCb   = null;
+
+// Navigation
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item[data-page]').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name)?.classList.add('active');
+  document.querySelector(`.nav-item[data-page="${name}"]`)?.classList.add('active');
+  if (name === 'analytics') buildAnalytics();
+  if (name === 'profile')   buildProfile();
+  if (name === 'feed')      loadFeed();
+  if (name === 'explore')   loadExplore();
+}
+document.querySelectorAll('.nav-item[data-page]').forEach(el =>
+  el.addEventListener('click', () => switchPage(el.dataset.page))
+);
+document.getElementById('av-profile-btn').addEventListener('click', () => { closeMenu(); switchPage('profile'); });
+document.getElementById('av-settings-btn').addEventListener('click', () => { closeMenu(); switchPage('settings'); });
+document.getElementById('s-profile').addEventListener('click', () => switchPage('profile'));
+document.querySelectorAll('.profile-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.profile-tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('ptab-' + tab.dataset.tab)?.classList.add('active');
+    if (tab.dataset.tab === 'posts') loadMyPosts();
+    if (tab.dataset.tab === 'saved') loadSaved();
+  });
+});
+
+// Avatar menu
+function closeMenu() { document.getElementById('av-menu').classList.remove('open'); }
+document.getElementById('av-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('av-menu').classList.toggle('open');
+});
+document.addEventListener('click', e => {
+  if (!document.getElementById('av-btn').contains(e.target) &&
+      !document.getElementById('av-menu').contains(e.target)) closeMenu();
+});
+[
+  'av-logout-btn','av-switch-btn',
+  'profile-logout-btn','profile-switch-btn',
+  'settings-logout-btn','settings-switch-btn'
+].forEach(id => document.getElementById(id)?.addEventListener('click', doLogout));
+
+// Confirm
+function showConfirm(title, sub, okTxt, cb) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-sub').textContent   = sub;
+  document.getElementById('confirm-ok').textContent    = okTxt;
+  confirmCb = cb;
+  document.getElementById('confirm-overlay').classList.add('show');
+}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('show'); confirmCb = null; }
+document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
+document.getElementById('confirm-ok').addEventListener('click', () => { if (confirmCb) confirmCb(); closeConfirm(); });
+document.getElementById('confirm-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-overlay')) closeConfirm();
+});
+
+// Date strip
+function buildDateStrip() {
+  const strip = document.getElementById('date-strip');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const today = new Date();
+  strip.innerHTML = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    const ds = d.toDateString();
+    const kcal = sessions.filter(s => new Date(s.created_at).toDateString() === ds).reduce((a, b) => a + b.total_calories, 0);
+    const chip = document.createElement('div');
+    chip.className = 'date-chip' + (i === 0 ? ' active' : '');
+    chip.innerHTML = `<span class="dc-day">${i === 0 ? 'Today' : days[d.getDay()]}</span><span class="dc-num">${d.getDate()}</span><span class="dc-kcal">${kcal ? kcal : '—'}</span>`;
+    if (i > 0) chip.addEventListener('click', () => openDayPanel(ds));
+    strip.appendChild(chip);
+  }
+}
+
+// Day panel
+function openDayPanel(ds) {
+  const d = new Date(ds);
+  document.getElementById('day-panel-title').textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  document.getElementById('day-panel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  const daySessions = sessions.filter(s => new Date(s.created_at).toDateString() === ds);
+  const kcal  = daySessions.reduce((a, s) => a + s.total_calories, 0);
+  const carbs = daySessions.reduce((a, s) => a + s.total_carbs, 0);
+  const fat   = daySessions.reduce((a, s) => a + s.total_fat, 0);
+  const prot  = daySessions.reduce((a, s) => a + s.total_protein, 0);
+  document.getElementById('day-panel-sub').textContent = kcal + ' kcal logged';
+  const body = document.getElementById('day-panel-body');
+  if (!daySessions.length) {
+    body.innerHTML = '<div style="text-align:center;padding:56px 0;color:var(--txt-3);font-size:14px">No meals logged this day</div>';
+    return;
+  }
+  let html = `<div class="card" style="margin-bottom:12px">
+    <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--amber);margin-bottom:12px">${kcal} kcal</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <div style="background:var(--bg-3);border-radius:var(--r-sm);padding:10px;text-align:center">
+        <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--carbs)">${carbs.toFixed(1)}g</div>
+        <div style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px">Carbs</div>
+      </div>
+      <div style="background:var(--bg-3);border-radius:var(--r-sm);padding:10px;text-align:center">
+        <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--fat)">${fat.toFixed(1)}g</div>
+        <div style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px">Fat</div>
+      </div>
+      <div style="background:var(--bg-3);border-radius:var(--r-sm);padding:10px;text-align:center">
+        <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--protein)">${prot.toFixed(1)}g</div>
+        <div style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px">Protein</div>
+      </div>
+    </div>
+  </div>`;
+  daySessions.forEach(s => {
+    const t = new Date(s.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    html += `<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div style="font-size:15px;font-weight:600;text-transform:capitalize">${s.meal_type}</div>
+          <div style="font-size:12px;color:var(--txt-3)">${t}</div>
+        </div>
+        <div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--amber)">${s.total_calories} kcal</div>
+      </div>`;
+    (s.items || []).forEach(item => {
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--bg-3);border-radius:var(--r-sm);margin-bottom:5px">
+        <div>
+          <div style="font-size:14px;font-weight:500">${item.food_name}</div>
+          <div style="display:flex;gap:5px;margin-top:4px">
+            <span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:var(--r-full);background:rgba(96,165,250,0.1);color:var(--carbs)">${item.carbs.toFixed(1)}g C</span>
+            <span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:var(--r-full);background:rgba(248,113,113,0.1);color:var(--fat)">${item.fat.toFixed(1)}g F</span>
+            <span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:var(--r-full);background:rgba(52,211,153,0.1);color:var(--protein)">${item.protein.toFixed(1)}g P</span>
+          </div>
+        </div>
+        <div style="font-family:var(--font-display);font-size:13px;font-weight:700">${item.calories}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  body.innerHTML = html;
+}
+document.getElementById('day-panel-back').addEventListener('click', () => {
+  document.getElementById('day-panel').classList.remove('open');
+  document.body.style.overflow = '';
+});
+
+// Ring
+function updateRing() {
+  const all = Object.values(meals).flatMap(m => m.foods);
+  const kcal = all.reduce((a, f) => a + f.kcal, 0);
+  const carbs = all.reduce((a, f) => a + f.carbs, 0);
+  const fat   = all.reduce((a, f) => a + f.fat, 0);
+  const prot  = all.reduce((a, f) => a + f.protein, 0);
+  const pct   = Math.min(Math.round(kcal / GOAL * 100), 100);
+  const rem   = Math.max(GOAL - kcal, 0);
+  document.getElementById('ring-fill').style.strokeDashoffset = 264 - (pct / 100) * 264;
+  document.getElementById('ring-pct').textContent    = pct + '%';
+  document.getElementById('today-kcal').textContent  = kcal;
+  document.getElementById('rem-chip').textContent    = rem > 0 ? rem + ' remaining' : 'Goal reached';
+  document.getElementById('m-carbs').textContent     = carbs.toFixed(1) + 'g';
+  document.getElementById('m-fat').textContent       = fat.toFixed(1) + 'g';
+  document.getElementById('m-protein').textContent   = prot.toFixed(1) + 'g';
+  setTimeout(() => {
+    document.getElementById('mb-carbs').style.width   = Math.min(carbs / 2.5, 100) + '%';
+    document.getElementById('mb-fat').style.width     = Math.min(fat / 0.9, 100) + '%';
+    document.getElementById('mb-protein').style.width = Math.min(prot / 0.6, 100) + '%';
+  }, 300);
+}
+
+// Meal sections
+function toggleMeal(t) { document.getElementById('card-' + t).classList.toggle('open'); }
+function recalc(t) {
+  const m = meals[t];
+  m.kcal    = m.foods.reduce((a, f) => a + f.kcal, 0);
+  m.carbs   = parseFloat(m.foods.reduce((a, f) => a + f.carbs, 0).toFixed(1));
+  m.fat     = parseFloat(m.foods.reduce((a, f) => a + f.fat, 0).toFixed(1));
+  m.protein = parseFloat(m.foods.reduce((a, f) => a + f.protein, 0).toFixed(1));
+}
+function renderMeal(t) {
+  const m = meals[t];
+  document.getElementById('badge-' + t).textContent = m.kcal ? m.kcal + ' kcal' : '0 kcal';
+  const mmr = document.getElementById('mmr-' + t);
+  if (m.foods.length) {
+    mmr.style.display = 'flex';
+    document.getElementById('mmr-c-' + t).textContent = m.carbs.toFixed(1) + 'g';
+    document.getElementById('mmr-f-' + t).textContent = m.fat.toFixed(1) + 'g';
+    document.getElementById('mmr-p-' + t).textContent = m.protein.toFixed(1) + 'g';
+  } else {
+    mmr.style.display = 'none';
+  }
+  const list = document.getElementById('foods-' + t);
+  if (!m.foods.length) { list.innerHTML = '<div class="meal-empty">No foods logged yet</div>'; return; }
+  list.innerHTML = '';
+  m.foods.forEach(f => {
+    const row = document.createElement('div');
+    row.className = 'food-row';
+    const emoji = foodEmoji(f.name);
+    row.innerHTML = `
+      ${emoji ? `<span class="food-emoji">${emoji}</span>` : ''}
+      <div class="food-info">
+        <div class="food-name">${f.name}</div>
+        <div class="food-serving">${f.serving || '1 serving'}</div>
+        <div class="food-macros">
+          <span class="food-macro" style="background:rgba(96,165,250,0.1);color:var(--carbs)">${f.carbs.toFixed(1)}g C</span>
+          <span class="food-macro" style="background:rgba(248,113,113,0.1);color:var(--fat)">${f.fat.toFixed(1)}g F</span>
+          <span class="food-macro" style="background:rgba(52,211,153,0.1);color:var(--protein)">${f.protein.toFixed(1)}g P</span>
+        </div>
+      </div>
+      <div class="food-kcal">${f.kcal}</div>`;
+    list.appendChild(row);
+  });
+}
+
+// Upload modal
+function openModal(meal) {
+  activeMeal = meal || 'breakfast';
+  const map = { breakfast: 'mt-b', lunch: 'mt-l', dinner: 'mt-d', snacks: 'mt-s' };
+  const r = document.getElementById(map[activeMeal]);
+  if (r) r.checked = true;
+  document.getElementById('overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('overlay').classList.remove('show');
+  document.body.style.overflow = '';
+  resetUpload();
+}
+function resetUpload() {
+  selFile = null;
+  document.getElementById('fi').value = '';
+  document.getElementById('preview').src = '';
+  document.getElementById('preview').classList.remove('show');
+  document.getElementById('up-title').textContent = 'Tap to upload photo';
+  document.getElementById('up-sub').textContent   = 'JPEG, PNG or WebP — max 10MB';
+  document.getElementById('change-btn').classList.remove('show');
+  document.getElementById('uz').classList.remove('has', 'drag');
+  document.getElementById('analyze-btn').disabled = true;
+  document.getElementById('scanning').classList.remove('show');
+  document.getElementById('modal-actions').style.display = 'flex';
+}
+function applyFile(file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showToast('Please select an image file', 'error'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('Image too large — max 10MB', 'error'); return; }
+  selFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('preview').src = ev.target.result;
+    document.getElementById('preview').classList.add('show');
+    document.getElementById('up-title').textContent = 'Ready to analyze';
+    document.getElementById('up-sub').textContent   = file.name;
+    document.getElementById('change-btn').classList.add('show');
+    document.getElementById('uz').classList.add('has');
+    document.getElementById('analyze-btn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+document.getElementById('fi').addEventListener('change', () => applyFile(document.getElementById('fi').files[0]));
+document.getElementById('change-btn').addEventListener('click', resetUpload);
+document.getElementById('cancel-btn').addEventListener('click', closeModal);
+document.getElementById('nav-log-btn').addEventListener('click', () => openModal(null));
+document.getElementById('overlay').addEventListener('click', e => { if (e.target === document.getElementById('overlay')) closeModal(); });
+const uz = document.getElementById('uz');
+uz.addEventListener('dragover',  e => { e.preventDefault(); uz.classList.add('drag'); });
+uz.addEventListener('dragleave', ()  => uz.classList.remove('drag'));
+uz.addEventListener('drop',      e  => { e.preventDefault(); uz.classList.remove('drag'); applyFile(e.dataTransfer.files[0]); });
+
+// Analyze
+document.getElementById('analyze-btn').addEventListener('click', async () => {
+  if (!selFile) return;
+  activeMeal = document.querySelector('input[name="mt"]:checked')?.value || activeMeal;
+  const btn = document.getElementById('analyze-btn');
+  setLoading(btn, true);
+  document.getElementById('scanning').classList.add('show');
+  document.getElementById('modal-actions').style.display = 'none';
+  const fd = new FormData(); fd.append('image', selFile);
+  try {
+    const res = await fetch(`${API_BASE}/analyze?meal_type=${activeMeal}`, {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd,
+    });
+    if (res.status === 401) { localStorage.clear(); window.location.href = '/login'; return; }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Analysis failed');
+    data.foods.forEach(f => meals[activeMeal].foods.push({ name: f.name, kcal: f.kcal, carbs: f.carbs, fat: f.fat, protein: f.protein, serving: f.serving }));
+    sessions.unshift({ id: data.session_id, meal_type: activeMeal, total_calories: data.total_kcal, total_carbs: data.total_carbs, total_fat: data.total_fat, total_protein: data.total_protein, food_summary: data.foods.map(f => f.name).join(', '), created_at: new Date().toISOString(), items: data.foods.map(f => ({ food_name: f.name, calories: f.kcal, carbs: f.carbs, fat: f.fat, protein: f.protein, serving: f.serving })) });
+    recalc(activeMeal); renderMeal(activeMeal); updateRing(); buildDateStrip();
+    if (!document.getElementById('card-' + activeMeal).classList.contains('open'))
+      document.getElementById('card-' + activeMeal).classList.add('open');
+    pendShare = { session_id: data.session_id, foods: data.foods, kcal: data.total_kcal, carbs: data.total_carbs, fat: data.total_fat, protein: data.total_protein, meal_type: activeMeal };
+    closeModal();
+    openShare();
+  } catch (err) {
+    document.getElementById('scanning').classList.remove('show');
+    document.getElementById('modal-actions').style.display = 'flex';
+    showToast(err.message, 'error');
+  } finally { setLoading(btn, false); }
+});
+
+// Share
+function openShare() {
+  if (!pendShare) return;
+  document.getElementById('share-name').textContent  = pendShare.meal_type.charAt(0).toUpperCase() + pendShare.meal_type.slice(1);
+  document.getElementById('share-kcal').textContent  = pendShare.kcal + ' kcal';
+  document.getElementById('share-foods').textContent = pendShare.foods.map(f => f.name).join(', ');
+  document.getElementById('share-macros').innerHTML  = `<span class="pill pill-blue">${pendShare.carbs.toFixed(1)}g C</span><span class="pill pill-red">${pendShare.fat.toFixed(1)}g F</span><span class="pill pill-green">${pendShare.protein.toFixed(1)}g P</span>`;
+  document.getElementById('share-caption').value     = '';
+  document.getElementById('share-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeShare() { document.getElementById('share-overlay').classList.remove('show'); document.body.style.overflow = ''; pendShare = null; }
+document.getElementById('skip-share-btn').addEventListener('click', () => { closeShare(); showToast('Saved privately'); });
+document.getElementById('do-share-btn').addEventListener('click', async () => {
+  if (!pendShare) return;
+  const priv = document.querySelector('input[name="priv"]:checked')?.value || 'public';
+  if (priv === 'skip') { closeShare(); showToast('Saved privately'); return; }
+  const btn = document.getElementById('do-share-btn');
+  setLoading(btn, true);
+  try {
+    await api('/posts', 'POST', { session_id: pendShare.session_id, caption: document.getElementById('share-caption').value.trim(), status: priv });
+    closeShare();
+    showToast('Shared to your profile', 'success');
+  } catch (e) { showToast(e.message, 'error'); }
+  finally { setLoading(btn, false); }
+});
+
+// Post card builder
+function buildPost(p) {
+  const author = p.author_username || p.author_email?.split('@')[0] || 'User';
+  const isOwner = p.is_owner || p.user_id === MY_ID;
+  const card = document.createElement('div');
+  card.className = 'post-card';
+  card.innerHTML = `
+    <div class="post-header">
+      <div class="post-author" data-uid="${p.user_id}" style="${isOwner ? 'cursor:default' : ''}">
+        <div class="post-av">${author[0].toUpperCase()}</div>
+        <div>
+          <div class="post-author-name">@${author}</div>
+          <div class="post-time">${timeAgo(p.created_at)}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-family:var(--font-display);font-size:14px;font-weight:800;color:var(--amber)">${p.total_calories} kcal</span>
+        ${isOwner ? `<div class="post-menu-wrap">
+          <div class="post-menu-btn post-menu-trigger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </div>
+          <div class="post-dropdown">
+            <div class="post-dd-item toggle-status-btn" data-id="${p.id}" data-status="${p.status || 'public'}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+              ${(p.status || 'public') === 'public' ? 'Make Private' : 'Make Public'}
+            </div>
+            <div class="post-dd-divider"></div>
+            <div class="post-dd-item danger delete-btn" data-id="${p.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+              Delete
+            </div>
+          </div>
+        </div>` : ''}
+      </div>
+    </div>
+    <div class="post-body">
+      <div>
+        <span class="post-meal-tag">${p.meal_type || 'meal'}</span>
+        ${isOwner ? `<span class="post-status-badge ${p.status || 'public'}">${(p.status || 'public') === 'public' ? 'Public' : 'Private'}</span>` : ''}
+      </div>
+      <div class="post-foods">${p.food_summary || 'Meal'}</div>
+      ${p.caption ? `<div class="post-caption">${p.caption}</div>` : ''}
+      <div class="post-macros">
+        <span class="post-macro" style="background:rgba(96,165,250,0.1);color:var(--carbs)">${p.total_carbs.toFixed(1)}g Carbs</span>
+        <span class="post-macro" style="background:rgba(248,113,113,0.1);color:var(--fat)">${p.total_fat.toFixed(1)}g Fat</span>
+        <span class="post-macro" style="background:rgba(52,211,153,0.1);color:var(--protein)">${p.total_protein.toFixed(1)}g Protein</span>
+      </div>
+    </div>
+    <div class="post-actions">
+      <button class="post-action like-btn ${p.liked ? 'liked' : ''}" data-id="${p.id}" data-liked="${p.liked ? '1' : '0'}">
+        <svg viewBox="0 0 24 24" fill="${p.liked ? 'currentColor' : 'none'}" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        ${p.like_count || 0}
+      </button>
+      <button class="post-action save-btn ${p.saved ? 'saved' : ''}" data-id="${p.id}" data-saved="${p.saved ? '1' : '0'}">
+        <svg viewBox="0 0 24 24" fill="${p.saved ? 'currentColor' : 'none'}" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        ${p.saved ? 'Saved' : 'Save'}
+      </button>
+    </div>`;
+
+  // View author profile
+  if (!isOwner) {
+    card.querySelector('.post-author').addEventListener('click', () => openUserPanel(p.user_id, author));
+  }
+
+  // Post menu
+  const trigger = card.querySelector('.post-menu-trigger');
+  const dropdown = card.querySelector('.post-dropdown');
+  if (trigger && dropdown) {
+    trigger.addEventListener('click', e => {
+      e.stopPropagation();
+      document.querySelectorAll('.post-dropdown.open').forEach(d => d.classList.remove('open'));
+      dropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => dropdown.classList.remove('open'));
+  }
+
+  // Toggle status
+  const toggleBtn = card.querySelector('.toggle-status-btn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', async () => {
+      dropdown.classList.remove('open');
+      const cur   = toggleBtn.dataset.status;
+      const newSt = cur === 'public' ? 'private' : 'public';
+      try {
+        await api(`/posts/${toggleBtn.dataset.id}/status`, 'PATCH', { status: newSt });
+        toggleBtn.dataset.status = newSt;
+        toggleBtn.childNodes[1].textContent = newSt === 'public' ? 'Make Private' : 'Make Public';
+        const badge = card.querySelector('.post-status-badge');
+        if (badge) { badge.className = `post-status-badge ${newSt}`; badge.textContent = newSt === 'public' ? 'Public' : 'Private'; }
+        showToast('Post is now ' + newSt, 'success');
+      } catch (e) { showToast(e.message, 'error'); }
+    });
+  }
+
+  // Delete
+  const delBtn = card.querySelector('.delete-btn');
+  if (delBtn) {
+    delBtn.addEventListener('click', () => {
+      dropdown.classList.remove('open');
+      showConfirm('Delete this post?', 'The meal log will remain in history.', 'Delete', async () => {
+        try {
+          await api(`/posts/${delBtn.dataset.id}`, 'DELETE');
+          card.remove();
+          showToast('Post deleted');
+        } catch (e) { showToast(e.message, 'error'); }
+      });
+    });
+  }
+
+  // Like
+  card.querySelector('.like-btn').addEventListener('click', async function() {
+    const liked = this.dataset.liked === '1';
+    try {
+      const res = await api(`/posts/${this.dataset.id}/like`, liked ? 'DELETE' : 'POST');
+      this.dataset.liked = res.liked ? '1' : '0';
+      this.classList.toggle('liked', res.liked);
+      this.innerHTML = `<svg viewBox="0 0 24 24" fill="${res.liked ? 'currentColor' : 'none'}" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>${res.like_count}`;
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+
+  // Save
+  card.querySelector('.save-btn').addEventListener('click', async function() {
+    const saved = this.dataset.saved === '1';
+    try {
+      const res = await api(`/posts/${this.dataset.id}/save`, saved ? 'DELETE' : 'POST');
+      this.dataset.saved = res.saved ? '1' : '0';
+      this.classList.toggle('saved', res.saved);
+      this.innerHTML = `<svg viewBox="0 0 24 24" fill="${res.saved ? 'currentColor' : 'none'}" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>${res.saved ? 'Saved' : 'Save'}`;
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+
+  return card;
+}
+
+// User profile panel
+async function openUserPanel(userId, uname) {
+  const panel = document.getElementById('user-panel');
+  const body  = document.getElementById('user-panel-body');
+  document.getElementById('user-panel-title').textContent = '@' + uname;
+  panel.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  body.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt-3)">Loading...</div>';
+  try {
+    const [u, pd] = await Promise.all([api(`/users/${userId}/profile`), api(`/posts/profile/${userId}`)]);
+    body.innerHTML = `
+      <div style="text-align:center;padding:24px 20px 16px">
+        <div style="width:70px;height:70px;border-radius:50%;background:var(--amber-grad);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;font-weight:800;color:#000;margin:0 auto 12px">${uname[0].toUpperCase()}</div>
+        <div style="font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:3px">@${u.username || uname}</div>
+        ${u.bio ? `<div style="font-size:13px;color:var(--txt-2);margin-bottom:14px">${u.bio}</div>` : ''}
+        <div style="display:flex;justify-content:center;gap:24px;margin-bottom:16px">
+          <div style="text-align:center"><span style="font-family:var(--font-display);font-size:18px;font-weight:700;display:block">${u.followers_count || 0}</span><span style="font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:0.06em">Followers</span></div>
+          <div style="text-align:center"><span style="font-family:var(--font-display);font-size:18px;font-weight:700;display:block">${u.posts_count || 0}</span><span style="font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:0.06em">Posts</span></div>
+        </div>
+        <button class="btn ${u.following ? 'btn-outline' : 'btn-amber'} btn-full" id="follow-btn" data-uid="${userId}" data-following="${u.following ? '1' : '0'}">${u.following ? 'Following' : 'Follow'}</button>
+      </div>
+      <div style="padding:0 20px 16px">
+        <div style="font-family:var(--font-display);font-size:13px;font-weight:700;margin-bottom:10px;color:var(--txt-2);text-transform:uppercase;letter-spacing:0.04em">Public Posts</div>
+        <div id="up-posts">${pd.posts?.length ? '' : '<p style="color:var(--txt-3);font-size:14px;text-align:center;padding:20px">No public posts</p>'}</div>
+      </div>`;
+    const postsEl = document.getElementById('up-posts');
+    if (pd.posts?.length) pd.posts.forEach(p => postsEl.appendChild(buildPost(p)));
+    document.getElementById('follow-btn').addEventListener('click', async function() {
+      const following = this.dataset.following === '1';
+      try {
+        await api(`/follow/${this.dataset.uid}`, following ? 'DELETE' : 'POST');
+        this.dataset.following = following ? '0' : '1';
+        this.className = `btn ${following ? 'btn-amber' : 'btn-outline'} btn-full`;
+        this.textContent = following ? 'Follow' : 'Following';
+        showToast(following ? 'Unfollowed' : 'Following', 'success');
+      } catch (e) { showToast(e.message, 'error'); }
+    });
+  } catch (e) {
+    body.innerHTML = `<p style="color:var(--red);padding:20px;font-size:14px">${e.message}</p>`;
+  }
+}
+document.getElementById('user-panel-back').addEventListener('click', () => {
+  document.getElementById('user-panel').classList.remove('open');
+  document.body.style.overflow = '';
+});
+
+// Feed
+async function loadFeed() {
+  const c = document.getElementById('feed-list');
+  c.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt-3);font-size:14px">Loading...</div>';
+  try {
+    const data = await api('/posts/feed?limit=20');
+    if (!data.posts?.length) {
+      c.innerHTML = `<div class="feed-empty">
+        <div class="feed-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="feed-empty-title">Feed is empty</div>
+        <div class="feed-empty-sub">Log a meal and share it publicly, or explore what others are eating.</div>
+        <button class="btn btn-amber" onclick="switchPage('explore')">Browse Explore</button>
+      </div>`;
+      return;
+    }
+    c.innerHTML = '';
+    data.posts.forEach(p => c.appendChild(buildPost(p)));
+  } catch (e) {
+    c.innerHTML = `<div style="text-align:center;padding:40px">
+      <div style="font-size:14px;color:var(--txt-2);margin-bottom:14px">Server is starting up...</div>
+      <button class="btn btn-ghost" onclick="loadFeed()">Retry</button>
+    </div>`;
+  }
+}
+
+// Explore
+async function loadExplore(filter, search) {
+  const grid = document.getElementById('explore-grid');
+  grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt-3);font-size:14px">Loading...</div>';
+  let url = '/posts/explore?limit=30';
+  if (filter === 'low-cal')           url += '&max_cal=400';
+  else if (filter === 'high-protein') url += '&min_cal=0';
+  else if (filter && !['low-cal','high-protein'].includes(filter)) url += `&meal_type=${encodeURIComponent(filter)}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  try {
+    const data = await api(url);
+    if (!data.posts?.length) {
+      grid.innerHTML = '<div style="text-align:center;padding:48px 0"><div style="font-size:14px;font-weight:600;margin-bottom:6px">No posts found</div><div style="font-size:13px;color:var(--txt-3)">Log a meal and share it publicly!</div></div>';
+      return;
+    }
+    grid.innerHTML = '';
+    let posts = data.posts;
+    if (filter === 'high-protein') posts = posts.sort((a, b) => b.total_protein - a.total_protein);
+    posts.forEach(p => grid.appendChild(buildPost(p)));
+  } catch (e) {
+    grid.innerHTML = `<div style="text-align:center;padding:40px">
+      <div style="font-size:14px;color:var(--txt-2);margin-bottom:14px">Server is waking up...</div>
+      <button class="btn btn-ghost" onclick="loadExplore('${filter||''}','${search||''}')">Retry</button>
+    </div>`;
+  }
+}
+
+// User search in explore
+let userSearchTimer = null;
+document.getElementById('explore-search').addEventListener('input', async e => {
+  const q = e.target.value.trim();
+  clearTimeout(xTimer); clearTimeout(userSearchTimer);
+  const ur = document.getElementById('user-results');
+  if (q.startsWith('@')) {
+    const term = q.slice(1);
+    userSearchTimer = setTimeout(async () => {
+      if (!term) { ur.style.display = 'none'; return; }
+      try {
+        const data = await api(`/users/search?q=${encodeURIComponent(term)}`);
+        if (!data.users?.length) { ur.style.display = 'none'; return; }
+        ur.style.display = 'block';
+        ur.innerHTML = '<div class="label" style="margin-bottom:8px">Users</div>';
+        data.users.forEach(u => {
+          const card = document.createElement('div');
+          card.className = 'user-card';
+          card.innerHTML = `
+            <div style="display:flex;align-items:center;gap:11px">
+              <div class="user-card-av">${(u.username || u.email)[0].toUpperCase()}</div>
+              <div><div class="user-card-name">@${u.username || u.email.split('@')[0]}</div><div class="user-card-meta">${u.followers_count || 0} followers</div></div>
+            </div>
+            <button class="follow-btn ${u.following ? 'following' : ''}" data-uid="${u.id}" data-following="${u.following ? '1' : '0'}">${u.following ? 'Following' : 'Follow'}</button>`;
+          card.querySelector('.user-card-av').parentElement.parentElement.addEventListener('click', () =>
+            openUserPanel(u.id, u.username || u.email.split('@')[0])
+          );
+          card.querySelector('.follow-btn').addEventListener('click', async function(ev) {
+            ev.stopPropagation();
+            const following = this.dataset.following === '1';
+            try {
+              await api(`/follow/${this.dataset.uid}`, following ? 'DELETE' : 'POST');
+              this.dataset.following = following ? '0' : '1';
+              this.className = `follow-btn ${following ? '' : 'following'}`;
+              this.textContent = following ? 'Follow' : 'Following';
+              showToast(following ? 'Unfollowed' : 'Following', 'success');
+            } catch (err) { showToast(err.message, 'error'); }
+          });
+          ur.appendChild(card);
+        });
+      } catch (_) {}
+    }, 400);
+    return;
+  }
+  ur.style.display = 'none';
+  xTimer = setTimeout(() => loadExplore(xFilter, q), 500);
+});
+
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    xFilter = chip.dataset.filter;
+    loadExplore(xFilter, document.getElementById('explore-search').value);
+  });
+});
+
+// My posts / saved
+async function loadMyPosts() {
+  const c = document.getElementById('my-posts-list');
+  c.innerHTML = '<div style="text-align:center;padding:24px;color:var(--txt-3);font-size:14px">Loading...</div>';
+  try {
+    const data = await api(`/posts/profile/${MY_ID}`);
+    if (!data.posts?.length) { c.innerHTML = '<p style="text-align:center;color:var(--txt-3);padding:24px;font-size:14px">No posts yet.</p>'; return; }
+    c.innerHTML = '';
+    data.posts.forEach(p => c.appendChild(buildPost(p)));
+  } catch (e) { c.innerHTML = `<p style="color:var(--red);padding:16px;font-size:14px">${e.message}</p>`; }
+}
+async function loadSaved() {
+  const c = document.getElementById('saved-posts-list');
+  c.innerHTML = '<div style="text-align:center;padding:24px;color:var(--txt-3);font-size:14px">Loading...</div>';
+  try {
+    const data = await api('/posts/saved');
+    if (!data.posts?.length) { c.innerHTML = '<p style="text-align:center;color:var(--txt-3);padding:24px;font-size:14px">No saved posts yet.</p>'; return; }
+    c.innerHTML = '';
+    data.posts.forEach(p => c.appendChild(buildPost(p)));
+  } catch (e) { c.innerHTML = `<p style="color:var(--red);padding:16px;font-size:14px">${e.message}</p>`; }
+}
+
+// Analytics
+function buildAnalytics() {
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  const today = new Date();
+  const dC = Array(7).fill(0), dCa = Array(7).fill(0), dF = Array(7).fill(0), dP = Array(7).fill(0);
+  sessions.forEach(s => {
+    const diff = Math.floor((today - new Date(s.created_at)) / 86400000);
+    if (diff >= 0 && diff < 7) {
+      const idx = (todayIdx - diff + 7) % 7;
+      dC[idx] += s.total_calories; dCa[idx] += s.total_carbs;
+      dF[idx] += s.total_fat; dP[idx] += s.total_protein;
+    }
+  });
+  const total = dC.reduce((a,b) => a+b, 0);
+  const nz = dC.filter(v => v > 0);
+  document.getElementById('an-total').textContent  = total ? total.toLocaleString() + ' kcal' : '—';
+  document.getElementById('an-avg').textContent    = nz.length ? Math.round(total / nz.length) + ' kcal' : '—';
+  document.getElementById('an-best').textContent   = Math.max(...dC, 0) + ' kcal';
+  document.getElementById('an-streak').textContent = calcStreak() + ' days';
+  const chart = document.getElementById('analytics-chart');
+  chart.innerHTML = '';
+  const maxV = Math.max(...dC, GOAL, 1);
+  days.forEach((day, i) => {
+    const pct = Math.min((dC[i] || 0) / maxV * 100, 100);
+    const isT = i === todayIdx;
+    const col = document.createElement('div');
+    col.className = 'bc-col' + (isT ? ' today' : '');
+    col.innerHTML = `<div class="bc-bar"><div class="bc-fill" style="height:0%" data-pct="${pct}"></div></div><span class="bc-label">${day}</span>`;
+    chart.appendChild(col);
+  });
+  setTimeout(() => chart.querySelectorAll('.bc-fill').forEach(b => b.style.height = b.dataset.pct + '%'), 200);
+  const wC = dCa.reduce((a,b)=>a+b,0), wF = dF.reduce((a,b)=>a+b,0), wP = dP.reduce((a,b)=>a+b,0);
+  const mM = Math.max(wC, wF, wP, 1);
+  document.getElementById('wm-carbs').textContent   = wC.toFixed(0) + 'g';
+  document.getElementById('wm-fat').textContent     = wF.toFixed(0) + 'g';
+  document.getElementById('wm-protein').textContent = wP.toFixed(0) + 'g';
+  setTimeout(() => {
+    document.getElementById('wmb-carbs').style.width   = (wC / mM * 100) + '%';
+    document.getElementById('wmb-fat').style.width     = (wF / mM * 100) + '%';
+    document.getElementById('wmb-protein').style.width = (wP / mM * 100) + '%';
+  }, 200);
+  const hist = document.getElementById('history-list');
+  hist.innerHTML = '';
+  if (!sessions.length) { hist.innerHTML = '<div style="text-align:center;padding:24px;color:var(--txt-3);font-size:14px">No meals logged yet</div>'; return; }
+  sessions.slice(0, 20).forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.cssText = 'display:flex;align-items:center;gap:13px;padding:13px 15px';
+    div.innerHTML = `
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.food_summary || 'Meal'}</div>
+        <div style="font-size:12px;color:var(--txt-3);margin-top:2px">${timeAgo(s.created_at)} · ${s.meal_type}</div>
+        <div style="display:flex;gap:7px;margin-top:4px">
+          <span style="font-size:11px;color:var(--carbs);font-weight:600">${s.total_carbs.toFixed(0)}g C</span>
+          <span style="font-size:11px;color:var(--fat);font-weight:600">${s.total_fat.toFixed(0)}g F</span>
+          <span style="font-size:11px;color:var(--protein);font-weight:600">${s.total_protein.toFixed(0)}g P</span>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <span style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--amber)">${s.total_calories}</span>
+        <span style="font-size:11px;color:var(--txt-3);display:block">kcal</span>
+      </div>`;
+    hist.appendChild(div);
+  });
+}
+
+// Profile
+function buildProfile() {
+  const total   = sessions.length;
+  const daysSet = new Set(sessions.map(s => new Date(s.created_at).toDateString()));
+  const daysN   = daysSet.size;
+  const totalK  = sessions.reduce((a,s) => a+s.total_calories, 0);
+  const dayKcals = Object.values(sessions.reduce((acc,s) => { const d=new Date(s.created_at).toDateString(); acc[d]=(acc[d]||0)+s.total_calories; return acc; }, {}));
+  document.getElementById('ps-meals').textContent  = total;
+  document.getElementById('ps-streak').textContent = calcStreak();
+  document.getElementById('streak-num').textContent= calcStreak();
+  document.getElementById('psg-meals').textContent = total;
+  document.getElementById('psg-avg').textContent   = daysN ? Math.round(totalK / daysN) : 0;
+  document.getElementById('psg-best').textContent  = dayKcals.length ? Math.max(...dayKcals) : 0;
+  document.getElementById('psg-days').textContent  = daysN;
+  document.getElementById('at-carbs').textContent  = sessions.reduce((a,s)=>a+s.total_carbs,0).toFixed(0)+'g';
+  document.getElementById('at-fat').textContent    = sessions.reduce((a,s)=>a+s.total_fat,0).toFixed(0)+'g';
+  document.getElementById('at-protein').textContent= sessions.reduce((a,s)=>a+s.total_protein,0).toFixed(0)+'g';
+  api(`/posts/profile/${MY_ID}`).then(d => { document.getElementById('ps-posts').textContent = d.posts?.length || 0; }).catch(() => {});
+}
+
+function calcStreak() {
+  const days = new Set(sessions.map(s => new Date(s.created_at).toDateString()));
+  let streak = 0;
+  const check = new Date();
+  while (days.has(check.toDateString())) { streak++; check.setDate(check.getDate() - 1); }
+  return streak;
+}
+
+// Load history
+async function loadHistory() {
+  try {
+    const data = await api('/history?limit=100');
+    sessions = data.sessions || [];
+    const todayStr = new Date().toDateString();
+    sessions.forEach(s => {
+      if (new Date(s.created_at).toDateString() !== todayStr) return;
+      const t = s.meal_type in meals ? s.meal_type : 'snacks';
+      s.items.forEach(item => meals[t].foods.push({ name: item.food_name, kcal: item.calories, carbs: item.carbs||0, fat: item.fat||0, protein: item.protein||0, serving: item.serving }));
+    });
+    ['breakfast','lunch','dinner','snacks'].forEach(t => { recalc(t); renderMeal(t); });
+    updateRing();
+    buildDateStrip();
+  } catch (e) {
+    console.warn('History load failed:', e.message);
+    buildDateStrip();
+  }
+}
+
+// Wake up Render + Init
+fetch(API_BASE + '/health').catch(() => {});
+updateRing();
+loadHistory();
+
+</script>
+{% endblock %}
