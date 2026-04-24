@@ -1,1 +1,13 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyc
+*.egg-info/
 .env
+*.bak
+
+# System
+.DS_Store
+*.log
