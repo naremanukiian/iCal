@@ -148,6 +148,8 @@ def init_db():
     ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT DEFAULT '';
     ALTER TABLE users ADD COLUMN IF NOT EXISTS calorie_goal INTEGER DEFAULT 2000;
     ALTER TABLE posts ADD COLUMN IF NOT EXISTS status VARCHAR(10) DEFAULT 'public';
+    ALTER TABLE meal_sessions ADD COLUMN IF NOT EXISTS photo_url TEXT;
+    ALTER TABLE posts ADD COLUMN IF NOT EXISTS photo_url TEXT;
     UPDATE users SET username = split_part(email,'@',1) WHERE username IS NULL;
 
     -- Indexes

@@ -3,57 +3,45 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#0c0d11"/>
+<meta name="theme-color" content="#FFFFFF"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="iCal"/>
-<meta name="description" content="Track calories and macros with AI. Snap a photo of any meal."/>
+<meta name="description" content="Track calories and macros with AI."/>
 <title>{% block title %}iCal{% endblock %}</title>
-
 <link rel="manifest" href="/manifest.json"/>
 <link rel="apple-touch-icon" href="/static/icons/icon-192.png"/>
 <link rel="icon" type="image/png" href="/static/icons/icon-192.png"/>
-
-<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-
-<!-- App styles -->
-<link rel="stylesheet" href="/static/css/style.css?v=2"/>
-<link rel="stylesheet" href="/static/css/frame.css"/>
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/css/style.css?v=9"/>
+<link rel="stylesheet" href="/static/css/frame.css?v=9"/>
 {% block head %}{% endblock %}
 </head>
 <body class="frame-body">
-
-<!-- ═══ iPhone 17 Pro Frame (desktop only) ═══════ -->
-<div class="phone-frame-wrap" id="phone-wrap">
+<div class="phone-frame-wrap">
   <div class="phone-frame">
-    <!-- Dynamic Island -->
-    <div class="dynamic-island">
-      <div class="di-pill"></div>
+    <div class="btn-mute"></div>
+    <div class="btn-vol-up"></div>
+    <div class="btn-vol-dn"></div>
+    <div class="btn-power"></div>
+    <div class="screen-glass">
+      <div class="dynamic-island">
+        <div class="di-sensor"></div>
+        <div class="di-lens"></div>
+      </div>
+      <div id="phone-screen">
+        <div id="toast"></div>
+        {% block body %}{% endblock %}
+      </div>
+      <div class="home-indicator"></div>
     </div>
-    <!-- Phone screen content -->
-    <div class="phone-screen" id="phone-screen">
-      <div id="toast"></div>
-      {% block body %}{% endblock %}
-    </div>
-    <!-- Home indicator -->
-    <div class="home-indicator"></div>
   </div>
 </div>
-
-<!-- App scripts -->
-<script src="/static/js/script.js?v=2"></script>
+<script src="/static/js/script.js?v=9"></script>
 {% block scripts %}{% endblock %}
-
-<!-- PWA service worker -->
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
-}
-</script>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});</script>
 </body>
 </html>

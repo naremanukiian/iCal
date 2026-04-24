@@ -51,13 +51,7 @@ def analyze(current_user: dict):
 
     # Run async analyzer in sync Flask context
     try:
-        import asyncio
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            foods = loop.run_until_complete(analyze_food_image(image_bytes, ct or "image/jpeg"))
-        finally:
-            loop.close()
+        foods = asyncio.run(analyze_food_image(image_bytes, ct or "image/jpeg"))
     except Exception as e:
         return _err(f"Analysis failed: {e}", 500)
 
@@ -71,13 +65,27 @@ def analyze(current_user: dict):
     food_summary  = ", ".join(f["name"] for f in foods)
     uid           = int(current_user["sub"])
 
+    # Compress uploaded image to a small JPEG thumbnail (~30KB) stored as base64
+    # This lets posts display real food photos in the feed
+    photo_url = None
+    try:
+        import base64, io
+        from PIL import Image
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        img.thumbnail((400, 400), Image.LANCZOS)
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=65, optimize=True)
+        photo_url = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+    except Exception:
+        photo_url = None  # graceful fallback if Pillow unavailable
+
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """INSERT INTO meal_sessions
-                   (user_id,meal_type,total_calories,total_carbs,total_fat,total_protein,food_summary)
-                   VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING id""",
-                (uid, meal_type, total_kcal, total_carbs, total_fat, total_protein, food_summary)
+                   (user_id,meal_type,total_calories,total_carbs,total_fat,total_protein,food_summary,photo_url)
+                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id""",
+                (uid, meal_type, total_kcal, total_carbs, total_fat, total_protein, food_summary, photo_url)
             )
             session_id = cur.fetchone()[0]
             for f in foods:
@@ -96,6 +104,7 @@ def analyze(current_user: dict):
         "total_fat":     total_fat,
         "total_protein": total_protein,
         "session_id":    session_id,
+        "photo_url":     photo_url,
     })
 
 

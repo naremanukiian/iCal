@@ -127,15 +127,16 @@ def create_post(current_user: dict):
             cur.execute("""
                 INSERT INTO posts
                   (user_id,session_id,caption,status,meal_type,
-                   total_calories,total_carbs,total_fat,total_protein,food_summary,items_json)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                   total_calories,total_carbs,total_fat,total_protein,food_summary,items_json,photo_url)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 RETURNING id
             """, (
                 me, session_id, caption, status, session["meal_type"],
                 session["total_calories"], float(session["total_carbs"]),
                 float(session["total_fat"]), float(session["total_protein"]),
                 session["food_summary"],
-                psycopg2.extras.Json(session["items"] or [])
+                psycopg2.extras.Json(session["items"] or []),
+                session.get("photo_url")
             ))
             post_id = cur.fetchone()["id"]
 
@@ -184,7 +185,11 @@ def _post_query(where: str, params: dict, me: int) -> str:
                EXISTS(SELECT 1 FROM likes l WHERE l.post_id=p.id AND l.user_id=%(me)s) AS liked,
                EXISTS(SELECT 1 FROM saves s WHERE s.post_id=p.id AND s.user_id=%(me)s) AS saved,
                (SELECT COUNT(*) FROM likes WHERE post_id=p.id) AS like_count,
-               (p.user_id = %(me)s) AS is_owner
+               (p.user_id = %(me)s) AS is_owner,
+               COALESCE(
+                   p.photo_url,
+                   (SELECT ms.photo_url FROM meal_sessions ms WHERE ms.id = p.session_id LIMIT 1)
+               ) AS photo_url
         FROM posts p JOIN users u ON u.id = p.user_id
         WHERE {where}
         ORDER BY like_count DESC, p.created_at DESC
@@ -262,7 +267,11 @@ def get_explore(current_user: dict):
                EXISTS(SELECT 1 FROM likes l WHERE l.post_id=p.id AND l.user_id=%(me)s) AS liked,
                EXISTS(SELECT 1 FROM saves s WHERE s.post_id=p.id AND s.user_id=%(me)s) AS saved,
                (SELECT COUNT(*) FROM likes WHERE post_id=p.id) AS like_count,
-               (p.user_id = %(me)s) AS is_owner
+               (p.user_id = %(me)s) AS is_owner,
+               COALESCE(
+                   p.photo_url,
+                   (SELECT ms.photo_url FROM meal_sessions ms WHERE ms.id = p.session_id LIMIT 1)
+               ) AS photo_url
         FROM posts p JOIN users u ON u.id = p.user_id
         WHERE {' AND '.join(where)}
         ORDER BY like_count DESC, p.created_at DESC
