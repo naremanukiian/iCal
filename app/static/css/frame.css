@@ -1,210 +1,90 @@
-/* ================================================================
-   iCal — frame.css v10
-   iPhone 15 Pro: 393×852 logical px · 47px radius · Dynamic Island
-   Stage: dark charcoal, device always centered
-   Only #phone-screen scrolls — everything else is locked
-   ================================================================ */
+/* iCal frame.css v11 — iPhone 15 Pro, dark stage */
+*,*::before,*::after{box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;margin:0;padding:0}
 
-*, *::before, *::after { box-sizing: border-box; }
-
-html, body {
-  width: 100%; height: 100%;
-  overflow: hidden;
-  margin: 0; padding: 0;
-}
-
-/* ── Stage ── */
-.frame-body {
-  width: 100vw;
-  height: 100dvh;
-  overflow: hidden;
-  background: #111113;
+.frame-body{
+  width:100vw;height:100dvh;overflow:hidden;
+  background:#050508;
   background-image:
-    radial-gradient(ellipse 60% 50% at 30% 40%, rgba(232,82,74,.07) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 70% 60%, rgba(100,100,140,.06) 0%, transparent 60%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+    radial-gradient(ellipse 70% 55% at 20% 20%,rgba(255,107,107,.08) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 50% at 80% 80%,rgba(99,102,241,.07) 0%,transparent 55%);
+  display:flex;align-items:center;justify-content:center;position:relative;
 }
-
-/* ── Wrapper — aspect-ratio locks proportions ── */
-.phone-frame-wrap {
-  position: relative;
-  z-index: 1;
-  height: 94dvh;
-  max-height: 852px;
-  aspect-ratio: 393 / 852;
+.phone-frame-wrap{
+  position:relative;z-index:1;
+  height:94dvh;max-height:852px;aspect-ratio:393/852;
   filter:
-    drop-shadow(0 0 1.5px rgba(0,0,0,.95))
-    drop-shadow(0 12px 40px rgba(0,0,0,.70))
-    drop-shadow(0 40px 90px rgba(0,0,0,.55))
-    drop-shadow(0 70px 130px rgba(0,0,0,.30));
+    drop-shadow(0 0 2px rgba(0,0,0,1))
+    drop-shadow(0 16px 48px rgba(0,0,0,.80))
+    drop-shadow(0 48px 100px rgba(0,0,0,.60))
+    drop-shadow(0 80px 140px rgba(0,0,0,.35));
 }
+.phone-frame{
+  position:relative;width:100%;height:100%;
+  border-radius:calc(100% * 47 / 393);
+  background:#1C1C1E;
+  background-image:linear-gradient(158deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.04) 30%,rgba(255,255,255,0) 55%,rgba(255,255,255,.02) 75%,rgba(255,255,255,.10) 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.35),inset 0 -1.5px 0 rgba(0,0,0,.40),inset 0 0 0 1px rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.btn-mute{position:absolute;left:-3.5px;top:calc(100%*110/852);width:3.5px;height:calc(100%*30/852);background:#3A3A3C;border-radius:2px 0 0 2px}
+.btn-vol-up{position:absolute;left:-3.5px;top:calc(100%*158/852);width:3.5px;height:calc(100%*60/852);background:#3A3A3C;border-radius:2px 0 0 2px}
+.btn-vol-dn{position:absolute;left:-3.5px;top:calc(100%*232/852);width:3.5px;height:calc(100%*60/852);background:#3A3A3C;border-radius:2px 0 0 2px}
+.btn-power{position:absolute;right:-3.5px;top:calc(100%*170/852);width:3.5px;height:calc(100%*80/852);background:#3A3A3C;border-radius:0 2px 2px 0}
 
-/* ── Titanium shell ── */
-.phone-frame {
-  position: relative;
-  width: 100%; height: 100%;
-  border-radius: calc(100% * 47 / 393);
-  background: #C8C5BE;
-  background-image: linear-gradient(
-    158deg,
-    rgba(255,255,255,.38) 0%,
-    rgba(255,255,255,.10) 25%,
-    rgba(255,255,255,.00) 50%,
-    rgba(255,255,255,.04) 75%,
-    rgba(255,255,255,.18) 100%
-  );
-  box-shadow:
-    inset 0  1.5px 0   rgba(255,255,255,.62),
-    inset 0 -1.5px 0   rgba(0,0,0,.24),
-    inset 0  0     0 1px rgba(0,0,0,.20);
-  overflow: hidden;
+.screen-glass{
+  position:absolute;
+  inset:calc(100%*8/852) calc(100%*8/393);
+  border-radius:calc(100%*39/393);
+  overflow:hidden;background:#0A0A0F;
+  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.08);
+  isolation:isolate;
 }
+.screen-glass::after{
+  content:'';position:absolute;inset:0;z-index:600;
+  background:linear-gradient(148deg,rgba(255,255,255,.04) 0%,transparent 40%);
+  border-radius:calc(100%*39/393);pointer-events:none;
+}
+.dynamic-island{
+  position:absolute;top:calc(100%*12/852);left:50%;transform:translateX(-50%);z-index:20;
+  width:calc(100%*126/393);min-width:94px;max-width:130px;
+  height:calc(100%*37/852);min-height:27px;max-height:40px;
+  background:#000;border-radius:999px;
+  display:flex;align-items:center;justify-content:flex-end;padding-right:11px;gap:6px;
+  pointer-events:none;
+}
+.di-lens{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#111130,#000);box-shadow:0 0 0 1px rgba(255,255,255,.06);position:relative;flex-shrink:0}
+.di-lens::after{content:'';position:absolute;top:2px;left:2px;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.15)}
+.di-sensor{width:7px;height:7px;border-radius:50%;background:#090914;flex-shrink:0}
 
-/* ── Hardware buttons (left) ── */
-.btn-mute {
-  position: absolute; left: -3.5px;
-  top: calc(100% * 110 / 852);
-  width: 3.5px; height: calc(100% * 30 / 852);
-  background: linear-gradient(90deg, #A8A5A0 0%, #B5B2AB 100%);
-  border-radius: 2px 0 0 2px;
-}
-.btn-vol-up {
-  position: absolute; left: -3.5px;
-  top: calc(100% * 158 / 852);
-  width: 3.5px; height: calc(100% * 60 / 852);
-  background: linear-gradient(90deg, #A8A5A0 0%, #B5B2AB 100%);
-  border-radius: 2px 0 0 2px;
-}
-.btn-vol-dn {
-  position: absolute; left: -3.5px;
-  top: calc(100% * 232 / 852);
-  width: 3.5px; height: calc(100% * 60 / 852);
-  background: linear-gradient(90deg, #A8A5A0 0%, #B5B2AB 100%);
-  border-radius: 2px 0 0 2px;
-}
-/* ── Power button (right) ── */
-.btn-power {
-  position: absolute; right: -3.5px;
-  top: calc(100% * 170 / 852);
-  width: 3.5px; height: calc(100% * 80 / 852);
-  background: linear-gradient(270deg, #A8A5A0 0%, #B5B2AB 100%);
-  border-radius: 0 2px 2px 0;
-}
+.home-indicator{position:absolute;bottom:calc(100%*8/852);left:50%;transform:translateX(-50%);width:calc(100%*134/393);height:5px;background:rgba(255,255,255,.18);border-radius:3px;z-index:400;pointer-events:none}
 
-/* ── Screen glass ── */
-.screen-glass {
-  position: absolute;
-  inset: calc(100% * 8 / 852) calc(100% * 8 / 393);
-  border-radius: calc(100% * 39 / 393);
-  overflow: hidden;
-  background: #FFFFFF;
-  box-shadow: inset 0 0 0 0.5px rgba(0,0,0,.06);
-  isolation: isolate;
+#phone-screen{
+  position:absolute;inset:0;
+  border-radius:calc(100%*39/393);
+  background:#0A0A0F;
+  overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;pointer-events:auto;
 }
-/* Subtle glass sheen */
-.screen-glass::after {
-  content: '';
-  position: absolute; inset: 0;
-  z-index: 600;
-  background: linear-gradient(148deg, rgba(255,255,255,.055) 0%, transparent 45%);
-  border-radius: calc(100% * 39 / 393);
-  pointer-events: none;
-}
+#phone-screen::-webkit-scrollbar{display:none}
 
-/* ── Dynamic Island ── */
-.dynamic-island {
-  position: absolute;
-  top: calc(100% * 12 / 852);
-  left: 50%; transform: translateX(-50%);
-  z-index: 20;
-  width: calc(100% * 126 / 393);
-  min-width: 94px; max-width: 130px;
-  height: calc(100% * 37 / 852);
-  min-height: 27px; max-height: 40px;
-  background: #000;
-  border-radius: 999px;
-  display: flex; align-items: center;
-  justify-content: flex-end;
-  padding-right: 11px; gap: 6px;
-  pointer-events: none;
-}
-.di-lens {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: radial-gradient(circle at 33% 33%, #14142E, #000);
-  box-shadow: 0 0 0 1px rgba(255,255,255,.07);
-  position: relative; flex-shrink: 0;
-}
-.di-lens::after {
-  content: ''; position: absolute;
-  top: 2px; left: 2px; width: 3px; height: 3px;
-  border-radius: 50%; background: rgba(255,255,255,.18);
-}
-.di-sensor {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: #090914; flex-shrink: 0;
-}
+.app{width:100%;position:relative;background:#0A0A0F;min-height:100%;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+.bottom-nav{position:sticky!important;bottom:0!important;width:100%!important;z-index:400!important}
 
-/* ── Scrollable screen ── */
-#phone-screen {
-  position: absolute; inset: 0;
-  border-radius: calc(100% * 39 / 393);
-  background: #F5F5F5;
-  overflow-y: auto; overflow-x: hidden;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  pointer-events: auto;
+@media(min-width:768px){
+  html,body{overflow:hidden!important;height:100dvh!important}
+  .frame-body{pointer-events:none}
+  .phone-frame-wrap{pointer-events:all}
 }
-#phone-screen::-webkit-scrollbar { display: none; }
-
-/* ── Home indicator ── */
-.home-indicator {
-  position: absolute;
-  bottom: calc(100% * 8 / 852);
-  left: 50%; transform: translateX(-50%);
-  width: calc(100% * 134 / 393);
-  height: 5px;
-  background: rgba(0,0,0,.22);
-  border-radius: 3px;
-  z-index: 400;
-  pointer-events: none;
-}
-
-/* ── App shell ── */
-.app {
-  width: 100%; position: relative;
-  background: #F5F5F5;
-  min-height: 100%;
-  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
-}
-
-/* ── Bottom nav: sticky at bottom of scroll container ── */
-.bottom-nav {
-  position: sticky !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  z-index: 400 !important;
-}
-
-/* ── Desktop ── */
-@media (min-width: 768px) {
-  html, body { overflow: hidden !important; height: 100dvh !important; }
-  .frame-body      { pointer-events: none; }
-  .phone-frame-wrap { pointer-events: all; }
-}
-
-/* ── Mobile: go full screen ── */
-@media (max-width: 767px) {
-  .frame-body { background: #F5F5F5; display: block; pointer-events: auto; }
-  .phone-frame-wrap { width: 100%; height: 100dvh; aspect-ratio: unset; filter: none; }
-  .phone-frame { width: 100%; height: 100dvh; border-radius: 0; background: none; box-shadow: none; }
-  .btn-mute, .btn-vol-up, .btn-vol-dn, .btn-power { display: none; }
-  .screen-glass { inset: 0; border-radius: 0; box-shadow: none; }
-  .screen-glass::after { display: none; }
-  .dynamic-island, .home-indicator { display: none; }
-  #phone-screen { border-radius: 0; }
-  .frame-body::before { display: none; }
+@media(max-width:767px){
+  .frame-body{background:#0A0A0F;display:block;pointer-events:auto}
+  .phone-frame-wrap{width:100%;height:100dvh;aspect-ratio:unset;filter:none}
+  .phone-frame{width:100%;height:100dvh;border-radius:0;background:none;box-shadow:none}
+  .btn-mute,.btn-vol-up,.btn-vol-dn,.btn-power{display:none}
+  .screen-glass{inset:0;border-radius:0;box-shadow:none}
+  .screen-glass::after{display:none}
+  .dynamic-island,.home-indicator{display:none}
+  #phone-screen{border-radius:0}
 }
