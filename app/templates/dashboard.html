@@ -7,7 +7,7 @@
   <div class="sheet">
     <div class="sheet-handle"></div>
     <h3 class="sheet-title">Log a Meal</h3>
-    <p class="sheet-sub">Choose meal type, then upload a photo</p>
+    <p class="sheet-sub">Select meal type, then upload a photo</p>
     <div class="mt-grid">
       <div>
         <input type="radio" name="mt" value="breakfast" id="mt-b" class="mt-radio" checked/>
@@ -38,8 +38,6 @@
         </label>
       </div>
     </div>
-
-    <!-- Upload zone -->
     <div class="upload-zone" id="uz">
       <input type="file" id="fi" accept="image/jpeg,image/png,image/webp,image/heic"/>
       <div id="uz-placeholder">
@@ -52,14 +50,11 @@
       <img id="preview" class="preview-img" alt="" style="display:none"/>
     </div>
     <button class="btn btn-ghost btn-sm btn-full" id="change-btn" style="display:none;margin-bottom:10px">Change photo</button>
-
-    <!-- Scanning state -->
-    <div class="scanning" id="scanning" style="display:none">
+    <div class="scanning" id="scanning">
       <div class="scan-ring"></div>
       <div class="scan-text">Analyzing your meal...</div>
-      <div class="scan-sub">GPT-4o + 60k food database</div>
+      <div class="scan-sub">GPT-4o Vision + 60k food database</div>
     </div>
-
     <div style="display:flex;gap:10px;margin-top:12px" id="modal-actions">
       <button class="btn btn-ghost" id="cancel-btn" style="flex:1">Cancel</button>
       <button class="btn btn-primary btn-lg" id="analyze-btn" style="flex:2" disabled>
@@ -74,18 +69,20 @@
   <div class="sheet">
     <div class="sheet-handle"></div>
     <h3 class="sheet-title">Meal Logged</h3>
-    <p class="sheet-sub">Share to your profile?</p>
+    <p class="sheet-sub">Share this meal to your profile?</p>
     <div class="share-preview">
-      <div class="share-preview-name" id="share-name">—</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <div style="display:flex;gap:5px;flex-wrap:wrap" id="share-macros"></div>
-        <div class="share-preview-kcal" id="share-kcal">0 kcal</div>
+      <div class="share-preview-meal" id="share-meal-type">—</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div>
+          <div class="share-preview-kcal" id="share-kcal">0 kcal</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px" id="share-macros"></div>
+        </div>
       </div>
-      <div class="share-preview-foods" id="share-foods">—</div>
+      <div class="share-preview-foods" id="share-foods" style="margin-top:8px">—</div>
     </div>
     <div class="fg" style="margin-bottom:14px">
       <label class="fl">Caption (optional)</label>
-      <textarea id="share-caption" class="fc" rows="2" placeholder="What did you think of this meal?" style="min-height:72px;resize:none"></textarea>
+      <textarea id="share-caption" class="fc" rows="2" placeholder="How was this meal?" style="min-height:70px;resize:none"></textarea>
     </div>
     <label class="fl" style="margin-bottom:8px;display:block">Visibility</label>
     <div class="priv-grid">
@@ -139,7 +136,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
     <div>
-      <div class="panel-title" id="day-panel-title">—</div>
+      <div class="panel-title" id="day-panel-title">Day Details</div>
       <div class="panel-sub" id="day-panel-sub">—</div>
     </div>
   </div>
@@ -157,477 +154,442 @@
   <div class="panel-body" id="user-panel-body"></div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     APP SHELL
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════ -->
+<!-- APP SHELL -->
+<!-- ═══════════════════════════════════════════════ -->
 <div class="app">
 
-  <!-- ╔═══════════════╗
-       ║  HOME PAGE    ║
-       ╚═══════════════╝ -->
-  <div class="page active" id="page-home">
-
-    <!-- Status bar -->
-    <div class="status-bar">
-      <span class="sb-time" id="sb-time-home">9:41</span>
-      <div class="sb-icons">
-        <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
-        <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="10.5" r="1" fill="currentColor" stroke="none"/><path d="M5 8A4.5 4.5 0 018 6.5 4.5 4.5 0 0111 8"/><path d="M2 5A8.5 8.5 0 018 2.5 8.5 8.5 0 0114 5"/></svg>
-        <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/></svg>
-      </div>
-    </div>
-
-    <!-- Top header -->
-    <div style="background:#fff;border-bottom:1px solid var(--bdr);padding:10px 16px 10px">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <!-- Date + greeting -->
-        <div>
-          <div style="font-size:12px;font-weight:600;color:var(--txt-3);text-transform:uppercase;letter-spacing:.06em" id="greeting-label">Good morning</div>
-          <div style="font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--txt);line-height:1.1" id="uname-display">—</div>
-        </div>
-        <!-- Streak + avatar -->
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(255,149,0,.08);border-radius:999px;border:1px solid rgba(255,149,0,.2)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" style="width:13px;height:13px"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
-            <span style="font-size:12px;font-weight:700;color:var(--orange)" id="streak-badge">0</span>
-          </div>
-          <div class="av-wrap">
-            <div class="avatar-btn" id="av-btn"><span id="av-init">?</span></div>
-            <div class="av-menu" id="av-menu">
-              <div class="av-user-info">
-                <div class="av-user-name" id="av-name">—</div>
-                <div class="av-user-email" id="av-email">—</div>
-              </div>
-              <div class="av-item" id="av-profile-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile
-              </div>
-              <div class="av-item" id="av-settings-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings
-              </div>
-              <div class="av-divider"></div>
-              <div class="av-item danger" id="av-logout-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Calorie summary card -->
-    <div style="padding:12px 16px 0;background:#fff">
-      <div style="background:#fff;border:1px solid var(--bdr);border-radius:20px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06)">
-        <!-- Semicircle arc -->
-        <div style="position:relative;text-align:center;height:120px">
-          <svg width="220" height="120" viewBox="0 0 220 120" style="display:block;margin:0 auto">
-            <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#F0F0F0" stroke-width="14" stroke-linecap="round"/>
-            <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="var(--coral)" stroke-width="14" stroke-linecap="round"
-              id="cal-arc" stroke-dasharray="283" stroke-dashoffset="283"
-              style="transition:stroke-dashoffset .9s cubic-bezier(.16,1,.3,1)"/>
-          </svg>
-          <div style="position:absolute;top:22px;left:50%;transform:translateX(-50%);text-align:center;width:160px">
-            <div style="font-size:36px;font-weight:900;color:var(--txt);letter-spacing:-.04em;line-height:1" id="today-kcal">0</div>
-            <div style="font-size:11px;color:var(--txt-3);font-weight:500;margin-top:3px" id="kcal-status">kcal remaining</div>
-          </div>
-          <div style="position:absolute;bottom:0;left:12px;text-align:center">
-            <div style="font-size:14px;font-weight:700;color:var(--txt)" id="eaten-display">0</div>
-            <div style="font-size:10px;color:var(--txt-3)">Eaten</div>
-          </div>
-          <div style="position:absolute;bottom:0;right:12px;text-align:center">
-            <div style="font-size:14px;font-weight:700;color:var(--txt)">0</div>
-            <div style="font-size:10px;color:var(--txt-3)">Burned</div>
-          </div>
-        </div>
-        <!-- Macro row -->
-        <div style="display:flex;justify-content:space-around;padding-top:14px;border-top:1px solid var(--bdr);margin-top:4px">
-          <div style="text-align:center">
-            <div style="font-size:10px;font-weight:600;color:var(--txt-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px">Carbs</div>
-            <div style="font-size:15px;font-weight:700;color:var(--carbs)" id="m-carbs">0g</div>
-            <div style="font-size:10px;color:var(--txt-4)">/ <span id="mc-goal">134</span>g</div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-size:10px;font-weight:600;color:var(--txt-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px">Protein</div>
-            <div style="font-size:15px;font-weight:700;color:var(--protein)" id="m-protein">0g</div>
-            <div style="font-size:10px;color:var(--txt-4)">/ <span id="mp-goal">100</span>g</div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-size:10px;font-weight:600;color:var(--txt-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px">Fat</div>
-            <div style="font-size:15px;font-weight:700;color:var(--fat)" id="m-fat">0g</div>
-            <div style="font-size:10px;color:var(--txt-4)">/ <span id="mf-goal">45</span>g</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Date strip -->
-    <div id="date-strip" style="display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none;background:#fff;border-bottom:1px solid var(--bdr)"></div>
-
-    <!-- AI Banner -->
-    <div style="padding:12px 16px 0">
-      <a href="/suggest" class="ai-banner" style="margin-bottom:0">
-        <div class="ai-banner-ico">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
-        <div>
-          <div class="ai-banner-title">AI Meal Suggestions</div>
-          <div class="ai-banner-sub">GPT-4o generates personalized recipes</div>
-        </div>
-        <div class="ai-banner-arrow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-      </a>
-    </div>
-
-    <!-- Meal cards — expandable -->
-    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
-      <div style="font-size:12px;font-weight:700;color:var(--txt-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Today's Meals</div>
-
-      <!-- Breakfast -->
-      <div class="card meal-card" id="card-breakfast" style="padding:0">
-        <div class="meal-header" onclick="toggleMeal('breakfast')">
-          <div class="meal-left">
-            <div class="meal-ico" style="background:#FFF8E1"><svg viewBox="0 0 24 24" fill="none" stroke="#E0A800" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div>
-            <div>
-              <div class="meal-name">Breakfast</div>
-              <div class="meal-time" id="time-breakfast">6:00 – 10:00 AM</div>
-            </div>
-          </div>
-          <div class="meal-right">
-            <div class="meal-badge" id="badge-breakfast">0 kcal</div>
-            <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></div>
-          </div>
-        </div>
-        <div class="meal-body" id="body-breakfast">
-          <div class="meal-macro-row" id="mmr-breakfast" style="display:none">
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mmr-c-breakfast">0g</span> C</span>
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mmr-f-breakfast">0g</span> F</span>
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mmr-p-breakfast">0g</span> P</span>
-          </div>
-          <div class="food-list" id="foods-breakfast"><div class="meal-empty">No foods logged yet</div></div>
-          <button class="add-meal-btn" onclick="openModal('breakfast')">+ Add food photo</button>
-        </div>
-      </div>
-
-      <!-- Lunch -->
-      <div class="card meal-card" id="card-lunch" style="padding:0">
-        <div class="meal-header" onclick="toggleMeal('lunch')">
-          <div class="meal-left">
-            <div class="meal-ico" style="background:var(--coral-l)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral-d)" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div>
-            <div>
-              <div class="meal-name">Lunch</div>
-              <div class="meal-time">11 AM – 2:00 PM</div>
-            </div>
-          </div>
-          <div class="meal-right">
-            <div class="meal-badge" id="badge-lunch">0 kcal</div>
-            <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></div>
-          </div>
-        </div>
-        <div class="meal-body" id="body-lunch">
-          <div class="meal-macro-row" id="mmr-lunch" style="display:none">
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mmr-c-lunch">0g</span> C</span>
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mmr-f-lunch">0g</span> F</span>
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mmr-p-lunch">0g</span> P</span>
-          </div>
-          <div class="food-list" id="foods-lunch"><div class="meal-empty">No foods logged yet</div></div>
-          <button class="add-meal-btn" onclick="openModal('lunch')">+ Add food photo</button>
-        </div>
-      </div>
-
-      <!-- Dinner -->
-      <div class="card meal-card" id="card-dinner" style="padding:0">
-        <div class="meal-header" onclick="toggleMeal('dinner')">
-          <div class="meal-left">
-            <div class="meal-ico" style="background:#EDE7F6"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div>
-            <div>
-              <div class="meal-name">Dinner</div>
-              <div class="meal-time">5:00 – 9:00 PM</div>
-            </div>
-          </div>
-          <div class="meal-right">
-            <div class="meal-badge" id="badge-dinner">0 kcal</div>
-            <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></div>
-          </div>
-        </div>
-        <div class="meal-body" id="body-dinner">
-          <div class="meal-macro-row" id="mmr-dinner" style="display:none">
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mmr-c-dinner">0g</span> C</span>
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mmr-f-dinner">0g</span> F</span>
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mmr-p-dinner">0g</span> P</span>
-          </div>
-          <div class="food-list" id="foods-dinner"><div class="meal-empty">No foods logged yet</div></div>
-          <button class="add-meal-btn" onclick="openModal('dinner')">+ Add food photo</button>
-        </div>
-      </div>
-
-      <!-- Snacks -->
-      <div class="card meal-card" id="card-snacks" style="padding:0">
-        <div class="meal-header" onclick="toggleMeal('snacks')">
-          <div class="meal-left">
-            <div class="meal-ico" style="background:#FFF3E0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
-            <div>
-              <div class="meal-name">Snacks</div>
-              <div class="meal-time">Anytime</div>
-            </div>
-          </div>
-          <div class="meal-right">
-            <div class="meal-badge" id="badge-snacks">0 kcal</div>
-            <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></div>
-          </div>
-        </div>
-        <div class="meal-body" id="body-snacks">
-          <div class="meal-macro-row" id="mmr-snacks" style="display:none">
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mmr-c-snacks">0g</span> C</span>
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mmr-f-snacks">0g</span> F</span>
-            <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mmr-p-snacks">0g</span> P</span>
-          </div>
-          <div class="food-list" id="foods-snacks"><div class="meal-empty">No foods logged yet</div></div>
-          <button class="add-meal-btn" onclick="openModal('snacks')">+ Add food photo</button>
-        </div>
-      </div>
-    </div>
-  </div><!-- /HOME -->
-
-  <!-- ╔═══════════════╗
-       ║  FEED PAGE    ║
-       ╚═══════════════╝ -->
-  <div class="page" id="page-feed">
-    <div class="status-bar">
-      <span class="sb-time">9:41</span>
-      <div class="sb-icons">
-        <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
-      </div>
-    </div>
-    <div style="background:#fff;padding:12px 16px 12px;border-bottom:1px solid var(--bdr)">
-      <div style="font-size:12px;font-weight:600;color:var(--txt-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">Social</div>
-      <div style="font-size:24px;font-weight:800;letter-spacing:-.03em;color:var(--txt)">Feed</div>
-    </div>
-    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px" id="feed-list">
-      <div style="text-align:center;padding:40px 0;color:var(--txt-3);font-size:14px">Loading feed...</div>
+<!-- ╔══════════════╗ -->
+<!-- ║  HOME PAGE   ║ -->
+<!-- ╚══════════════╝ -->
+<div class="page active" id="page-home">
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="sb-time" id="sb-time">9:41</span>
+    <div class="sb-icons">
+      <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+      <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="10.5" r="1" fill="currentColor" stroke="none"/><path d="M5 8A4.5 4.5 0 018 6.5 4.5 4.5 0 0111 8"/><path d="M2 5A8.5 8.5 0 018 2.5 8.5 8.5 0 0114 5"/></svg>
+      <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/></svg>
     </div>
   </div>
 
-  <!-- ╔═══════════════╗
-       ║ EXPLORE PAGE  ║
-       ╚═══════════════╝ -->
-  <div class="page" id="page-explore">
-    <div class="status-bar">
-      <span class="sb-time">9:41</span>
-      <div class="sb-icons">
-        <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
-      </div>
+  <!-- Header -->
+  <div class="home-header">
+    <div>
+      <div class="home-greeting" id="greeting-label">Good morning</div>
+      <div class="home-name" id="uname-display">—</div>
     </div>
-    <div style="background:#fff;padding:12px 16px 12px;border-bottom:1px solid var(--bdr)">
-      <div style="font-size:12px;font-weight:600;color:var(--txt-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">Discover</div>
-      <div style="font-size:24px;font-weight:800;letter-spacing:-.03em;color:var(--txt)">Explore</div>
-    </div>
-    <div style="padding:12px 16px">
-      <div class="search-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="explore-search" placeholder="Search meals or @username..."/>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="streak-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
+        <span id="streak-badge">0</span>
       </div>
-      <div class="filter-strip">
-        <button class="filter-chip active" data-filter="">All</button>
-        <button class="filter-chip" data-filter="breakfast">Breakfast</button>
-        <button class="filter-chip" data-filter="lunch">Lunch</button>
-        <button class="filter-chip" data-filter="dinner">Dinner</button>
-        <button class="filter-chip" data-filter="snacks">Snacks</button>
-        <button class="filter-chip" data-filter="low-cal">Under 400 kcal</button>
-        <button class="filter-chip" data-filter="high-protein">High Protein</button>
-      </div>
-      <div id="user-results" style="display:none;margin-bottom:8px"></div>
-      <div style="display:flex;flex-direction:column;gap:10px" id="explore-grid">
-        <div style="text-align:center;padding:40px 0;color:var(--txt-3);font-size:14px">Loading...</div>
+      <div class="av-wrap">
+        <div class="avatar-btn" id="av-btn"><span id="av-init">?</span></div>
+        <div class="av-menu" id="av-menu">
+          <div class="av-user-info">
+            <div class="av-user-name" id="av-name">—</div>
+            <div class="av-user-email" id="av-email">—</div>
+          </div>
+          <div class="av-item" id="av-profile-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile
+          </div>
+          <div class="av-item" id="av-settings-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings
+          </div>
+          <div class="av-divider"></div>
+          <div class="av-item danger" id="av-logout-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ╔═══════════════╗
-       ║ ANALYTICS     ║
-       ╚═══════════════╝ -->
-  <div class="page" id="page-analytics">
-    <div class="status-bar">
-      <span class="sb-time">9:41</span>
-      <div class="sb-icons">
-        <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+  <!-- Calorie card -->
+  <div class="cal-card">
+    <div class="cal-arc-wrap" style="height:140px">
+      <svg class="cal-arc-svg" width="220" height="140" viewBox="0 0 220 140">
+        <path class="cal-arc-track" d="M 20 128 A 90 90 0 0 1 200 128"/>
+        <path class="cal-arc-fill" id="cal-arc" d="M 20 128 A 90 90 0 0 1 200 128"
+          stroke-dasharray="283" stroke-dashoffset="283"/>
+      </svg>
+      <div class="cal-center">
+        <span class="cal-number" id="cal-remaining">0</span>
+        <span class="cal-status" id="cal-status">kcal remaining</span>
       </div>
-    </div>
-    <div style="background:#fff;padding:12px 16px 12px;border-bottom:1px solid var(--bdr)">
-      <div style="font-size:12px;font-weight:600;color:var(--txt-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">Weekly</div>
-      <div style="font-size:24px;font-weight:800;letter-spacing:-.03em;color:var(--txt)">Analytics</div>
-    </div>
-    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
-      <div class="card">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt-3);margin-bottom:14px">This Week</div>
-        <div class="stat-grid">
-          <div class="stat-card hi"><span class="stat-val" id="an-total">—</span><span class="stat-lbl">Total kcal</span></div>
-          <div class="stat-card"><span class="stat-val" id="an-avg">—</span><span class="stat-lbl">Daily Avg</span></div>
-          <div class="stat-card"><span class="stat-val" id="an-best">—</span><span class="stat-lbl">Best Day</span></div>
-          <div class="stat-card"><span class="stat-val" id="an-streak">—</span><span class="stat-lbl">Streak</span></div>
+      <div class="cal-sides">
+        <div class="cal-side">
+          <span class="cal-side-num" id="cal-eaten">0</span>
+          <span class="cal-side-lbl">Eaten</span>
         </div>
-        <div class="bar-chart" id="analytics-chart"></div>
+        <div class="cal-side">
+          <span class="cal-side-num">0</span>
+          <span class="cal-side-lbl">Burned</span>
+        </div>
       </div>
-      <div class="card">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt-3);margin-bottom:14px">Weekly Macros</div>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600"><span style="color:var(--carbs)">Carbs</span><span style="color:var(--txt-2)" id="wm-carbs">0g</span></div>
-            <div class="macro-bar"><div class="macro-bar-fill" id="wmb-carbs" style="background:var(--carbs);width:0%"></div></div>
+    </div>
+    <div class="macro-row">
+      <div class="macro-item">
+        <span class="macro-label">Carbs</span>
+        <span class="macro-val" id="m-carbs" style="color:var(--carbs)">0g</span>
+        <span class="macro-goal">/ <span id="mc-goal">134</span>g</span>
+        <div class="macro-bar-track"><div class="macro-bar-fill" id="mb-carbs" style="background:var(--carbs);width:0%"></div></div>
+      </div>
+      <div class="macro-item">
+        <span class="macro-label">Protein</span>
+        <span class="macro-val" id="m-protein" style="color:var(--protein)">0g</span>
+        <span class="macro-goal">/ <span id="mp-goal">100</span>g</span>
+        <div class="macro-bar-track"><div class="macro-bar-fill" id="mb-protein" style="background:var(--protein);width:0%"></div></div>
+      </div>
+      <div class="macro-item">
+        <span class="macro-label">Fat</span>
+        <span class="macro-val" id="m-fat" style="color:var(--fat)">0g</span>
+        <span class="macro-goal">/ <span id="mf-goal">45</span>g</span>
+        <div class="macro-bar-track"><div class="macro-bar-fill" id="mb-fat" style="background:var(--fat);width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date strip -->
+  <div class="date-strip" id="date-strip"></div>
+
+  <!-- AI banner -->
+  <a href="/suggest" class="ai-banner" style="text-decoration:none">
+    <div class="ai-banner-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
+    <div>
+      <div class="ai-banner-title">AI Meal Suggestions</div>
+      <div class="ai-banner-sub">GPT-4o generates personalized recipes</div>
+    </div>
+    <div class="ai-banner-arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </a>
+
+  <!-- Meal cards -->
+  <div style="padding:14px 16px 0;display:flex;flex-direction:column;gap:8px">
+    <div class="section-heading" style="padding:0 0 8px">Today's Meals</div>
+
+    <!-- Breakfast -->
+    <div class="meal-card" id="card-breakfast">
+      <div class="meal-header" onclick="toggleMeal('breakfast')">
+        <div class="meal-left">
+          <div class="meal-ico" style="background:#FFF8E1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E0A800" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
           </div>
           <div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600"><span style="color:var(--fat)">Fat</span><span style="color:var(--txt-2)" id="wm-fat">0g</span></div>
-            <div class="macro-bar"><div class="macro-bar-fill" id="wmb-fat" style="background:var(--fat);width:0%"></div></div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600"><span style="color:var(--protein)">Protein</span><span style="color:var(--txt-2)" id="wm-protein">0g</span></div>
-            <div class="macro-bar"><div class="macro-bar-fill" id="wmb-protein" style="background:var(--protein);width:0%"></div></div>
+            <div class="meal-name">Breakfast</div>
+            <div class="meal-time">6:00 – 10:00 AM</div>
           </div>
         </div>
+        <div class="meal-right">
+          <div class="meal-badge" id="badge-breakfast">0 kcal</div>
+          <div class="meal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
       </div>
-      <div>
-        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt-3);margin-bottom:8px">History</div>
-        <div id="history-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="meal-body" id="body-breakfast">
+        <div class="meal-body-top" id="mmr-breakfast" style="display:none">
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mc-breakfast">0g</span> C</span>
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mf-breakfast">0g</span> F</span>
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mp-breakfast">0g</span> P</span>
+        </div>
+        <div class="food-list" id="foods-breakfast"><div class="meal-empty">No foods logged yet</div></div>
+        <button class="add-food-btn" onclick="openModal('breakfast')">+ Add food photo</button>
       </div>
     </div>
-  </div>
 
-  <!-- ╔═══════════════╗
-       ║ PROFILE PAGE  ║
-       ╚═══════════════╝ -->
-  <div class="page" id="page-profile">
-    <div class="status-bar">
-      <span class="sb-time">9:41</span>
-      <div class="sb-icons">
-        <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+    <!-- Lunch -->
+    <div class="meal-card" id="card-lunch">
+      <div class="meal-header" onclick="toggleMeal('lunch')">
+        <div class="meal-left">
+          <div class="meal-ico" style="background:var(--coral-l)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--coral-d)" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+          </div>
+          <div>
+            <div class="meal-name">Lunch</div>
+            <div class="meal-time">11:00 AM – 2:00 PM</div>
+          </div>
+        </div>
+        <div class="meal-right">
+          <div class="meal-badge" id="badge-lunch">0 kcal</div>
+          <div class="meal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+      </div>
+      <div class="meal-body" id="body-lunch">
+        <div class="meal-body-top" id="mmr-lunch" style="display:none">
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mc-lunch">0g</span> C</span>
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mf-lunch">0g</span> F</span>
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mp-lunch">0g</span> P</span>
+        </div>
+        <div class="food-list" id="foods-lunch"><div class="meal-empty">No foods logged yet</div></div>
+        <button class="add-food-btn" onclick="openModal('lunch')">+ Add food photo</button>
       </div>
     </div>
-    <div class="profile-top">
-      <div class="profile-av" id="profile-av">?</div>
-      <div class="profile-name" id="profile-name">—</div>
-      <div class="profile-bio">Tracking my nutrition</div>
-      <div class="profile-stats">
-        <div class="profile-stat"><span class="profile-stat-num" id="ps-meals">0</span><span class="profile-stat-lbl">Meals</span></div>
-        <div class="profile-stat"><span class="profile-stat-num" id="ps-posts">0</span><span class="profile-stat-lbl">Posts</span></div>
-        <div class="profile-stat"><span class="profile-stat-num" id="ps-streak">0</span><span class="profile-stat-lbl">Streak</span></div>
-      </div>
-      <div class="profile-actions">
-        <button class="btn btn-ghost btn-full btn-sm" id="profile-logout-btn">Sign Out</button>
-        <button class="btn btn-outline btn-full btn-sm" id="profile-switch-btn">Switch</button>
-      </div>
-    </div>
-    <div class="profile-tabs">
-      <div class="profile-tab active" data-tab="stats">Stats</div>
-      <div class="profile-tab" data-tab="posts">Posts</div>
-      <div class="profile-tab" data-tab="saved">Saved</div>
-    </div>
-    <div class="profile-tab-content active" id="ptab-stats">
-      <div class="streak-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" style="width:36px;height:36px;flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
-        <div><div class="streak-num" id="streak-num">0</div><div class="streak-lbl">Day streak</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px">
-        <div class="card" style="padding:14px"><span style="font-size:20px;font-weight:800;display:block" id="psg-meals">0</span><span style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Total Meals</span></div>
-        <div class="card" style="padding:14px"><span style="font-size:20px;font-weight:800;display:block" id="psg-avg">0</span><span style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Avg kcal/day</span></div>
-        <div class="card" style="padding:14px"><span style="font-size:20px;font-weight:800;display:block" id="psg-best">0</span><span style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Best Day</span></div>
-        <div class="card" style="padding:14px"><span style="font-size:20px;font-weight:800;display:block" id="psg-days">0</span><span style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Days Logged</span></div>
-      </div>
-    </div>
-    <div class="profile-tab-content" id="ptab-posts">
-      <div id="my-posts-list"><p style="text-align:center;color:var(--txt-3);padding:24px;font-size:14px">No posts yet.</p></div>
-    </div>
-    <div class="profile-tab-content" id="ptab-saved">
-      <div id="saved-posts-list"><p style="text-align:center;color:var(--txt-3);padding:24px;font-size:14px">No saved posts yet.</p></div>
-    </div>
-  </div>
 
-  <!-- ╔═══════════════╗
-       ║ SETTINGS PAGE ║
-       ╚═══════════════╝ -->
-  <div class="page" id="page-settings">
-    <div class="status-bar">
-      <span class="sb-time">9:41</span>
-      <div class="sb-icons">
-        <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+    <!-- Dinner -->
+    <div class="meal-card" id="card-dinner">
+      <div class="meal-header" onclick="toggleMeal('dinner')">
+        <div class="meal-left">
+          <div class="meal-ico" style="background:#EDE7F6">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          </div>
+          <div>
+            <div class="meal-name">Dinner</div>
+            <div class="meal-time">5:00 – 9:00 PM</div>
+          </div>
+        </div>
+        <div class="meal-right">
+          <div class="meal-badge" id="badge-dinner">0 kcal</div>
+          <div class="meal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+      </div>
+      <div class="meal-body" id="body-dinner">
+        <div class="meal-body-top" id="mmr-dinner" style="display:none">
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mc-dinner">0g</span> C</span>
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mf-dinner">0g</span> F</span>
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mp-dinner">0g</span> P</span>
+        </div>
+        <div class="food-list" id="foods-dinner"><div class="meal-empty">No foods logged yet</div></div>
+        <button class="add-food-btn" onclick="openModal('dinner')">+ Add food photo</button>
       </div>
     </div>
-    <div style="background:#fff;padding:12px 16px 12px;border-bottom:1px solid var(--bdr)">
-      <div style="font-size:12px;font-weight:600;color:var(--txt-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">App</div>
-      <div style="font-size:24px;font-weight:800;letter-spacing:-.03em;color:var(--txt)">Settings</div>
-    </div>
-    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:6px">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--txt-3);padding-bottom:6px">Account</div>
-      <div class="settings-row" id="s-profile">
-        <div class="settings-row-left"><div class="settings-ico" style="background:var(--coral-l)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral-d)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><span class="settings-lbl">My Profile</span><span class="settings-sub" id="s-email">—</span></div></div>
-        <div class="settings-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+    <!-- Snacks -->
+    <div class="meal-card" id="card-snacks">
+      <div class="meal-header" onclick="toggleMeal('snacks')">
+        <div class="meal-left">
+          <div class="meal-ico" style="background:#FFF3E0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          </div>
+          <div>
+            <div class="meal-name">Snacks</div>
+            <div class="meal-time">Anytime</div>
+          </div>
+        </div>
+        <div class="meal-right">
+          <div class="meal-badge" id="badge-snacks">0 kcal</div>
+          <div class="meal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
       </div>
-      <div class="settings-row">
-        <div class="settings-row-left"><div class="settings-ico" style="background:#E3F2FD"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div><span class="settings-lbl">Calorie Goal</span><span class="settings-sub" id="s-goal">2000 kcal/day</span></div></div>
-        <div class="settings-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
-      </div>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--txt-3);padding:8px 0 6px">Preferences</div>
-      <div class="settings-row" style="cursor:default">
-        <div class="settings-row-left"><div class="settings-ico" style="background:rgba(175,82,222,.08)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div><span class="settings-lbl">Notifications</span><span class="settings-sub">Meal reminders</span></div></div>
-        <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
-      </div>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--txt-3);padding:8px 0 6px">Session</div>
-      <div class="settings-row" id="settings-logout-btn">
-        <div class="settings-row-left"><div class="settings-ico" style="background:rgba(255,59,48,.07)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><div><span class="settings-lbl" style="color:var(--red)">Sign Out</span><span class="settings-sub">Log out of iCal</span></div></div>
+      <div class="meal-body" id="body-snacks">
+        <div class="meal-body-top" id="mmr-snacks" style="display:none">
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--carbs)"></span><span id="mc-snacks">0g</span> C</span>
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--fat)"></span><span id="mf-snacks">0g</span> F</span>
+          <span class="mmr-item"><span class="mmr-dot" style="background:var(--protein)"></span><span id="mp-snacks">0g</span> P</span>
+        </div>
+        <div class="food-list" id="foods-snacks"><div class="meal-empty">No foods logged yet</div></div>
+        <button class="add-food-btn" onclick="openModal('snacks')">+ Add food photo</button>
       </div>
     </div>
   </div>
+</div><!-- /home -->
+
+<!-- ╔══════════════╗ -->
+<!-- ║  FEED PAGE   ║ -->
+<!-- ╚══════════════╝ -->
+<div class="page" id="page-feed">
+  <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
+  <div class="top-bar">
+    <div><div class="top-bar-sub">Social</div><div class="top-bar-title">Feed</div></div>
+  </div>
+  <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px" id="feed-list">
+    <div class="empty-state">
+      <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+      <div class="empty-title">Loading feed...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔═══════════════╗ -->
+<!-- ║ EXPLORE PAGE  ║ -->
+<!-- ╚═══════════════╝ -->
+<div class="page" id="page-explore">
+  <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
+  <div class="top-bar">
+    <div><div class="top-bar-sub">Discover</div><div class="top-bar-title">Explore</div></div>
+  </div>
+  <div style="padding:12px 16px">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="explore-search" placeholder="Search meals or @username..."/>
+    </div>
+    <div class="filter-strip">
+      <button class="filter-chip active" data-filter="">All</button>
+      <button class="filter-chip" data-filter="breakfast">Breakfast</button>
+      <button class="filter-chip" data-filter="lunch">Lunch</button>
+      <button class="filter-chip" data-filter="dinner">Dinner</button>
+      <button class="filter-chip" data-filter="snacks">Snacks</button>
+      <button class="filter-chip" data-filter="low-cal">Under 400 kcal</button>
+      <button class="filter-chip" data-filter="high-protein">High Protein</button>
+    </div>
+    <div id="user-results" style="display:none;margin-bottom:10px"></div>
+    <div style="display:flex;flex-direction:column;gap:10px" id="explore-grid">
+      <div class="empty-state">
+        <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="empty-title">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔════════════════╗ -->
+<!-- ║ ANALYTICS PAGE ║ -->
+<!-- ╚════════════════╝ -->
+<div class="page" id="page-analytics">
+  <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
+  <div class="top-bar">
+    <div><div class="top-bar-sub">Weekly</div><div class="top-bar-title">Analytics</div></div>
+  </div>
+  <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt-3);margin-bottom:14px">This Week</div>
+      <div class="stat-grid">
+        <div class="stat-card hi"><span class="stat-val" id="an-total">—</span><span class="stat-lbl">Total kcal</span></div>
+        <div class="stat-card"><span class="stat-val" id="an-avg">—</span><span class="stat-lbl">Daily Avg</span></div>
+        <div class="stat-card"><span class="stat-val" id="an-best">—</span><span class="stat-lbl">Best Day</span></div>
+        <div class="stat-card"><span class="stat-val" id="an-streak">—</span><span class="stat-lbl">Streak</span></div>
+      </div>
+      <div class="bar-chart" id="analytics-chart"></div>
+    </div>
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt-3);margin-bottom:14px">Weekly Macros</div>
+      <div class="wm-row"><span style="font-weight:700;color:var(--carbs)">Carbs</span><span id="wm-carbs" style="color:var(--txt-2)">0g</span></div>
+      <div class="wm-bar-track"><div class="wm-bar-fill" id="wmb-carbs" style="background:var(--carbs);width:0%"></div></div>
+      <div class="wm-row"><span style="font-weight:700;color:var(--fat)">Fat</span><span id="wm-fat" style="color:var(--txt-2)">0g</span></div>
+      <div class="wm-bar-track"><div class="wm-bar-fill" id="wmb-fat" style="background:var(--fat);width:0%"></div></div>
+      <div class="wm-row"><span style="font-weight:700;color:var(--protein)">Protein</span><span id="wm-protein" style="color:var(--txt-2)">0g</span></div>
+      <div class="wm-bar-track"><div class="wm-bar-fill" id="wmb-protein" style="background:var(--protein);width:0%"></div></div>
+    </div>
+    <div>
+      <div class="section-heading" style="padding:0 0 8px">History</div>
+      <div id="history-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔═══════════════╗ -->
+<!-- ║ PROFILE PAGE  ║ -->
+<!-- ╚═══════════════╝ -->
+<div class="page" id="page-profile">
+  <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
+  <div class="profile-top">
+    <div class="profile-av-circle" id="profile-av">?</div>
+    <div class="profile-username" id="profile-name">—</div>
+    <div class="profile-bio">Tracking nutrition with iCal</div>
+    <div class="profile-stats">
+      <div><span class="profile-stat-num" id="ps-meals">0</span><span class="profile-stat-lbl">Meals</span></div>
+      <div><span class="profile-stat-num" id="ps-posts">0</span><span class="profile-stat-lbl">Posts</span></div>
+      <div><span class="profile-stat-num" id="ps-streak">0</span><span class="profile-stat-lbl">Streak</span></div>
+    </div>
+    <div class="profile-actions">
+      <button class="btn btn-ghost btn-full btn-sm" id="profile-logout-btn">Sign Out</button>
+      <button class="btn btn-outline btn-full btn-sm" id="profile-settings-btn">Settings</button>
+    </div>
+  </div>
+  <div class="profile-tabs">
+    <div class="profile-tab active" data-tab="stats">Stats</div>
+    <div class="profile-tab" data-tab="posts">Posts</div>
+    <div class="profile-tab" data-tab="saved">Saved</div>
+  </div>
+  <div class="profile-tab-content active" id="ptab-stats">
+    <div class="streak-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" style="width:44px;height:44px;flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
+      <div><div class="streak-num" id="streak-num">0</div><div class="streak-lbl">Day streak — keep it up</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px">
+      <div class="card" style="padding:14px"><span style="font-size:22px;font-weight:900;display:block" id="psg-meals">0</span><span style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Total Meals</span></div>
+      <div class="card" style="padding:14px"><span style="font-size:22px;font-weight:900;display:block" id="psg-avg">0</span><span style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Avg kcal/day</span></div>
+      <div class="card" style="padding:14px"><span style="font-size:22px;font-weight:900;display:block" id="psg-best">0</span><span style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Best Day</span></div>
+      <div class="card" style="padding:14px"><span style="font-size:22px;font-weight:900;display:block" id="psg-days">0</span><span style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Days Logged</span></div>
+    </div>
+  </div>
+  <div class="profile-tab-content" id="ptab-posts">
+    <div id="my-posts-list"><div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="empty-title">No posts yet</div><div class="empty-sub">Log a meal and share it to see it here.</div></div></div>
+  </div>
+  <div class="profile-tab-content" id="ptab-saved">
+    <div id="saved-posts-list"><div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div><div class="empty-title">Nothing saved yet</div><div class="empty-sub">Save posts from Feed to find them here.</div></div></div>
+  </div>
+</div>
+
+<!-- ╔════════════════╗ -->
+<!-- ║ SETTINGS PAGE  ║ -->
+<!-- ╚════════════════╝ -->
+<div class="page" id="page-settings">
+  <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
+  <div class="top-bar"><div><div class="top-bar-sub">App</div><div class="top-bar-title">Settings</div></div></div>
+  <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt-3);padding:4px 0">Account</div>
+    <div class="settings-row" id="s-profile-btn">
+      <div class="settings-row-left"><div class="settings-ico" style="background:var(--coral-l)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral-d)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><span class="settings-lbl">My Profile</span><span class="settings-sub" id="s-email">—</span></div></div>
+      <div class="settings-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-row-left"><div class="settings-ico" style="background:var(--blue-l)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><span class="settings-lbl">Calorie Goal</span><span class="settings-sub" id="s-goal">2000 kcal/day</span></div></div>
+      <div class="settings-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt-3);padding:12px 0 4px">Preferences</div>
+    <div class="settings-row" style="cursor:default">
+      <div class="settings-row-left"><div class="settings-ico" style="background:var(--purple-l)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div><span class="settings-lbl">Notifications</span><span class="settings-sub">Meal reminders</span></div></div>
+      <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt-3);padding:12px 0 4px">Session</div>
+    <div class="settings-row" id="settings-logout-btn">
+      <div class="settings-row-left"><div class="settings-ico" style="background:var(--red-l)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><div><span class="settings-lbl" style="color:var(--red)">Sign Out</span><span class="settings-sub">Log out of iCal</span></div></div>
+    </div>
+  </div>
+</div>
 
 </div><!-- /app -->
 
-<!-- ═══ BOTTOM NAV ═══ -->
+<!-- Bottom Nav -->
 <nav class="bottom-nav">
   <div class="nav-item active" data-page="home" id="nav-home">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Home
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
   </div>
   <div class="nav-item" data-page="feed" id="nav-feed">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-    Feed
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Feed
   </div>
-  <!-- Gold FAB — coral primary -->
-  <button class="nav-fab" id="nav-log-btn" aria-label="Log meal">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  <button class="nav-fab" id="nav-fab" aria-label="Log meal">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
   </button>
   <div class="nav-item" data-page="explore" id="nav-explore">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    Explore
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Explore
   </div>
   <div class="nav-item" data-page="profile" id="nav-profile">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    Profile
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
   </div>
 </nav>
 
 {% endblock %}
 {% block scripts %}
 <script>
-/* ═══════════════════════════════════════
-   iCal Dashboard v9 — All buttons functional
-   ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   iCal Dashboard v10 — All buttons wired, no dead code
+   ═══════════════════════════════════════════════════ */
 const token = localStorage.getItem('token');
 if (!token) window.location.href = '/login';
 
 const GOAL     = parseInt(localStorage.getItem('calorie_goal') || '2000');
 const MY_ID    = parseInt(localStorage.getItem('user_id') || '0');
 const email    = localStorage.getItem('user_email') || '';
-const username = localStorage.getItem('username') || email.split('@')[0];
+const username = localStorage.getItem('username') || email.split('@')[0] || 'User';
 const initial  = (username[0] || '?').toUpperCase();
 
-/* ── Boot UI ── */
-document.getElementById('uname-display').textContent  = username;
-document.getElementById('av-name').textContent        = username;
-document.getElementById('av-email').textContent       = email;
-document.getElementById('av-init').textContent        = initial;
-document.getElementById('profile-av').textContent     = initial;
-document.getElementById('profile-name').textContent   = username;
-document.getElementById('s-email').textContent        = email;
-document.getElementById('s-goal').textContent         = GOAL + ' kcal/day';
+/* ── Boot UI immediately ── */
+['uname-display','av-name','profile-name'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = username;
+});
+['av-init','profile-av'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = initial;
+});
+document.getElementById('av-email').textContent  = email;
+document.getElementById('s-email').textContent   = email;
+document.getElementById('s-goal').textContent    = GOAL + ' kcal/day';
 
-/* Macro goal estimates */
 const carbGoal    = Math.round(GOAL * 0.50 / 4);
 const proteinGoal = Math.round(GOAL * 0.30 / 4);
 const fatGoal     = Math.round(GOAL * 0.20 / 9);
@@ -635,98 +597,102 @@ document.getElementById('mc-goal').textContent = carbGoal;
 document.getElementById('mp-goal').textContent = proteinGoal;
 document.getElementById('mf-goal').textContent = fatGoal;
 
-/* Live clock */
-function updateClock(){
-  const n=new Date(), h=n.getHours().toString().padStart(2,'0'), m=n.getMinutes().toString().padStart(2,'0');
-  document.querySelectorAll('.sb-time').forEach(el=>el.textContent=`${h}:${m}`);
+/* ── Clock ── */
+function updateClock() {
+  const n = new Date();
+  const t = n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
+  document.querySelectorAll('.sb-time').forEach(el => el.textContent = t);
 }
-updateClock(); setInterval(updateClock, 30000);
+updateClock();
+setInterval(updateClock, 30000);
 
-/* Greeting */
+/* ── Greeting ── */
 const hr = new Date().getHours();
 document.getElementById('greeting-label').textContent =
   hr < 5 ? 'Good night' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
 
-/* ── Meal state ── */
+/* ── State ── */
 const meals = {
   breakfast: { foods:[], kcal:0, carbs:0, fat:0, protein:0 },
   lunch:     { foods:[], kcal:0, carbs:0, fat:0, protein:0 },
   dinner:    { foods:[], kcal:0, carbs:0, fat:0, protein:0 },
-  snacks:    { foods:[], kcal:0, carbs:0, fat:0, protein:0 },
+  snacks:    { foods:[], kcal:0, carbs:0, fat:0, protein:0 }
 };
-let sessions=[], pendShare=null, activeMeal='breakfast', selFile=null, photoUrl=null, xFilter='', xTimer=null, confirmCb=null;
+let sessions = [], pendShare = null, activeMeal = 'breakfast';
+let selFile = null, photoUrl = null, confirmCb = null;
+let xFilter = '', searchTimer = null, xTimer = null;
 
-/* ── Arc update ── */
+/* ── Arc animation ── */
 function updateArc(pct) {
   const arc = document.getElementById('cal-arc');
   if (!arc) return;
-  // Semicircle: total path length ≈ 283px
   arc.style.strokeDashoffset = 283 - (Math.min(pct, 100) / 100) * 283;
 }
 
-/* ── Ring / calorie update ── */
-function updateRing(){
-  const all = Object.values(meals).flatMap(m=>m.foods);
-  const kcal    = all.reduce((a,f)=>a+f.kcal, 0);
-  const carbs   = all.reduce((a,f)=>a+f.carbs, 0);
-  const fat     = all.reduce((a,f)=>a+f.fat, 0);
-  const protein = all.reduce((a,f)=>a+f.protein, 0);
-  const pct     = Math.min(Math.round(kcal/GOAL*100), 100);
+/* ── Calorie ring ── */
+function updateRing() {
+  const all     = Object.values(meals).flatMap(m => m.foods);
+  const kcal    = all.reduce((a, f) => a + f.kcal,    0);
+  const carbs   = all.reduce((a, f) => a + f.carbs,   0);
+  const fat     = all.reduce((a, f) => a + f.fat,     0);
+  const protein = all.reduce((a, f) => a + f.protein, 0);
+  const pct     = Math.min(Math.round(kcal / GOAL * 100), 100);
   const rem     = Math.max(GOAL - kcal, 0);
 
   updateArc(pct);
-  document.getElementById('today-kcal').textContent   = rem;
-  document.getElementById('kcal-status').textContent  = rem > 0 ? 'kcal remaining' : 'Goal reached!';
-  document.getElementById('eaten-display').textContent = kcal;
-  document.getElementById('m-carbs').textContent      = carbs.toFixed(1)+'g';
-  document.getElementById('m-fat').textContent        = fat.toFixed(1)+'g';
-  document.getElementById('m-protein').textContent    = protein.toFixed(1)+'g';
+  document.getElementById('cal-remaining').textContent = rem;
+  document.getElementById('cal-status').textContent    = rem > 0 ? 'kcal remaining' : 'Goal reached!';
+  document.getElementById('cal-eaten').textContent     = kcal;
+  document.getElementById('m-carbs').textContent   = carbs.toFixed(1) + 'g';
+  document.getElementById('m-fat').textContent     = fat.toFixed(1) + 'g';
+  document.getElementById('m-protein').textContent = protein.toFixed(1) + 'g';
+
+  const setPct = (id, val, max) => {
+    const el = document.getElementById(id);
+    if (el) el.style.width = Math.min((val / max) * 100, 100) + '%';
+  };
+  setPct('mb-carbs',   carbs,   carbGoal);
+  setPct('mb-protein', protein, proteinGoal);
+  setPct('mb-fat',     fat,     fatGoal);
 }
 
-/* ── Page navigation ── */
+/* ── Navigation ── */
 function switchPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item[data-page]').forEach(n => n.classList.remove('active'));
   const page = document.getElementById('page-' + name);
   if (page) page.classList.add('active');
-  const navItem = document.querySelector(`.nav-item[data-page="${name}"]`);
-  if (navItem) navItem.classList.add('active');
-  // Load data for specific pages
-  if (name === 'analytics') buildAnalytics();
-  if (name === 'profile')   buildProfile();
+  const nav = document.querySelector(`.nav-item[data-page="${name}"]`);
+  if (nav)  nav.classList.add('active');
   if (name === 'feed')      loadFeed();
   if (name === 'explore')   loadExplore();
-  // Scroll back to top
+  if (name === 'analytics') buildAnalytics();
+  if (name === 'profile')   buildProfile();
   document.getElementById('phone-screen')?.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* Wire nav items */
-document.querySelectorAll('.nav-item[data-page]').forEach(el => {
-  el.addEventListener('click', () => switchPage(el.dataset.page));
-});
+document.querySelectorAll('.nav-item[data-page]').forEach(el =>
+  el.addEventListener('click', () => switchPage(el.dataset.page))
+);
+document.getElementById('nav-fab').addEventListener('click', () => openModal(null));
 
-/* FAB button → open log modal */
-document.getElementById('nav-log-btn').addEventListener('click', () => openModal(null));
-
-/* Avatar menu */
-function closeMenu(){ document.getElementById('av-menu').classList.remove('open'); }
+/* ── Avatar menu ── */
+function closeAv() { document.getElementById('av-menu').classList.remove('open'); }
 document.getElementById('av-btn').addEventListener('click', e => {
   e.stopPropagation();
   document.getElementById('av-menu').classList.toggle('open');
 });
-document.addEventListener('click', e => {
-  if (!document.getElementById('av-btn').contains(e.target) &&
-      !document.getElementById('av-menu').contains(e.target)) closeMenu();
-});
-document.getElementById('av-profile-btn').addEventListener('click',  () => { closeMenu(); switchPage('profile'); });
-document.getElementById('av-settings-btn').addEventListener('click', () => { closeMenu(); switchPage('settings'); });
+document.addEventListener('click', closeAv);
+document.getElementById('av-menu').addEventListener('click', e => e.stopPropagation());
+document.getElementById('av-profile-btn').addEventListener('click',  () => { closeAv(); switchPage('profile'); });
+document.getElementById('av-settings-btn').addEventListener('click', () => { closeAv(); switchPage('settings'); });
 document.getElementById('av-logout-btn').addEventListener('click',   () => doLogout());
-document.getElementById('s-profile').addEventListener('click',       () => switchPage('profile'));
-document.getElementById('profile-logout-btn').addEventListener('click',  () => doLogout());
-document.getElementById('profile-switch-btn').addEventListener('click',  () => doLogout());
-document.getElementById('settings-logout-btn').addEventListener('click', () => doLogout());
+document.getElementById('profile-logout-btn').addEventListener('click',   () => doLogout());
+document.getElementById('profile-settings-btn').addEventListener('click', () => switchPage('settings'));
+document.getElementById('s-profile-btn').addEventListener('click',        () => switchPage('profile'));
+document.getElementById('settings-logout-btn').addEventListener('click',  () => doLogout());
 
-/* Confirm dialog */
+/* ── Confirm dialog ── */
 function showConfirm(title, sub, okTxt, cb) {
   document.getElementById('confirm-title').textContent = title;
   document.getElementById('confirm-sub').textContent   = sub;
@@ -734,144 +700,129 @@ function showConfirm(title, sub, okTxt, cb) {
   confirmCb = cb;
   document.getElementById('confirm-overlay').classList.add('show');
 }
-function closeConfirm() {
-  document.getElementById('confirm-overlay').classList.remove('show');
-  confirmCb = null;
-}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('show'); confirmCb = null; }
 document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
 document.getElementById('confirm-ok').addEventListener('click', () => { if (confirmCb) confirmCb(); closeConfirm(); });
-document.getElementById('confirm-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('confirm-overlay')) closeConfirm();
-});
+document.getElementById('confirm-overlay').addEventListener('click', e => { if (e.target.id === 'confirm-overlay') closeConfirm(); });
 
-/* Day panel */
-function openDayPanel(ds) {
-  const d = new Date(ds);
-  document.getElementById('day-panel-title').textContent = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  document.getElementById('day-panel').classList.add('open');
-  const daySessions = sessions.filter(s => new Date(s.created_at).toDateString() === ds);
-  const kcal = daySessions.reduce((a,s)=>a+s.total_calories,0);
-  document.getElementById('day-panel-sub').textContent = kcal + ' kcal logged';
-  const body = document.getElementById('day-panel-body');
-  if (!daySessions.length) {
-    body.innerHTML = '<p style="text-align:center;padding:48px;color:var(--txt-3);font-size:14px">No meals logged this day</p>';
-    return;
-  }
-  let html = `<div class="card" style="margin-bottom:12px"><div style="font-size:28px;font-weight:900;color:var(--coral-d);margin-bottom:10px">${kcal} kcal</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
-  const dc = daySessions.reduce((a,s)=>a+s.total_carbs,0);
-  const df = daySessions.reduce((a,s)=>a+s.total_fat,0);
-  const dp = daySessions.reduce((a,s)=>a+s.total_protein,0);
-  html += `<div style="background:var(--bg-3);border-radius:10px;padding:10px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--carbs)">${dc.toFixed(1)}g</div><div style="font-size:10px;color:var(--txt-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Carbs</div></div>`;
-  html += `<div style="background:var(--bg-3);border-radius:10px;padding:10px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--fat)">${df.toFixed(1)}g</div><div style="font-size:10px;color:var(--txt-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Fat</div></div>`;
-  html += `<div style="background:var(--bg-3);border-radius:10px;padding:10px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--protein)">${dp.toFixed(1)}g</div><div style="font-size:10px;color:var(--txt-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Protein</div></div>`;
-  html += '</div></div>';
-  daySessions.forEach(s => {
-    const t = new Date(s.created_at).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-    html += `<div class="card" style="margin-bottom:10px">`;
-    html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div><div style="font-size:15px;font-weight:700;text-transform:capitalize">${s.meal_type}</div><div style="font-size:12px;color:var(--txt-3)">${t}</div></div><div style="font-size:16px;font-weight:800;color:var(--coral-d)">${s.total_calories} kcal</div></div>`;
-    (s.items||[]).forEach(item => {
-      html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--bg-3);border-radius:10px;margin-bottom:5px">`;
-      html += `<div><div style="font-size:14px;font-weight:600">${item.food_name}</div>`;
-      html += `<div style="display:flex;gap:5px;margin-top:4px"><span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:rgba(74,144,217,.1);color:var(--carbs)">${item.carbs.toFixed(1)}g C</span><span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:rgba(255,149,0,.1);color:var(--fat)">${item.fat.toFixed(1)}g F</span><span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:rgba(52,199,89,.1);color:var(--protein)">${item.protein.toFixed(1)}g P</span></div></div>`;
-      html += `<div style="font-size:14px;font-weight:700">${item.calories}</div></div>`;
-    });
-    html += '</div>';
-  });
-  body.innerHTML = html;
-}
+/* ── Day panel ── */
 document.getElementById('day-panel-back').addEventListener('click', () =>
   document.getElementById('day-panel').classList.remove('open')
 );
+function openDayPanel(ds) {
+  const d = new Date(ds);
+  document.getElementById('day-panel-title').textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  const daySessions = sessions.filter(s => new Date(s.created_at).toDateString() === ds);
+  const kcal = daySessions.reduce((a,s) => a + s.total_calories, 0);
+  document.getElementById('day-panel-sub').textContent = kcal + ' kcal logged';
+  const body = document.getElementById('day-panel-body');
+  if (!daySessions.length) {
+    body.innerHTML = '<div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="empty-title">No meals this day</div></div>';
+  } else {
+    let html = `<div class="card" style="margin-bottom:10px"><div style="font-size:30px;font-weight:900;color:var(--coral-d);margin-bottom:8px">${kcal} kcal</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
+    const dc = daySessions.reduce((a,s)=>a+s.total_carbs,0);
+    const df = daySessions.reduce((a,s)=>a+s.total_fat,0);
+    const dp = daySessions.reduce((a,s)=>a+s.total_protein,0);
+    html += `<div style="background:var(--bg-3);border-radius:var(--r-sm);padding:10px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--carbs)">${dc.toFixed(1)}g</div><div style="font-size:10px;color:var(--txt-3);font-weight:600;text-transform:uppercase;margin-top:2px">Carbs</div></div>`;
+    html += `<div style="background:var(--bg-3);border-radius:var(--r-sm);padding:10px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--fat)">${df.toFixed(1)}g</div><div style="font-size:10px;color:var(--txt-3);font-weight:600;text-transform:uppercase;margin-top:2px">Fat</div></div>`;
+    html += `<div style="background:var(--bg-3);border-radius:var(--r-sm);padding:10px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--protein)">${dp.toFixed(1)}g</div><div style="font-size:10px;color:var(--txt-3);font-weight:600;text-transform:uppercase;margin-top:2px">Protein</div></div>`;
+    html += '</div></div>';
+    daySessions.forEach(s => {
+      const t = new Date(s.created_at).toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+      html += `<div class="card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><div style="font-size:15px;font-weight:700;text-transform:capitalize">${s.meal_type}</div><div style="font-size:12px;color:var(--txt-3)">${t}</div></div><div style="font-size:18px;font-weight:800;color:var(--coral-d)">${s.total_calories} kcal</div></div>`;
+      (s.items||[]).forEach(item => {
+        html += `<div class="food-row"><div class="food-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="food-info"><div class="food-name">${item.food_name}</div><div class="food-macros"><span class="food-macro" style="background:var(--blue-l);color:var(--carbs)">${item.carbs.toFixed(1)}g C</span><span class="food-macro" style="background:var(--orange-l);color:var(--fat)">${item.fat.toFixed(1)}g F</span><span class="food-macro" style="background:var(--green-l);color:var(--protein)">${item.protein.toFixed(1)}g P</span></div></div><div class="food-kcal">${item.calories}</div></div>`;
+      });
+      html += '</div>';
+    });
+    body.innerHTML = html;
+  }
+  document.getElementById('day-panel').classList.add('open');
+}
 
-/* User panel */
+/* ── User panel ── */
 document.getElementById('user-panel-back').addEventListener('click', () =>
   document.getElementById('user-panel').classList.remove('open')
 );
-
 async function openUserPanel(userId, uname) {
   const panel = document.getElementById('user-panel');
   const body  = document.getElementById('user-panel-body');
   document.getElementById('user-panel-title').textContent = '@' + uname;
   panel.classList.add('open');
-  body.innerHTML = '<p style="text-align:center;padding:40px;color:var(--txt-3);font-size:14px">Loading...</p>';
+  body.innerHTML = '<div class="empty-state"><div class="empty-title">Loading...</div></div>';
   try {
     const [u, pd] = await Promise.all([api(`/users/${userId}/profile`), api(`/posts/profile/${userId}`)]);
     body.innerHTML = `<div style="text-align:center;padding:24px 20px 16px">
-      <div style="width:70px;height:70px;border-radius:50%;background:var(--coral-l);border:3px solid var(--coral-m);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--coral-d);margin:0 auto 12px">${uname[0].toUpperCase()}</div>
-      <div style="font-size:18px;font-weight:800;margin-bottom:3px">@${u.username||uname}</div>
-      <div style="display:flex;justify-content:center;gap:24px;margin:14px 0">
-        <div style="text-align:center"><span style="font-size:18px;font-weight:800;display:block">${u.followers_count||0}</span><span style="font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Followers</span></div>
-        <div style="text-align:center"><span style="font-size:18px;font-weight:800;display:block">${u.posts_count||0}</span><span style="font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Posts</span></div>
-      </div>
+      <div class="profile-av-circle" style="margin-bottom:12px">${uname[0].toUpperCase()}</div>
+      <div class="profile-username">@${u.username||uname}</div>
+      <div class="profile-stats"><div><span class="profile-stat-num">${u.followers_count||0}</span><span class="profile-stat-lbl">Followers</span></div><div><span class="profile-stat-num">${u.posts_count||0}</span><span class="profile-stat-lbl">Posts</span></div></div>
       <button class="btn btn-primary btn-full" id="follow-btn-panel" data-uid="${userId}" data-following="${u.following?'1':'0'}">${u.following?'Following':'Follow'}</button>
     </div>
-    <div style="padding:0 20px 16px">
-      <div style="font-size:12px;font-weight:700;margin-bottom:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.06em">Public Posts</div>
-      <div id="up-posts">${pd.posts?.length?'':'<p style="color:var(--txt-3);font-size:14px;text-align:center;padding:20px">No public posts</p>'}</div>
+    <div style="padding:0 16px 16px">
+      <div class="section-heading" style="padding:0 0 8px">Posts</div>
+      <div id="up-posts">${pd.posts?.length?'':'<div class="empty-state"><div class="empty-title">No public posts</div></div>'}</div>
     </div>`;
-    const postsEl = document.getElementById('up-posts');
-    if (pd.posts?.length) pd.posts.forEach(p => postsEl.appendChild(buildPost(p)));
-    document.getElementById('follow-btn-panel').addEventListener('click', async function(){
+    if (pd.posts?.length) pd.posts.forEach(p => document.getElementById('up-posts').appendChild(buildPost(p)));
+    document.getElementById('follow-btn-panel')?.addEventListener('click', async function() {
       const following = this.dataset.following === '1';
       try {
         await api(`/follow/${this.dataset.uid}`, following ? 'DELETE' : 'POST');
         this.dataset.following = following ? '0' : '1';
         this.textContent = following ? 'Follow' : 'Following';
-        if (!following) this.classList.add('btn-ghost');
-        else this.classList.remove('btn-ghost');
-        showToast(following ? 'Unfollowed' : 'Following', 'success');
+        if (following) this.classList.remove('btn-ghost'); else this.classList.add('btn-ghost');
+        showToast(following ? 'Unfollowed' : 'Now following', 'success');
       } catch(e) { showToast(e.message, 'error'); }
     });
   } catch(e) {
-    body.innerHTML = `<p style="color:var(--red);padding:20px;font-size:14px">${e.message}</p>`;
+    body.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading profile</div><div class="empty-sub">${e.message}</div></div>`;
   }
 }
 
-/* Date strip */
+/* ── Date strip ── */
 function buildDateStrip() {
   const strip = document.getElementById('date-strip');
-  const days  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const today = new Date();
   strip.innerHTML = '';
   for (let i = 6; i >= 0; i--) {
-    const d  = new Date(today); d.setDate(today.getDate() - i);
-    const ds = d.toDateString();
+    const d  = new Date(today);
+    d.setDate(today.getDate() - i);
+    const ds   = d.toDateString();
     const kcal = sessions.filter(s => new Date(s.created_at).toDateString() === ds)
                          .reduce((a,s) => a + s.total_calories, 0);
     const chip = document.createElement('div');
     chip.className = 'date-chip' + (i === 0 ? ' active' : '');
-    chip.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--bg-2);cursor:pointer;flex-shrink:0;transition:all .15s;min-width:50px';
-    if (i === 0) chip.style.cssText += 'border-color:var(--coral);background:var(--coral-l)';
-    chip.innerHTML = `<span style="font-size:10px;font-weight:600;color:${i===0?'var(--coral-d)':'var(--txt-3)'};text-transform:uppercase;letter-spacing:.04em">${i===0?'Today':days[d.getDay()]}</span><span style="font-size:17px;font-weight:700;color:${i===0?'var(--coral-d)':'var(--txt)'};line-height:1.2">${d.getDate()}</span><span style="font-size:10px;color:var(--coral-d);font-weight:600">${kcal?kcal:''}</span>`;
+    chip.innerHTML = `<span class="dc-day">${i === 0 ? 'Today' : days[d.getDay()]}</span><span class="dc-num">${d.getDate()}</span><span class="dc-kcal">${kcal || ''}</span>`;
     if (i > 0) chip.addEventListener('click', () => openDayPanel(ds));
     strip.appendChild(chip);
   }
 }
 
-/* Meal accordion */
-function toggleMeal(t) {
-  document.getElementById('card-' + t).classList.toggle('open');
-}
+/* ── Meal accordion ── */
+function toggleMeal(t) { document.getElementById('card-'+t)?.classList.toggle('open'); }
 
 function recalc(t) {
   const m = meals[t];
-  m.kcal    = m.foods.reduce((a,f) => a+f.kcal, 0);
-  m.carbs   = parseFloat(m.foods.reduce((a,f) => a+f.carbs, 0).toFixed(1));
-  m.fat     = parseFloat(m.foods.reduce((a,f) => a+f.fat, 0).toFixed(1));
-  m.protein = parseFloat(m.foods.reduce((a,f) => a+f.protein, 0).toFixed(1));
+  m.kcal    = m.foods.reduce((a,f) => a + f.kcal,    0);
+  m.carbs   = parseFloat(m.foods.reduce((a,f) => a + f.carbs,   0).toFixed(1));
+  m.fat     = parseFloat(m.foods.reduce((a,f) => a + f.fat,     0).toFixed(1));
+  m.protein = parseFloat(m.foods.reduce((a,f) => a + f.protein, 0).toFixed(1));
 }
 
 function renderMeal(t) {
-  const m   = meals[t];
-  const bEl = document.getElementById('badge-' + t);
-  if (bEl) bEl.textContent = m.kcal ? m.kcal + ' kcal' : '0 kcal';
+  const m = meals[t];
+  const badge = document.getElementById('badge-' + t);
+  if (badge) {
+    badge.textContent = m.kcal ? m.kcal + ' kcal' : '0 kcal';
+    badge.classList.toggle('has', m.kcal > 0);
+  }
   const mmr = document.getElementById('mmr-' + t);
   if (mmr) {
     if (m.foods.length) {
       mmr.style.display = 'flex';
-      document.getElementById('mmr-c-' + t).textContent = m.carbs.toFixed(1)+'g';
-      document.getElementById('mmr-f-' + t).textContent = m.fat.toFixed(1)+'g';
-      document.getElementById('mmr-p-' + t).textContent = m.protein.toFixed(1)+'g';
+      document.getElementById('mc-'+t).textContent = m.carbs.toFixed(1)+'g';
+      document.getElementById('mf-'+t).textContent = m.fat.toFixed(1)+'g';
+      document.getElementById('mp-'+t).textContent = m.protein.toFixed(1)+'g';
     } else {
       mmr.style.display = 'none';
     }
@@ -886,18 +837,17 @@ function renderMeal(t) {
   m.foods.forEach(f => {
     const row = document.createElement('div');
     row.className = 'food-row';
-    row.innerHTML = `
-      ${f.photoUrl
-        ? `<img class="food-photo" src="${f.photoUrl}" alt="${f.name}" loading="lazy"/>`
-        : `<div class="food-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
-      }
+    row.innerHTML = f.photoUrl
+      ? `<img class="food-thumb" src="${f.photoUrl}" alt="${f.name}" loading="lazy"/>`
+      : `<div class="food-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+    row.innerHTML += `
       <div class="food-info">
         <div class="food-name">${f.name}</div>
         <div class="food-serving">${f.serving||'1 serving'}</div>
         <div class="food-macros">
-          <span class="food-macro" style="background:rgba(74,144,217,.1);color:var(--carbs)">${f.carbs.toFixed(1)}g C</span>
-          <span class="food-macro" style="background:rgba(255,149,0,.1);color:var(--fat)">${f.fat.toFixed(1)}g F</span>
-          <span class="food-macro" style="background:rgba(52,199,89,.1);color:var(--protein)">${f.protein.toFixed(1)}g P</span>
+          <span class="food-macro" style="background:var(--blue-l);color:var(--carbs)">${f.carbs.toFixed(1)}g C</span>
+          <span class="food-macro" style="background:var(--orange-l);color:var(--fat)">${f.fat.toFixed(1)}g F</span>
+          <span class="food-macro" style="background:var(--green-l);color:var(--protein)">${f.protein.toFixed(1)}g P</span>
         </div>
       </div>
       <div class="food-kcal">${f.kcal}</div>`;
@@ -905,7 +855,7 @@ function renderMeal(t) {
   });
 }
 
-/* Upload modal */
+/* ── Upload modal ── */
 function openModal(meal) {
   activeMeal = meal || 'breakfast';
   const map = { breakfast:'mt-b', lunch:'mt-l', dinner:'mt-d', snacks:'mt-s' };
@@ -922,7 +872,7 @@ function resetUpload() {
   const fi = document.getElementById('fi');
   if (fi) fi.value = '';
   const prev = document.getElementById('preview');
-  if (prev) { prev.src=''; prev.style.display='none'; }
+  if (prev) { prev.src = ''; prev.style.display = 'none'; }
   document.getElementById('uz-placeholder').style.display = '';
   document.getElementById('change-btn').style.display = 'none';
   document.getElementById('uz').classList.remove('has','drag');
@@ -956,14 +906,14 @@ document.getElementById('fi').addEventListener('change', () =>
 document.getElementById('change-btn').addEventListener('click', resetUpload);
 document.getElementById('cancel-btn').addEventListener('click', closeModal);
 document.getElementById('overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('overlay')) closeModal();
+  if (e.target.id === 'overlay') closeModal();
 });
 const uz = document.getElementById('uz');
 uz.addEventListener('dragover',  e => { e.preventDefault(); uz.classList.add('drag'); });
 uz.addEventListener('dragleave', () => uz.classList.remove('drag'));
 uz.addEventListener('drop',      e => { e.preventDefault(); uz.classList.remove('drag'); applyFile(e.dataTransfer.files[0]); });
 
-/* Analyze */
+/* ── Analyze ── */
 document.getElementById('analyze-btn').addEventListener('click', async () => {
   if (!selFile) return;
   activeMeal = document.querySelector('input[name="mt"]:checked')?.value || activeMeal;
@@ -982,33 +932,31 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
     if (res.status === 401) { localStorage.clear(); window.location.href = '/login'; return; }
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Analysis failed');
-    // Add foods with the actual photo URL so they appear in the feed
-    const imgUrl = photoUrl;
+
+    const savedPhoto = data.photo_url || photoUrl;
     data.foods.forEach((f, i) => {
       meals[activeMeal].foods.push({
         name: f.name, kcal: f.kcal, carbs: f.carbs, fat: f.fat, protein: f.protein,
-        serving: f.serving, photoUrl: i === 0 ? imgUrl : null
+        serving: f.serving, photoUrl: i === 0 ? savedPhoto : null
       });
     });
-    const savedPhotoUrl2 = data.photo_url || imgUrl;
     sessions.unshift({
       id: data.session_id, meal_type: activeMeal,
       total_calories: data.total_kcal, total_carbs: data.total_carbs,
       total_fat: data.total_fat, total_protein: data.total_protein,
       food_summary: data.foods.map(f=>f.name).join(', '),
       created_at: new Date().toISOString(),
-      photo_url: savedPhotoUrl2,
-      items: data.foods.map(f=>({food_name:f.name,calories:f.kcal,carbs:f.carbs,fat:f.fat,protein:f.protein,serving:f.serving}))
+      photo_url: savedPhoto,
+      items: data.foods.map(f=>({ food_name:f.name, calories:f.kcal, carbs:f.carbs, fat:f.fat, protein:f.protein, serving:f.serving }))
     });
     recalc(activeMeal); renderMeal(activeMeal); updateRing(); buildDateStrip();
     if (!document.getElementById('card-'+activeMeal).classList.contains('open'))
       document.getElementById('card-'+activeMeal).classList.add('open');
-    // Use server-returned photo_url if available, else keep the local preview
-    const savedPhotoUrl = data.photo_url || imgUrl;
+
     pendShare = {
       session_id: data.session_id, foods: data.foods, kcal: data.total_kcal,
       carbs: data.total_carbs, fat: data.total_fat, protein: data.total_protein,
-      meal_type: activeMeal, photo_url: savedPhotoUrl
+      meal_type: activeMeal, photo_url: savedPhoto
     };
     closeModal();
     openShare();
@@ -1021,17 +969,16 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
   }
 });
 
-/* Share sheet */
+/* ── Share sheet ── */
 function openShare() {
   if (!pendShare) return;
-  document.getElementById('share-name').textContent  = pendShare.meal_type;
-  document.getElementById('share-kcal').textContent  = pendShare.kcal + ' kcal';
-  document.getElementById('share-foods').textContent = pendShare.foods.map(f=>f.name).join(', ');
-  const mm = document.getElementById('share-macros');
-  mm.innerHTML = `
-    <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;background:rgba(74,144,217,.1);color:var(--carbs)">${pendShare.carbs.toFixed(1)}g C</span>
-    <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;background:rgba(255,149,0,.1);color:var(--fat)">${pendShare.fat.toFixed(1)}g F</span>
-    <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;background:rgba(52,199,89,.1);color:var(--protein)">${pendShare.protein.toFixed(1)}g P</span>`;
+  document.getElementById('share-meal-type').textContent = pendShare.meal_type;
+  document.getElementById('share-kcal').textContent      = pendShare.kcal + ' kcal';
+  document.getElementById('share-foods').textContent     = pendShare.foods.map(f=>f.name).join(', ');
+  document.getElementById('share-macros').innerHTML = `
+    <span class="food-macro" style="background:var(--blue-l);color:var(--carbs)">${pendShare.carbs.toFixed(1)}g C</span>
+    <span class="food-macro" style="background:var(--orange-l);color:var(--fat)">${pendShare.fat.toFixed(1)}g F</span>
+    <span class="food-macro" style="background:var(--green-l);color:var(--protein)">${pendShare.protein.toFixed(1)}g P</span>`;
   document.getElementById('share-overlay').classList.add('show');
 }
 function closeShare() {
@@ -1040,9 +987,7 @@ function closeShare() {
   document.getElementById('share-caption').value = '';
 }
 document.getElementById('skip-share-btn').addEventListener('click', closeShare);
-document.getElementById('share-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('share-overlay')) closeShare();
-});
+document.getElementById('share-overlay').addEventListener('click', e => { if (e.target.id === 'share-overlay') closeShare(); });
 document.getElementById('do-share-btn').addEventListener('click', async () => {
   if (!pendShare) return;
   const btn = document.getElementById('do-share-btn');
@@ -1050,9 +995,10 @@ document.getElementById('do-share-btn').addEventListener('click', async () => {
   const priv = document.querySelector('input[name="priv"]:checked')?.value || 'public';
   if (priv === 'skip') { closeShare(); setLoading(btn, false); return; }
   try {
-    await api('/posts', 'POST', { session_id: pendShare.session_id,
-      caption: document.getElementById('share-caption').value.trim(),
-      status: priv
+    await api('/posts', 'POST', {
+      session_id: pendShare.session_id,
+      caption:    document.getElementById('share-caption').value.trim(),
+      status:     priv
     });
     showToast('Posted to your profile', 'success');
     closeShare();
@@ -1060,51 +1006,43 @@ document.getElementById('do-share-btn').addEventListener('click', async () => {
   finally { setLoading(btn, false); }
 });
 
-/* ── Post card builder ── */
+/* ── Post builder ── */
 function buildPost(p) {
-  // Server returns author_username and is_owner directly
-  const isOwner     = p.is_owner || p.user_id === MY_ID;
-  const author      = p.author_username || p.username || (p.author_email||'').split('@')[0] || 'user';
-  const displayName = isOwner ? 'You' : ('@' + author);
-  const avatarStyle = isOwner ? 'background:var(--coral);color:#fff;border-color:var(--coral-m)' : '';
-
+  const isOwner  = p.is_owner || p.user_id === MY_ID;
+  const author   = p.author_username || p.username || (p.author_email||'').split('@')[0] || 'user';
+  const dispName = isOwner ? 'You' : ('@' + author);
   const card = document.createElement('div');
   card.className = 'post-card';
 
-  // Photo: show real uploaded image, or a clean food-keyword placeholder
   let photoHtml = '';
   if (p.photo_url) {
-    photoHtml = `<img class="post-photo" src="${p.photo_url}" alt="${p.food_summary||'Meal'}" loading="lazy" onerror="this.parentElement.querySelector('.post-photo-placeholder')?.style.setProperty('display','flex');this.remove()"/>`;
+    photoHtml = `<img class="post-photo" src="${p.photo_url}" alt="${p.food_summary||'Meal'}" loading="lazy" onerror="this.remove()"/>`;
   } else {
-    // Tasteful placeholder with meal type color + food icon
-    const mealColors = {breakfast:'#FFF8E1',lunch:'#E8F5E9',dinner:'#EDE7F6',snacks:'#FFF3E0',other:'#F3F3F3'};
-    const mealIcons  = {breakfast:'☀',lunch:'◎',dinner:'◐',snacks:'□',other:'▦'};
-    const bgColor = mealColors[p.meal_type] || '#F3F3F3';
-    photoHtml = `<div class="post-photo-placeholder" style="display:flex;height:180px;background:${bgColor};flex-direction:column;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="#AEAEB2" stroke-width="1.5" style="width:36px;height:36px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span style="font-size:12px;color:#AEAEB2;font-weight:500">${p.food_summary||'Meal photo'}</span></div>`;
+    photoHtml = `<div class="post-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="width:38px;height:38px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${p.food_summary||'Meal photo'}</span></div>`;
   }
 
   card.innerHTML = `
     ${photoHtml}
     <div class="post-header">
       <div class="post-author">
-        <div class="post-av ${isOwner ? 'is-me' : ''}">${author[0].toUpperCase()}</div>
+        <div class="post-av ${isOwner?'is-me':''}">${author[0].toUpperCase()}</div>
         <div style="min-width:0;flex:1">
-          <div class="post-author-name ${isOwner ? 'is-me' : ''}">${displayName}</div>
+          <div class="post-author-name ${isOwner?'is-me':''}">${dispName}</div>
           <div class="post-time">${timeAgo(p.created_at)}</div>
         </div>
       </div>
       <div class="post-menu-wrap">
-        <button class="post-menu-btn post-menu-trigger">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        <button class="post-menu-trigger">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
         </button>
         <div class="post-dropdown">
           ${isOwner ? `
-            <div class="post-dd-item toggle-status-btn" data-id="${p.id}" data-status="${p.status||'public'}">
+            <div class="post-dd-item toggle-status" data-id="${p.id}" data-status="${p.status||'public'}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               ${(p.status||'public')==='public'?'Make Private':'Make Public'}
             </div>
             <div class="post-dd-divider"></div>
-            <div class="post-dd-item danger delete-btn" data-id="${p.id}">
+            <div class="post-dd-item danger delete-post" data-id="${p.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
               Delete
             </div>
@@ -1123,9 +1061,9 @@ function buildPost(p) {
       <div class="post-foods">${p.food_summary||'Meal'}</div>
       ${p.caption ? `<div class="post-caption">${p.caption}</div>` : ''}
       <div class="post-macros">
-        <span class="post-macro" style="background:rgba(74,144,217,.1);color:var(--carbs)">${p.total_carbs.toFixed(1)}g Carbs</span>
-        <span class="post-macro" style="background:rgba(255,149,0,.1);color:var(--fat)">${p.total_fat.toFixed(1)}g Fat</span>
-        <span class="post-macro" style="background:rgba(52,199,89,.1);color:var(--protein)">${p.total_protein.toFixed(1)}g Protein</span>
+        <span class="post-macro" style="background:var(--blue-l);color:var(--carbs)">${p.total_carbs.toFixed(1)}g Carbs</span>
+        <span class="post-macro" style="background:var(--orange-l);color:var(--fat)">${p.total_fat.toFixed(1)}g Fat</span>
+        <span class="post-macro" style="background:var(--green-l);color:var(--protein)">${p.total_protein.toFixed(1)}g Protein</span>
       </div>
     </div>
     <div class="post-actions">
@@ -1139,14 +1077,9 @@ function buildPost(p) {
       </button>
     </div>`;
 
-  /* Post author click → open user panel */
-  if (!isOwner) {
-    card.querySelector('.post-author').addEventListener('click', () => openUserPanel(p.user_id, author));
-  }
-
-  /* 3-dot menu */
-  const trigger   = card.querySelector('.post-menu-trigger');
-  const dropdown  = card.querySelector('.post-dropdown');
+  /* Menu toggle */
+  const trigger  = card.querySelector('.post-menu-trigger');
+  const dropdown = card.querySelector('.post-dropdown');
   trigger.addEventListener('click', e => {
     e.stopPropagation();
     document.querySelectorAll('.post-dropdown.open').forEach(d => d.classList.remove('open'));
@@ -1154,35 +1087,34 @@ function buildPost(p) {
   });
   document.addEventListener('click', () => dropdown.classList.remove('open'), { once: true });
 
-  /* Toggle status */
-  const toggleBtn = card.querySelector('.toggle-status-btn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', async () => {
-      dropdown.classList.remove('open');
-      const cur = toggleBtn.dataset.status;
-      const newSt = cur === 'public' ? 'private' : 'public';
-      try {
-        await api(`/posts/${toggleBtn.dataset.id}/status`, 'PATCH', { status: newSt });
-        toggleBtn.dataset.status = newSt;
-        toggleBtn.lastChild.textContent = newSt === 'public' ? 'Make Private' : 'Make Public';
-        const badge = card.querySelector('.post-status-badge');
-        if (badge) { badge.className = `post-status-badge ${newSt}`; badge.textContent = newSt === 'public' ? 'Public' : 'Private'; }
-        showToast('Post is now ' + newSt, 'success');
-      } catch(e) { showToast(e.message, 'error'); }
-    });
+  /* Author click */
+  if (!isOwner) {
+    card.querySelector('.post-author').addEventListener('click', () => openUserPanel(p.user_id, author));
   }
 
+  /* Toggle status */
+  card.querySelector('.toggle-status')?.addEventListener('click', async () => {
+    dropdown.classList.remove('open');
+    const el  = card.querySelector('.toggle-status');
+    const cur = el.dataset.status;
+    const nxt = cur === 'public' ? 'private' : 'public';
+    try {
+      await api(`/posts/${el.dataset.id}/status`, 'PATCH', { status: nxt });
+      el.dataset.status = nxt;
+      const badge = card.querySelector('.post-status-badge');
+      if (badge) { badge.className = `post-status-badge ${nxt}`; badge.textContent = nxt === 'public' ? 'Public' : 'Private'; }
+      showToast('Post is now ' + nxt, 'success');
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
   /* Delete */
-  const delBtn = card.querySelector('.delete-btn');
-  if (delBtn) {
-    delBtn.addEventListener('click', () => {
-      dropdown.classList.remove('open');
-      showConfirm('Delete this post?', 'The meal log will remain in history.', 'Delete', async () => {
-        try { await api(`/posts/${delBtn.dataset.id}`, 'DELETE'); card.remove(); showToast('Post deleted'); }
-        catch(e) { showToast(e.message, 'error'); }
-      });
+  card.querySelector('.delete-post')?.addEventListener('click', () => {
+    dropdown.classList.remove('open');
+    showConfirm('Delete this post?', 'The meal log will be kept in your history.', 'Delete', async () => {
+      try { await api(`/posts/${card.querySelector('.delete-post').dataset.id}`, 'DELETE'); card.remove(); showToast('Post deleted'); }
+      catch(e) { showToast(e.message, 'error'); }
     });
-  }
+  });
 
   /* Like */
   card.querySelector('.like-btn').addEventListener('click', async function() {
@@ -1191,8 +1123,9 @@ function buildPost(p) {
       const res = await api(`/posts/${this.dataset.id}/like`, liked ? 'DELETE' : 'POST');
       this.dataset.liked = res.liked ? '1' : '0';
       this.classList.toggle('liked', res.liked);
-      this.innerHTML = `<svg viewBox="0 0 24 24" fill="${res.liked?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>${res.like_count}`;
-    } catch(e) { showToast(e.message, 'error'); }
+      this.querySelector('svg').setAttribute('fill', res.liked ? 'currentColor' : 'none');
+      this.childNodes[this.childNodes.length-1].textContent = res.like_count;
+    } catch(e) { showToast(e.message,'error'); }
   });
 
   /* Save */
@@ -1202,26 +1135,25 @@ function buildPost(p) {
       const res = await api(`/posts/${this.dataset.id}/save`, saved ? 'DELETE' : 'POST');
       this.dataset.saved = res.saved ? '1' : '0';
       this.classList.toggle('saved', res.saved);
-      this.innerHTML = `<svg viewBox="0 0 24 24" fill="${res.saved?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>${res.saved?'Saved':'Save'}`;
-    } catch(e) { showToast(e.message, 'error'); }
+      this.querySelector('svg').setAttribute('fill', res.saved ? 'currentColor' : 'none');
+      this.lastChild.textContent = res.saved ? 'Saved' : 'Save';
+    } catch(e) { showToast(e.message,'error'); }
   });
 
   return card;
 }
 
-/* Load feed */
+/* ── Feed ── */
 async function loadFeed() {
   const c = document.getElementById('feed-list');
-  c.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt-3);font-size:14px">Loading...</div>';
+  c.innerHTML = '<div class="empty-state"><div class="empty-title">Loading...</div></div>';
   try {
     const data = await api('/posts/feed?limit=20');
     if (!data.posts?.length) {
-      c.innerHTML = `<div style="text-align:center;padding:52px 20px">
-        <div style="width:64px;height:64px;border-radius:50%;background:var(--coral-l);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--coral-d)" stroke-width="1.5" style="width:28px;height:28px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        </div>
-        <div style="font-size:18px;font-weight:800;margin-bottom:8px">Feed is empty</div>
-        <div style="font-size:14px;color:var(--txt-2);margin-bottom:20px">Log a meal and share it, or explore what others are eating.</div>
+      c.innerHTML = `<div class="empty-state">
+        <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="empty-title">Feed is empty</div>
+        <div class="empty-sub">Log a meal and share it, or explore what others are eating.</div>
         <button class="btn btn-primary" onclick="switchPage('explore')">Browse Explore</button>
       </div>`;
       return;
@@ -1229,26 +1161,27 @@ async function loadFeed() {
     c.innerHTML = '';
     data.posts.forEach(p => c.appendChild(buildPost(p)));
   } catch(e) {
-    c.innerHTML = `<div style="text-align:center;padding:40px">
-      <div style="font-size:13px;color:var(--red);margin-bottom:6px;font-weight:600">${e.message||'Failed to load feed'}</div>
-      <div style="font-size:12px;color:var(--txt-3);margin-bottom:14px">Pull down to retry or tap below</div>
-      <button class="btn btn-ghost" onclick="loadFeed()">Retry</button>
+    c.innerHTML = `<div class="empty-state">
+      <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div class="empty-title">Could not load feed</div>
+      <div class="empty-sub">${e.message}</div>
+      <button class="btn btn-ghost" onclick="loadFeed()">Try again</button>
     </div>`;
   }
 }
 
-/* Load explore */
+/* ── Explore ── */
 async function loadExplore(filter, search) {
   const grid = document.getElementById('explore-grid');
-  grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt-3);font-size:14px">Loading...</div>';
+  grid.innerHTML = '<div class="empty-state"><div class="empty-title">Loading...</div></div>';
   let url = '/posts/explore?limit=30';
-  if (filter === 'low-cal') url += '&max_cal=400';
+  if (filter === 'low-cal')  url += '&max_cal=400';
   else if (filter && !['low-cal','high-protein'].includes(filter)) url += `&meal_type=${encodeURIComponent(filter)}`;
   if (search) url += `&search=${encodeURIComponent(search)}`;
   try {
     const data = await api(url);
     if (!data.posts?.length) {
-      grid.innerHTML = '<div style="text-align:center;padding:48px 0"><div style="font-size:14px;font-weight:600;margin-bottom:6px">No posts found</div><div style="font-size:13px;color:var(--txt-3)">Log a meal and share it publicly!</div></div>';
+      grid.innerHTML = '<div class="empty-state"><div class="empty-title">No posts found</div><div class="empty-sub">Try a different filter or be the first to share!</div></div>';
       return;
     }
     grid.innerHTML = '';
@@ -1256,10 +1189,10 @@ async function loadExplore(filter, search) {
     if (filter === 'high-protein') posts = posts.sort((a,b) => b.total_protein - a.total_protein);
     posts.forEach(p => grid.appendChild(buildPost(p)));
   } catch(e) {
-    grid.innerHTML = `<div style="text-align:center;padding:40px">
-      <div style="font-size:13px;color:var(--red);margin-bottom:6px;font-weight:600">${e.message||'Failed to load'}</div>
-      <div style="font-size:12px;color:var(--txt-3);margin-bottom:14px">Tap below to retry</div>
-      <button class="btn btn-ghost" onclick="loadExplore('${filter||''}','${search||''}')">Retry</button>
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-title">Could not load</div>
+      <div class="empty-sub">${e.message}</div>
+      <button class="btn btn-ghost" onclick="loadExplore('${filter||''}','${search||''}')">Try again</button>
     </div>`;
   }
 }
@@ -1275,7 +1208,6 @@ document.querySelectorAll('.filter-chip').forEach(chip => {
 });
 
 /* Search */
-let searchTimer = null;
 document.getElementById('explore-search')?.addEventListener('input', async e => {
   const q = e.target.value.trim();
   clearTimeout(searchTimer); clearTimeout(xTimer);
@@ -1291,17 +1223,27 @@ document.getElementById('explore-search')?.addEventListener('input', async e => 
         ur.innerHTML = '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt-3);margin-bottom:8px">Users</div>';
         data.users.forEach(u => {
           const uname = u.username || u.email.split('@')[0];
-          const card = document.createElement('div');
-          card.className = 'user-card';
-          card.innerHTML = `<div style="display:flex;align-items:center;gap:11px"><div class="user-card-av">${uname[0].toUpperCase()}</div><div><div class="user-card-name">@${uname}</div><div class="user-card-meta">${u.followers_count||0} followers</div></div></div><button class="follow-btn ${u.following?'following':''}" data-uid="${u.id}" data-following="${u.following?'1':'0'}">${u.following?'Following':'Follow'}</button>`;
-          card.querySelector('.user-card-av').closest('.user-card').addEventListener('click', () => openUserPanel(u.id, uname));
-          card.querySelector('.follow-btn').addEventListener('click', async function(ev) {
+          const row = document.createElement('div');
+          row.className = 'user-card';
+          row.innerHTML = `
+            <div style="display:flex;align-items:center;gap:11px">
+              <div class="user-card-av">${uname[0].toUpperCase()}</div>
+              <div><div class="user-card-name">@${uname}</div><div class="user-card-meta">${u.followers_count||0} followers</div></div>
+            </div>
+            <button class="follow-btn ${u.following?'following':''}" data-uid="${u.id}" data-following="${u.following?'1':'0'}">${u.following?'Following':'Follow'}</button>`;
+          row.querySelector('.user-card-av').parentElement.parentElement.addEventListener('click', () => openUserPanel(u.id, uname));
+          row.querySelector('.follow-btn').addEventListener('click', async function(ev) {
             ev.stopPropagation();
             const following = this.dataset.following === '1';
-            try { await api(`/follow/${this.dataset.uid}`, following ? 'DELETE' : 'POST'); this.dataset.following = following ? '0' : '1'; this.className = `follow-btn ${following?'':'following'}`; this.textContent = following ? 'Follow' : 'Following'; showToast(following?'Unfollowed':'Following','success'); }
-            catch(err) { showToast(err.message,'error'); }
+            try {
+              await api(`/follow/${this.dataset.uid}`, following ? 'DELETE' : 'POST');
+              this.dataset.following = following ? '0' : '1';
+              this.className = `follow-btn ${following?'':'following'}`;
+              this.textContent = following ? 'Follow' : 'Following';
+              showToast(following ? 'Unfollowed' : 'Now following', 'success');
+            } catch(err) { showToast(err.message,'error'); }
           });
-          ur.appendChild(card);
+          ur.appendChild(row);
         });
       } catch(_) {}
     }, 400);
@@ -1325,38 +1267,38 @@ document.querySelectorAll('.profile-tab').forEach(tab => {
 
 async function loadMyPosts() {
   const c = document.getElementById('my-posts-list');
-  c.innerHTML = '<p style="text-align:center;padding:24px;color:var(--txt-3);font-size:14px">Loading...</p>';
+  c.innerHTML = '<div class="empty-state"><div class="empty-title">Loading...</div></div>';
   try {
     const data = await api(`/posts/profile/${MY_ID}`);
-    if (!data.posts?.length) { c.innerHTML = '<p style="text-align:center;padding:24px;color:var(--txt-3);font-size:14px">No posts yet.</p>'; return; }
+    if (!data.posts?.length) { c.innerHTML = '<div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="empty-title">No posts yet</div><div class="empty-sub">Log a meal and share it to see it here.</div></div>'; return; }
     c.innerHTML = '';
     data.posts.forEach(p => c.appendChild(buildPost(p)));
-  } catch(e) { c.innerHTML = `<p style="color:var(--red);padding:16px;font-size:14px">${e.message}</p>`; }
+  } catch(e) { c.innerHTML = `<div class="empty-state"><div class="empty-title">Error</div><div class="empty-sub">${e.message}</div></div>`; }
 }
 
 async function loadSaved() {
   const c = document.getElementById('saved-posts-list');
-  c.innerHTML = '<p style="text-align:center;padding:24px;color:var(--txt-3);font-size:14px">Loading...</p>';
+  c.innerHTML = '<div class="empty-state"><div class="empty-title">Loading...</div></div>';
   try {
     const data = await api('/posts/saved');
-    if (!data.posts?.length) { c.innerHTML = '<p style="text-align:center;padding:24px;color:var(--txt-3);font-size:14px">No saved posts yet.</p>'; return; }
+    if (!data.posts?.length) { c.innerHTML = '<div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div><div class="empty-title">Nothing saved yet</div><div class="empty-sub">Save posts from the feed to find them here.</div></div>'; return; }
     c.innerHTML = '';
     data.posts.forEach(p => c.appendChild(buildPost(p)));
-  } catch(e) { c.innerHTML = `<p style="color:var(--red);padding:16px;font-size:14px">${e.message}</p>`; }
+  } catch(e) { c.innerHTML = `<div class="empty-state"><div class="empty-title">Error</div><div class="empty-sub">${e.message}</div></div>`; }
 }
 
-/* Analytics */
+/* ── Analytics ── */
 function buildAnalytics() {
-  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const days     = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const todayIdx = (new Date().getDay() + 6) % 7;
-  const today = new Date();
+  const today    = new Date();
   const dC = Array(7).fill(0), dCa = Array(7).fill(0), dF = Array(7).fill(0), dP = Array(7).fill(0);
   sessions.forEach(s => {
     const diff = Math.floor((today - new Date(s.created_at)) / 86400000);
     if (diff >= 0 && diff < 7) {
       const idx = (todayIdx - diff + 7) % 7;
       dC[idx] += s.total_calories; dCa[idx] += s.total_carbs;
-      dF[idx] += s.total_fat;       dP[idx]  += s.total_protein;
+      dF[idx] += s.total_fat;      dP[idx]  += s.total_protein;
     }
   });
   const total = dC.reduce((a,b)=>a+b,0);
@@ -1369,14 +1311,13 @@ function buildAnalytics() {
   chart.innerHTML = '';
   const maxV = Math.max(...dC, GOAL, 1);
   days.forEach((day,i) => {
-    const pct = Math.min((dC[i]||0)/maxV*100, 100);
-    const isT = i === todayIdx;
+    const pct = Math.min((dC[i]||0) / maxV * 100, 100);
     const col = document.createElement('div');
-    col.className = 'bc-col' + (isT ? ' today' : '');
+    col.className = 'bc-col' + (i === todayIdx ? ' today' : '');
     col.innerHTML = `<div class="bc-bar"><div class="bc-fill" style="height:0%" data-pct="${pct}"></div></div><span class="bc-label">${day}</span>`;
     chart.appendChild(col);
   });
-  setTimeout(() => chart.querySelectorAll('.bc-fill').forEach(b => b.style.height = b.dataset.pct + '%'), 200);
+  setTimeout(() => chart.querySelectorAll('.bc-fill').forEach(b => b.style.height = b.dataset.pct + '%'), 150);
   const wC = dCa.reduce((a,b)=>a+b,0), wF = dF.reduce((a,b)=>a+b,0), wP = dP.reduce((a,b)=>a+b,0);
   const mM = Math.max(wC, wF, wP, 1);
   document.getElementById('wm-carbs').textContent   = wC.toFixed(0)+'g';
@@ -1386,20 +1327,22 @@ function buildAnalytics() {
     document.getElementById('wmb-carbs').style.width   = (wC/mM*100)+'%';
     document.getElementById('wmb-fat').style.width     = (wF/mM*100)+'%';
     document.getElementById('wmb-protein').style.width = (wP/mM*100)+'%';
-  }, 200);
+  }, 150);
   const hist = document.getElementById('history-list');
   hist.innerHTML = '';
-  if (!sessions.length) { hist.innerHTML = '<div style="text-align:center;padding:24px;color:var(--txt-3);font-size:14px">No meals logged yet</div>'; return; }
-  sessions.slice(0,20).forEach(s => {
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.style.cssText = 'display:flex;align-items:center;gap:13px;padding:12px 14px';
-    div.innerHTML = `<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.food_summary||'Meal'}</div><div style="font-size:12px;color:var(--txt-3);margin-top:2px">${timeAgo(s.created_at)} · ${s.meal_type}</div><div style="display:flex;gap:7px;margin-top:4px"><span style="font-size:11px;color:var(--carbs);font-weight:600">${s.total_carbs.toFixed(0)}g C</span><span style="font-size:11px;color:var(--fat);font-weight:600">${s.total_fat.toFixed(0)}g F</span><span style="font-size:11px;color:var(--protein);font-weight:600">${s.total_protein.toFixed(0)}g P</span></div></div><div style="text-align:right;flex-shrink:0"><span style="font-size:16px;font-weight:800;color:var(--coral-d)">${s.total_calories}</span><span style="font-size:11px;color:var(--txt-3);display:block">kcal</span></div>`;
-    hist.appendChild(div);
+  if (!sessions.length) {
+    hist.innerHTML = '<div class="empty-state"><div class="empty-title">No history yet</div></div>';
+    return;
+  }
+  sessions.slice(0,30).forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'history-row';
+    row.innerHTML = `<div class="food-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="history-info"><div class="history-foods">${s.food_summary||'Meal'}</div><div class="history-meta">${timeAgo(s.created_at)} · ${s.meal_type}</div></div><div class="history-kcal"><div class="history-kcal-num">${s.total_calories}</div><div class="history-kcal-lbl">kcal</div></div>`;
+    hist.appendChild(row);
   });
 }
 
-/* Profile */
+/* ── Profile ── */
 function buildProfile() {
   const total = sessions.length;
   const days  = new Set(sessions.map(s => new Date(s.created_at).toDateString())).size;
@@ -1411,11 +1354,12 @@ function buildProfile() {
   document.getElementById('streak-badge').textContent = streak;
   document.getElementById('psg-meals').textContent  = total;
   document.getElementById('psg-avg').textContent    = days ? Math.round(totalK/days) : 0;
-  document.getElementById('psg-best').textContent   = days ? Math.max(...Object.values(sessions.reduce((acc,s)=>{const d=new Date(s.created_at).toDateString();acc[d]=(acc[d]||0)+s.total_calories;return acc;},{})),0) : 0;
-  document.getElementById('psg-days').textContent   = days;
+  const dayKcals = Object.values(sessions.reduce((acc,s)=>{ const d=new Date(s.created_at).toDateString(); acc[d]=(acc[d]||0)+s.total_calories; return acc; }, {}));
+  document.getElementById('psg-best').textContent  = dayKcals.length ? Math.max(...dayKcals) : 0;
+  document.getElementById('psg-days').textContent  = days;
   api(`/posts/profile/${MY_ID}`).then(d => {
     document.getElementById('ps-posts').textContent = d.posts?.length || 0;
-  }).catch(() => {});
+  }).catch(()=>{});
 }
 
 function calcStreak() {
@@ -1426,7 +1370,7 @@ function calcStreak() {
   return streak;
 }
 
-/* Load history */
+/* ── History load ── */
 async function loadHistory() {
   try {
     const data = await api('/history?limit=100');
@@ -1435,7 +1379,7 @@ async function loadHistory() {
     sessions.forEach(s => {
       if (new Date(s.created_at).toDateString() !== todayStr) return;
       const t = s.meal_type in meals ? s.meal_type : 'snacks';
-      s.items.forEach(item => {
+      (s.items||[]).forEach(item => {
         meals[t].foods.push({
           name: item.food_name, kcal: item.calories,
           carbs: item.carbs||0, fat: item.fat||0, protein: item.protein||0,
@@ -1452,8 +1396,8 @@ async function loadHistory() {
   }
 }
 
-/* Boot */
-fetch(API_BASE + '/health').catch(() => {});
+/* ── Boot ── */
+fetch(API_BASE + '/health').catch(()=>{});
 updateRing();
 loadHistory();
 </script>

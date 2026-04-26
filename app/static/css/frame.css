@@ -1,246 +1,161 @@
-/* ============================================================
-   iCal — frame.css v9
-   iPhone 15 Pro: 393×852 logical pixels, 47px corner radius
-   Frame always centered on dark matte stage
-   Only #phone-screen scrolls — body/frame never scroll
-   ============================================================ */
+/* ================================================================
+   iCal — frame.css v10
+   iPhone 15 Pro: 393×852 logical px · 47px radius · Dynamic Island
+   Stage: dark charcoal, device always centered
+   Only #phone-screen scrolls — everything else is locked
+   ================================================================ */
 
-/* ── Kill all outer scroll ── */
 *, *::before, *::after { box-sizing: border-box; }
+
 html, body {
   width: 100%; height: 100%;
   overflow: hidden;
   margin: 0; padding: 0;
 }
 
-/* ── Stage — dark matte, perfectly centers the device ── */
+/* ── Stage ── */
 .frame-body {
   width: 100vw;
   height: 100dvh;
   overflow: hidden;
-  /* Charcoal background — Apple product photography style */
-  background: #18181B;
-  /* Perfect centering */
+  background: #111113;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 30% 40%, rgba(232,82,74,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 70% 60%, rgba(100,100,140,.06) 0%, transparent 60%);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 }
 
-/* Subtle ambient glow behind device */
-.frame-body::before {
-  content: '';
-  position: absolute;
-  width: 340px; height: 600px;
-  background: radial-gradient(ellipse at center,
-    rgba(160, 160, 180, 0.12) 0%,
-    transparent 65%
-  );
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ── Device outer wrapper ──
-   Uses aspect-ratio to maintain exact iPhone 15 Pro proportions.
-   Height is constrained to viewport, width follows ratio.
-   filter:drop-shadow wraps the irregular frame shape correctly.
-*/
+/* ── Wrapper — aspect-ratio locks proportions ── */
 .phone-frame-wrap {
   position: relative;
   z-index: 1;
-  /* iPhone 15 Pro: 393 × 852 logical px */
   height: 94dvh;
   max-height: 852px;
   aspect-ratio: 393 / 852;
-  /* Premium shadow system */
   filter:
-    drop-shadow(0 0 1px rgba(0,0,0,0.9))
-    drop-shadow(0 8px 32px rgba(0,0,0,0.65))
-    drop-shadow(0 32px 80px rgba(0,0,0,0.50))
-    drop-shadow(0 64px 120px rgba(0,0,0,0.30));
+    drop-shadow(0 0 1.5px rgba(0,0,0,.95))
+    drop-shadow(0 12px 40px rgba(0,0,0,.70))
+    drop-shadow(0 40px 90px rgba(0,0,0,.55))
+    drop-shadow(0 70px 130px rgba(0,0,0,.30));
 }
 
-/* ── iPhone 15 Pro shell — Natural Titanium ──
-   Corner radius 47px at 393px width = 12% of width
-   Using proportional calc() so it scales with frame
-*/
+/* ── Titanium shell ── */
 .phone-frame {
   position: relative;
-  width: 100%;
-  height: 100%;
-  /* Proportional corner radius: 47/393 ≈ 11.96% */
+  width: 100%; height: 100%;
   border-radius: calc(100% * 47 / 393);
-
-  /* Natural Titanium finish — subtle gradient streak */
-  background: #C0BDB6;
+  background: #C8C5BE;
   background-image: linear-gradient(
-    162deg,
-    rgba(255,255,255, 0.32) 0%,
-    rgba(255,255,255, 0.08) 28%,
-    rgba(255,255,255, 0.00) 52%,
-    rgba(255,255,255, 0.03) 76%,
-    rgba(255,255,255, 0.16) 100%
+    158deg,
+    rgba(255,255,255,.38) 0%,
+    rgba(255,255,255,.10) 25%,
+    rgba(255,255,255,.00) 50%,
+    rgba(255,255,255,.04) 75%,
+    rgba(255,255,255,.18) 100%
   );
-
-  /* Layered inset shadow: bright top edge + dark base ring */
   box-shadow:
-    inset 0  1.5px 0   rgba(255,255,255, 0.60),
-    inset 0 -1.5px 0   rgba(0,0,0, 0.22),
-    inset 0  0     0 1px rgba(0,0,0, 0.18);
-
+    inset 0  1.5px 0   rgba(255,255,255,.62),
+    inset 0 -1.5px 0   rgba(0,0,0,.24),
+    inset 0  0     0 1px rgba(0,0,0,.20);
   overflow: hidden;
-  flex-shrink: 0;
 }
 
-/* ── Hardware buttons — volume + mute ──
-   Left side: mute toggle (top) + vol up + vol down
-   Positions relative to 852px height
-*/
+/* ── Hardware buttons (left) ── */
 .btn-mute {
-  position: absolute;
-  left: -3px;
-  top: calc(100% * 112 / 852);
-  width: 3px;
-  height: calc(100% * 28 / 852);
-  background: #B0ADA6;
+  position: absolute; left: -3.5px;
+  top: calc(100% * 110 / 852);
+  width: 3.5px; height: calc(100% * 30 / 852);
+  background: linear-gradient(90deg, #A8A5A0 0%, #B5B2AB 100%);
   border-radius: 2px 0 0 2px;
-  box-shadow: inset 1px 0 0 rgba(255,255,255,0.38), inset -1px 0 0 rgba(0,0,0,0.18);
 }
 .btn-vol-up {
-  position: absolute;
-  left: -3px;
+  position: absolute; left: -3.5px;
   top: calc(100% * 158 / 852);
-  width: 3px;
-  height: calc(100% * 56 / 852);
-  background: #B0ADA6;
+  width: 3.5px; height: calc(100% * 60 / 852);
+  background: linear-gradient(90deg, #A8A5A0 0%, #B5B2AB 100%);
   border-radius: 2px 0 0 2px;
-  box-shadow: inset 1px 0 0 rgba(255,255,255,0.38), inset -1px 0 0 rgba(0,0,0,0.18);
 }
 .btn-vol-dn {
-  position: absolute;
-  left: -3px;
-  top: calc(100% * 228 / 852);
-  width: 3px;
-  height: calc(100% * 56 / 852);
-  background: #B0ADA6;
+  position: absolute; left: -3.5px;
+  top: calc(100% * 232 / 852);
+  width: 3.5px; height: calc(100% * 60 / 852);
+  background: linear-gradient(90deg, #A8A5A0 0%, #B5B2AB 100%);
   border-radius: 2px 0 0 2px;
-  box-shadow: inset 1px 0 0 rgba(255,255,255,0.38), inset -1px 0 0 rgba(0,0,0,0.18);
 }
-
-/* ── Power button — right side ── */
+/* ── Power button (right) ── */
 .btn-power {
-  position: absolute;
-  right: -3px;
-  top: calc(100% * 172 / 852);
-  width: 3px;
-  height: calc(100% * 76 / 852);
-  background: #B0ADA6;
+  position: absolute; right: -3.5px;
+  top: calc(100% * 170 / 852);
+  width: 3.5px; height: calc(100% * 80 / 852);
+  background: linear-gradient(270deg, #A8A5A0 0%, #B5B2AB 100%);
   border-radius: 0 2px 2px 0;
-  box-shadow: inset -1px 0 0 rgba(255,255,255,0.38), inset 1px 0 0 rgba(0,0,0,0.18);
 }
 
-/* ── Screen glass ──
-   Inset from frame edge = bezel (8px at 393w → 2.04%)
-   Corner radius = 47 − 8 = 39px → 9.92% of width
-   Contains all app content.
-*/
+/* ── Screen glass ── */
 .screen-glass {
   position: absolute;
-  /* Bezel: ~8px left/right, ~8px top/bottom */
   inset: calc(100% * 8 / 852) calc(100% * 8 / 393);
   border-radius: calc(100% * 39 / 393);
   overflow: hidden;
   background: #FFFFFF;
-  /* Subtle glass effect */
-  box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.05);
+  box-shadow: inset 0 0 0 0.5px rgba(0,0,0,.06);
   isolation: isolate;
 }
-
-/* Very subtle diagonal glass sheen */
+/* Subtle glass sheen */
 .screen-glass::after {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   z-index: 600;
-  background: linear-gradient(
-    152deg,
-    rgba(255,255,255, 0.045) 0%,
-    transparent 48%
-  );
+  background: linear-gradient(148deg, rgba(255,255,255,.055) 0%, transparent 45%);
   border-radius: calc(100% * 39 / 393);
   pointer-events: none;
 }
 
-/* ── Dynamic Island ──
-   Width 126px at 393px device = 32.1% of frame width
-   Height 37px at 852px = 4.3% of frame height
-   Positioned at top: 12px from screen top
-*/
+/* ── Dynamic Island ── */
 .dynamic-island {
   position: absolute;
   top: calc(100% * 12 / 852);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 50%; transform: translateX(-50%);
   z-index: 20;
-  /* Proportional sizing */
   width: calc(100% * 126 / 393);
-  min-width: 96px; max-width: 132px;
+  min-width: 94px; max-width: 130px;
   height: calc(100% * 37 / 852);
-  min-height: 28px; max-height: 40px;
+  min-height: 27px; max-height: 40px;
   background: #000;
   border-radius: 999px;
-  display: flex;
-  align-items: center;
+  display: flex; align-items: center;
   justify-content: flex-end;
-  padding-right: 11px;
-  gap: 6px;
-  box-shadow: 0 0 0 0.5px rgba(255,255,255,0.06);
+  padding-right: 11px; gap: 6px;
   pointer-events: none;
 }
-
-/* Camera lens */
 .di-lens {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 33% 33%, #18183A, #000);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle at 33% 33%, #14142E, #000);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.07);
   position: relative; flex-shrink: 0;
 }
 .di-lens::after {
-  content: '';
-  position: absolute;
-  top: 2px; left: 2px;
-  width: 3px; height: 3px;
-  border-radius: 50%;
-  background: rgba(255,255,255, 0.20);
+  content: ''; position: absolute;
+  top: 2px; left: 2px; width: 3px; height: 3px;
+  border-radius: 50%; background: rgba(255,255,255,.18);
 }
-
-/* Face ID / proximity sensor dot */
 .di-sensor {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #0a0a14;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.04);
-  flex-shrink: 0;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #090914; flex-shrink: 0;
 }
 
-/* ── Scrollable screen viewport ──
-   This is THE ONLY element that scrolls.
-   overscroll-behavior:contain prevents scroll bleed.
-   pointer-events set to auto so touches register.
-*/
+/* ── Scrollable screen ── */
 #phone-screen {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   border-radius: calc(100% * 39 / 393);
   background: #F5F5F5;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: auto; overflow-x: hidden;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  /* Allow interaction — overrides parent pointer-events:none */
   pointer-events: auto;
 }
 #phone-screen::-webkit-scrollbar { display: none; }
@@ -249,79 +164,45 @@ html, body {
 .home-indicator {
   position: absolute;
   bottom: calc(100% * 8 / 852);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 50%; transform: translateX(-50%);
   width: calc(100% * 134 / 393);
   height: 5px;
-  background: rgba(0,0,0, 0.20);
+  background: rgba(0,0,0,.22);
   border-radius: 3px;
   z-index: 400;
   pointer-events: none;
 }
 
-/* ── App shell inside #phone-screen ── */
+/* ── App shell ── */
 .app {
-  width: 100%;
-  position: relative;
+  width: 100%; position: relative;
   background: #F5F5F5;
   min-height: 100%;
   padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
 }
 
-/* ── Bottom nav: sticky inside scroll container ── */
+/* ── Bottom nav: sticky at bottom of scroll container ── */
 .bottom-nav {
   position: sticky !important;
   bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
   width: 100% !important;
   z-index: 400 !important;
 }
 
-/* ══════════════════════════════════════════
-   DESKTOP: Outer stage non-interactive
-   so cursor events pass through to device only
-   ══════════════════════════════════════════ */
+/* ── Desktop ── */
 @media (min-width: 768px) {
   html, body { overflow: hidden !important; height: 100dvh !important; }
-
-  /* Stage itself doesn't capture events */
-  .frame-body {
-    pointer-events: none;
-  }
-  /* Device wrapper restores events */
-  .phone-frame-wrap {
-    pointer-events: all;
-  }
+  .frame-body      { pointer-events: none; }
+  .phone-frame-wrap { pointer-events: all; }
 }
 
-/* ══════════════════════════════════════════
-   MOBILE: Go full-screen, remove frame chrome
-   ══════════════════════════════════════════ */
+/* ── Mobile: go full screen ── */
 @media (max-width: 767px) {
-  .frame-body {
-    background: #F5F5F5;
-    display: block;
-    pointer-events: auto;
-  }
-  .phone-frame-wrap {
-    width: 100%;
-    height: 100dvh;
-    aspect-ratio: unset;
-    filter: none;
-  }
-  .phone-frame {
-    width: 100%; height: 100dvh;
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
-  }
+  .frame-body { background: #F5F5F5; display: block; pointer-events: auto; }
+  .phone-frame-wrap { width: 100%; height: 100dvh; aspect-ratio: unset; filter: none; }
+  .phone-frame { width: 100%; height: 100dvh; border-radius: 0; background: none; box-shadow: none; }
   .btn-mute, .btn-vol-up, .btn-vol-dn, .btn-power { display: none; }
-  .screen-glass {
-    inset: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
+  .screen-glass { inset: 0; border-radius: 0; box-shadow: none; }
   .screen-glass::after { display: none; }
   .dynamic-island, .home-indicator { display: none; }
   #phone-screen { border-radius: 0; }
