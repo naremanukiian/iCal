@@ -2,7 +2,16 @@
 {% block title %}AI Meal Ideas — iCal{% endblock %}
 {% block body %}
 
-<!-- Log confirm sheet -->
+<!-- Status bar -->
+<div class="status-bar">
+  <span class="sb-time">9:41</span>
+  <div class="sb-icons">
+    <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+    <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/></svg>
+  </div>
+</div>
+
+<!-- Log confirm overlay -->
 <div class="overlay" id="log-confirm-overlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -10,18 +19,18 @@
     <p class="sheet-sub" id="log-confirm-sub">This will be added to today's log</p>
     <div style="display:flex;gap:10px;margin-top:4px">
       <button class="btn btn-ghost" id="log-cancel-btn" style="flex:1">Cancel</button>
-      <button class="btn btn-amber btn-lg" id="log-confirm-btn" style="flex:2">
+      <button class="btn btn-primary btn-lg" id="log-confirm-btn" style="flex:2">
         <div class="sp"></div><span class="bt">Log Meal</span>
       </button>
     </div>
   </div>
 </div>
 
-<div class="app">
+<div class="suggest-page">
   <!-- Top bar -->
   <div class="suggest-topbar">
     <a href="/dashboard" class="suggest-back" aria-label="Back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </a>
     <div>
       <div class="suggest-topbar-title">AI Meal Ideas</div>
@@ -31,11 +40,6 @@
 
   <div class="suggest-body">
 
-    <!-- Hero badge -->
-    <div style="padding:4px 0 8px">
-      <div class="hero-badge-ai">✨ Personalized suggestions</div>
-    </div>
-
     <!-- Calorie limit -->
     <div class="form-section">
       <div class="form-section-label">
@@ -44,7 +48,7 @@
       </div>
       <div class="slider-wrap">
         <input type="range" class="slider" id="cal-slider" min="200" max="1200" step="50" value="600"/>
-        <div class="slider-labels"><span>200 kcal</span><span>1200 kcal</span></div>
+        <div class="slider-labels"><span>200</span><span>1200 kcal</span></div>
       </div>
     </div>
 
@@ -60,26 +64,80 @@
       </div>
     </div>
 
-    <!-- Diet type -->
+    <!-- Diet type — SVG icons, no emojis -->
     <div class="form-section">
       <div class="form-section-label">Diet Type</div>
       <div class="diet-grid">
-        <div><input type="radio" name="diet" value="any"           id="d-any" class="diet-radio" checked/><label for="d-any" class="diet-lbl"><span class="dem">🍽️</span>Any</label></div>
-        <div><input type="radio" name="diet" value="vegetarian"    id="d-veg" class="diet-radio"/><label for="d-veg" class="diet-lbl"><span class="dem">🥦</span>Vegetarian</label></div>
-        <div><input type="radio" name="diet" value="vegan"         id="d-vgn" class="diet-radio"/><label for="d-vgn" class="diet-lbl"><span class="dem">🌱</span>Vegan</label></div>
-        <div><input type="radio" name="diet" value="keto"          id="d-ket" class="diet-radio"/><label for="d-ket" class="diet-lbl"><span class="dem">🥑</span>Keto</label></div>
-        <div><input type="radio" name="diet" value="high-protein"  id="d-hp"  class="diet-radio"/><label for="d-hp"  class="diet-lbl"><span class="dem">💪</span>High Protein</label></div>
-        <div><input type="radio" name="diet" value="mediterranean" id="d-med" class="diet-radio"/><label for="d-med" class="diet-lbl"><span class="dem">🫒</span>Mediterranean</label></div>
+        <div>
+          <input type="radio" name="diet" value="any" id="d-any" class="diet-radio" checked/>
+          <label for="d-any" class="diet-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+            Any
+          </label>
+        </div>
+        <div>
+          <input type="radio" name="diet" value="vegetarian" id="d-veg" class="diet-radio"/>
+          <label for="d-veg" class="diet-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22V12M12 12C12 7 7 4 2 5c0 5 3 10 10 7M12 12c0-5 5-8 10-7-1 5-4 9-10 7"/></svg>
+            Vegetarian
+          </label>
+        </div>
+        <div>
+          <input type="radio" name="diet" value="vegan" id="d-vgn" class="diet-radio"/>
+          <label for="d-vgn" class="diet-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Vegan
+          </label>
+        </div>
+        <div>
+          <input type="radio" name="diet" value="keto" id="d-ket" class="diet-radio"/>
+          <label for="d-ket" class="diet-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
+            Keto
+          </label>
+        </div>
+        <div>
+          <input type="radio" name="diet" value="high-protein" id="d-hp" class="diet-radio"/>
+          <label for="d-hp" class="diet-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4v6a6 6 0 006 6 6 6 0 006-6V4"/><line x1="4" y1="20" x2="20" y2="20"/></svg>
+            High Protein
+          </label>
+        </div>
+        <div>
+          <input type="radio" name="diet" value="mediterranean" id="d-med" class="diet-radio"/>
+          <label for="d-med" class="diet-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+            Mediterranean
+          </label>
+        </div>
       </div>
     </div>
 
-    <!-- Difficulty -->
+    <!-- Difficulty — SVG icons, no emojis -->
     <div class="form-section">
       <div class="form-section-label">Difficulty</div>
       <div class="diff-grid">
-        <div><input type="radio" name="diff" value="easy"   id="df-e" class="diff-radio" checked/><label for="df-e" class="diff-lbl">😊 Easy</label></div>
-        <div><input type="radio" name="diff" value="medium" id="df-m" class="diff-radio"/><label for="df-m" class="diff-lbl">👨‍🍳 Medium</label></div>
-        <div><input type="radio" name="diff" value="hard"   id="df-h" class="diff-radio"/><label for="df-h" class="diff-lbl">🔥 Hard</label></div>
+        <div>
+          <input type="radio" name="diff" value="easy" id="df-e" class="diff-radio" checked/>
+          <label for="df-e" class="diff-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Easy
+          </label>
+        </div>
+        <div>
+          <input type="radio" name="diff" value="medium" id="df-m" class="diff-radio"/>
+          <label for="df-m" class="diff-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+            Medium
+          </label>
+        </div>
+        <div>
+          <input type="radio" name="diff" value="hard" id="df-h" class="diff-radio"/>
+          <label for="df-h" class="diff-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Hard
+          </label>
+        </div>
       </div>
     </div>
 
@@ -87,56 +145,44 @@
     <div class="form-section">
       <div class="form-section-label">
         Include Ingredients
-        <span class="opt">optional</span>
+        <span style="font-size:11px;font-weight:400;color:var(--t3)">optional</span>
       </div>
-      <div class="tag-input-wrap">
-        <input type="text" class="fc" id="ingr-input" placeholder="e.g. chicken, rice…" style="height:44px"/>
-        <button class="btn btn-ghost btn-sm" id="ingr-add-btn">Add</button>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input type="text" class="fc" id="ingr-input" placeholder="e.g. chicken, rice…" style="height:44px;flex:1;font-size:15px"/>
+        <button class="btn btn-ghost btn-sm" id="ingr-add-btn" style="height:44px;flex-shrink:0">Add</button>
       </div>
-      <div class="tags-list" id="ingr-tags"></div>
+      <div id="ingr-tags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     </div>
 
     <!-- Exclude -->
     <div class="form-section">
       <div class="form-section-label">
         Exclude Ingredients
-        <span class="opt">allergies</span>
+        <span style="font-size:11px;font-weight:400;color:var(--t3)">allergies</span>
       </div>
-      <div class="tag-input-wrap">
-        <input type="text" class="fc" id="excl-input" placeholder="e.g. nuts, dairy…" style="height:44px"/>
-        <button class="btn btn-ghost btn-sm" id="excl-add-btn">Add</button>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input type="text" class="fc" id="excl-input" placeholder="e.g. nuts, dairy…" style="height:44px;flex:1;font-size:15px"/>
+        <button class="btn btn-ghost btn-sm" id="excl-add-btn" style="height:44px;flex-shrink:0">Add</button>
       </div>
-      <div class="tags-list" id="excl-tags"></div>
+      <div id="excl-tags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     </div>
 
     <!-- Macro goals -->
     <div class="form-section">
-      <div class="form-section-label">
-        Macro Goals
-        <span class="opt">optional</span>
-      </div>
+      <div class="form-section-label">Macro Goals <span style="font-size:11px;font-weight:400;color:var(--t3)">optional</span></div>
       <div style="display:flex;flex-direction:column;gap:12px">
-        <div class="fg">
-          <label class="fl">Min Protein (g)</label>
-          <input type="number" class="fc" id="min-protein" placeholder="e.g. 30" min="0" max="200" inputmode="numeric"/>
-        </div>
-        <div class="fg">
-          <label class="fl">Max Carbs (g)</label>
-          <input type="number" class="fc" id="max-carbs" placeholder="e.g. 50" min="0" max="500" inputmode="numeric"/>
-        </div>
-        <div class="fg">
-          <label class="fl">Max Fat (g)</label>
-          <input type="number" class="fc" id="max-fat" placeholder="e.g. 20" min="0" max="200" inputmode="numeric"/>
-        </div>
+        <div class="fg"><label class="fl">Min Protein (g)</label><input type="number" class="fc" id="min-protein" placeholder="e.g. 30" min="0" max="200" inputmode="numeric" style="font-size:16px"/></div>
+        <div class="fg"><label class="fl">Max Carbs (g)</label><input type="number" class="fc" id="max-carbs" placeholder="e.g. 50" min="0" max="500" inputmode="numeric" style="font-size:16px"/></div>
+        <div class="fg"><label class="fl">Max Fat (g)</label><input type="number" class="fc" id="max-fat" placeholder="e.g. 20" min="0" max="200" inputmode="numeric" style="font-size:16px"/></div>
       </div>
     </div>
 
-    <!-- Personalize -->
+    <!-- Personalize from history -->
     <div class="form-section" id="personalize-card" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
         <div>
-          <div class="form-section-label" style="margin-bottom:2px">Personalize from history</div>
-          <div style="font-size:12px;color:var(--txt-2)">Suggest something you haven't eaten recently</div>
+          <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px">Personalize from history</div>
+          <div style="font-size:12px;color:var(--t3)">Suggest something you haven't eaten recently</div>
         </div>
         <label class="toggle">
           <input type="checkbox" id="personalize-toggle" checked/>
@@ -146,99 +192,91 @@
     </div>
 
     <!-- Generate button -->
-    <button class="generate-btn" id="generate-btn">
-      <div class="sp"></div>
-      <span class="bt">✨ Generate Meal Idea</span>
+    <button class="btn btn-primary btn-full btn-lg" id="generate-btn" style="gap:10px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <div class="sp"></div><span class="bt">Generate Meal Idea</span>
     </button>
 
-    <!-- Thinking -->
-    <div class="thinking" id="thinking">
-      <div class="thinking-dots">
-        <div class="thinking-dot"></div>
-        <div class="thinking-dot"></div>
-        <div class="thinking-dot"></div>
-      </div>
-      <div class="thinking-text" id="thinking-text">GPT-4o is crafting your meal…</div>
-      <div class="thinking-sub">Calculating exact calories and macros</div>
+    <!-- Thinking state -->
+    <div id="thinking" style="display:none;background:var(--s1);border:0.5px solid var(--bdr);border-radius:var(--r-lg);padding:28px;text-align:center">
+      <div class="suggest-loading-ring"></div>
+      <div class="suggest-loading-text" id="thinking-text">GPT-4o is crafting your meal…</div>
+      <div style="font-size:12px;color:var(--t3);margin-top:4px">Calculating exact calories and macros</div>
     </div>
 
     <!-- Result -->
-    <div class="meal-result" id="meal-result">
+    <div id="meal-result" style="display:none">
+      <div class="suggest-result">
+        <!-- Header -->
+        <div class="suggest-result-header">
+          <div class="suggest-recipe-title" id="result-name">—</div>
+          <div class="suggest-recipe-meta" id="result-meta"></div>
+        </div>
+        <div class="suggest-result-body">
+          <!-- Description -->
+          <div id="result-desc" style="font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:16px"></div>
 
-      <div class="result-hero">
-        <span class="result-emoji" id="result-emoji">🍽️</span>
-        <div class="result-name" id="result-name">—</div>
-        <div class="result-desc" id="result-desc">—</div>
-        <div class="result-meta" id="result-meta"></div>
-      </div>
+          <!-- Macros -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+            <div style="background:var(--s3);border:0.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center">
+              <span style="font-size:16px;font-weight:900;color:var(--a);display:block;letter-spacing:-.02em" id="r-kcal">0</span>
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">kcal</span>
+            </div>
+            <div style="background:var(--s3);border:0.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center">
+              <span style="font-size:16px;font-weight:900;color:var(--carbs);display:block;letter-spacing:-.02em" id="r-carbs">0g</span>
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Carbs</span>
+            </div>
+            <div style="background:var(--s3);border:0.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center">
+              <span style="font-size:16px;font-weight:900;color:var(--fat);display:block;letter-spacing:-.02em" id="r-fat">0g</span>
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Fat</span>
+            </div>
+            <div style="background:var(--s3);border:0.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center">
+              <span style="font-size:16px;font-weight:900;color:var(--protein);display:block;letter-spacing:-.02em" id="r-protein">0g</span>
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Protein</span>
+            </div>
+          </div>
 
-      <!-- Macros -->
-      <div class="result-macros">
-        <div class="result-macro">
-          <span class="result-macro-val" style="color:var(--gold-dark)" id="r-kcal">0</span>
-          <span class="result-macro-lbl">kcal</span>
-        </div>
-        <div class="result-macro">
-          <span class="result-macro-val" style="color:var(--carbs)" id="r-carbs">0g</span>
-          <span class="result-macro-lbl">Carbs</span>
-        </div>
-        <div class="result-macro">
-          <span class="result-macro-val" style="color:var(--fat)" id="r-fat">0g</span>
-          <span class="result-macro-lbl">Fat</span>
-        </div>
-        <div class="result-macro">
-          <span class="result-macro-val" style="color:var(--protein)" id="r-protein">0g</span>
-          <span class="result-macro-lbl">Protein</span>
-        </div>
-      </div>
+          <!-- Ingredients -->
+          <div class="suggest-result-section">
+            <div class="suggest-result-section-title">Ingredients</div>
+            <div id="ingredient-list"></div>
+          </div>
 
-      <!-- Ingredients -->
-      <div class="result-section">
-        <div class="result-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M12 2a10 10 0 110 20A10 10 0 0112 2z"/><path d="M12 8v4l3 3"/></svg>
-          Ingredients
-        </div>
-        <div id="ingredient-list"></div>
-      </div>
+          <!-- Steps -->
+          <div class="suggest-result-section">
+            <div class="suggest-result-section-title">Instructions</div>
+            <div id="step-list"></div>
+          </div>
 
-      <!-- Steps -->
-      <div class="result-section">
-        <div class="result-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-          Cooking Steps
-        </div>
-        <div id="step-list"></div>
-      </div>
+          <!-- Substitutions -->
+          <div id="subs-section" style="display:none">
+            <div class="suggest-result-section-title">Substitutions</div>
+            <div id="subs-list" style="display:flex;flex-direction:column;gap:6px"></div>
+          </div>
 
-      <!-- Substitutions -->
-      <div class="result-section" id="subs-section" style="display:none">
-        <div class="result-section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-          Substitutions
+          <!-- Actions -->
+          <div style="display:flex;gap:8px;margin-top:20px">
+            <button class="btn btn-ghost btn-full" id="regen-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+              Regenerate
+            </button>
+            <button class="btn btn-primary btn-full" id="log-meal-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Log Meal
+            </button>
+          </div>
         </div>
-        <div id="subs-list"></div>
-      </div>
-
-      <!-- Actions -->
-      <div class="result-actions">
-        <button class="btn btn-ghost" id="regen-btn" style="flex:1">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;display:block"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          Try Again
-        </button>
-        <button class="btn btn-amber btn-lg" id="log-meal-btn" style="flex:2">
-          Log This Meal
-        </button>
       </div>
     </div>
 
-    <!-- Suggestion history -->
-    <div id="suggestion-history" style="display:none;margin-top:8px">
-      <p class="sh-title">Recent Suggestions</p>
-      <div id="sh-list"></div>
+    <!-- History -->
+    <div id="suggestion-history" style="display:none">
+      <div style="font-size:12px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Recent Suggestions</div>
+      <div id="sh-list" style="display:flex;flex-direction:column;gap:6px"></div>
     </div>
 
   </div><!-- /suggest-body -->
-</div><!-- /app -->
+</div><!-- /suggest-page -->
 
 {% endblock %}
 {% block scripts %}
@@ -252,33 +290,32 @@ let lastResult  = null;
 let suggestions = JSON.parse(localStorage.getItem('ical_suggestions') || '[]');
 
 // Sliders
-const calSlider = document.getElementById('cal-slider');
+const calSlider  = document.getElementById('cal-slider');
 const timeSlider = document.getElementById('time-slider');
-calSlider.addEventListener('input', () => {
-  document.getElementById('cal-val').textContent = calSlider.value + ' kcal';
-});
-timeSlider.addEventListener('input', () => {
-  document.getElementById('time-val').textContent = timeSlider.value + ' min';
-});
+calSlider.addEventListener('input',  () => { document.getElementById('cal-val').textContent  = calSlider.value  + ' kcal'; });
+timeSlider.addEventListener('input', () => { document.getElementById('time-val').textContent = timeSlider.value + ' min';  });
 
 // Tags
-function addTag(input, listEl, arr, style) {
+function addTag(input, listEl, arr, color) {
   const val = input.value.trim();
   if (!val) return;
-  if (arr.includes(val.toLowerCase())) { input.value=''; return; }
+  if (arr.includes(val.toLowerCase())) { input.value = ''; return; }
   arr.push(val.toLowerCase());
   input.value = '';
-  renderTags(listEl, arr, style);
+  renderTags(listEl, arr, color);
 }
-function renderTags(container, arr, style) {
+function renderTags(container, arr, color) {
   container.innerHTML = '';
   arr.forEach((tag, i) => {
     const el = document.createElement('div');
-    el.className = `tag ${style}`;
-    el.innerHTML = `${tag}<button class="tag-remove" aria-label="Remove">✕</button>`;
-    el.querySelector('.tag-remove').addEventListener('click', () => {
-      arr.splice(i, 1); renderTags(container, arr, style);
-    });
+    el.className = 'tag-pill';
+    if (color === 'excluded') {
+      el.style.background = 'rgba(255,69,58,.12)';
+      el.style.borderColor = 'rgba(255,69,58,.30)';
+      el.style.color = 'var(--red)';
+    }
+    el.innerHTML = `<span>${tag}</span><button aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    el.querySelector('button').addEventListener('click', () => { arr.splice(i, 1); renderTags(container, arr, color); });
     container.appendChild(el);
   });
 }
@@ -286,13 +323,13 @@ document.getElementById('ingr-add-btn').addEventListener('click', () =>
   addTag(document.getElementById('ingr-input'), document.getElementById('ingr-tags'), ingredients, 'included')
 );
 document.getElementById('ingr-input').addEventListener('keydown', e => {
-  if (e.key==='Enter') addTag(e.target, document.getElementById('ingr-tags'), ingredients, 'included');
+  if (e.key === 'Enter') addTag(e.target, document.getElementById('ingr-tags'), ingredients, 'included');
 });
 document.getElementById('excl-add-btn').addEventListener('click', () =>
   addTag(document.getElementById('excl-input'), document.getElementById('excl-tags'), excludes, 'excluded')
 );
 document.getElementById('excl-input').addEventListener('keydown', e => {
-  if (e.key==='Enter') addTag(e.target, document.getElementById('excl-tags'), excludes, 'excluded');
+  if (e.key === 'Enter') addTag(e.target, document.getElementById('excl-tags'), excludes, 'excluded');
 });
 
 // History personalization
@@ -307,13 +344,13 @@ let mealHistory = [];
 
 // Build prompt
 function buildPrompt() {
-  const calLimit   = calSlider.value;
-  const diet       = document.querySelector('input[name="diet"]:checked')?.value || 'any';
-  const prepTime   = timeSlider.value;
-  const difficulty = document.querySelector('input[name="diff"]:checked')?.value || 'easy';
-  const minProtein = document.getElementById('min-protein').value;
-  const maxCarbs   = document.getElementById('max-carbs').value;
-  const maxFat     = document.getElementById('max-fat').value;
+  const calLimit    = calSlider.value;
+  const diet        = document.querySelector('input[name="diet"]:checked')?.value || 'any';
+  const prepTime    = timeSlider.value;
+  const difficulty  = document.querySelector('input[name="diff"]:checked')?.value || 'easy';
+  const minProtein  = document.getElementById('min-protein').value;
+  const maxCarbs    = document.getElementById('max-carbs').value;
+  const maxFat      = document.getElementById('max-fat').value;
   const personalize = document.getElementById('personalize-toggle')?.checked;
   let histCtx = '';
   if (personalize && mealHistory.length) {
@@ -321,13 +358,13 @@ function buildPrompt() {
     histCtx = `\nUser recently ate: ${recent}. Suggest something different and complementary.`;
   }
   const c = [];
-  if (diet !== 'any') c.push(`Diet: ${diet}`);
-  if (minProtein)     c.push(`Minimum protein: ${minProtein}g`);
-  if (maxCarbs)       c.push(`Maximum carbs: ${maxCarbs}g`);
-  if (maxFat)         c.push(`Maximum fat: ${maxFat}g`);
+  if (diet !== 'any')    c.push(`Diet: ${diet}`);
+  if (minProtein)        c.push(`Minimum protein: ${minProtein}g`);
+  if (maxCarbs)          c.push(`Maximum carbs: ${maxCarbs}g`);
+  if (maxFat)            c.push(`Maximum fat: ${maxFat}g`);
   if (ingredients.length) c.push(`Use these ingredients: ${ingredients.join(', ')}`);
   if (excludes.length)    c.push(`NEVER include: ${excludes.join(', ')}`);
-  return `You are a professional nutritionist and chef. Create ONE specific meal suggestion.\n\nRequirements:\n- Maximum calories: ${calLimit} kcal\n- Prep time: under ${prepTime} minutes\n- Difficulty: ${difficulty}\n${c.map(x=>`- ${x}`).join('\n')}\n${histCtx}\n\nRespond ONLY with a valid JSON object — no markdown, no explanation:\n{\n  "name": "Meal name",\n  "emoji": "🍽️",\n  "description": "2-3 sentence description",\n  "prep_time": 20,\n  "difficulty": "Easy",\n  "servings": 1,\n  "macros": {"kcal": 450,"carbs": 35,"fat": 18,"protein": 32},\n  "ingredients": [{"name": "Chicken breast","qty": "150g","kcal": 165}],\n  "steps": ["Season chicken with salt, pepper and garlic.","Cook 6-7 minutes per side."],\n  "substitutions": [{"from": "Chicken breast","to": "Tofu for vegetarian"}]\n}\n\nRules: macros must be accurate, steps must be clear, emoji must match food.`;
+  return `You are a professional nutritionist and chef. Create ONE specific meal suggestion.\n\nRequirements:\n- Maximum calories: ${calLimit} kcal\n- Prep time: under ${prepTime} minutes\n- Difficulty: ${difficulty}\n${c.map(x=>`- ${x}`).join('\n')}\n${histCtx}\n\nRespond ONLY with a valid JSON object — no markdown, no explanation:\n{\n  "name": "Meal name",\n  "description": "2-3 sentence description",\n  "prep_time": 20,\n  "difficulty": "Easy",\n  "servings": 1,\n  "macros": {"kcal": 450,"carbs": 35,"fat": 18,"protein": 32},\n  "ingredients": [{"name": "Chicken breast","qty": "150g","kcal": 165}],\n  "steps": ["Season chicken with salt, pepper and garlic.","Cook 6-7 minutes per side."],\n  "substitutions": [{"from": "Chicken breast","to": "Tofu for vegetarian"}]\n}\n\nRules: macros must be accurate, steps must be clear and numbered.`;
 }
 
 // Generate
@@ -335,8 +372,8 @@ const thinkingTexts = ['GPT-4o is crafting your meal…','Calculating exact macr
 async function generate() {
   const btn = document.getElementById('generate-btn');
   btn.classList.add('loading'); btn.disabled = true;
-  document.getElementById('thinking').classList.add('show');
-  document.getElementById('meal-result').classList.remove('show');
+  document.getElementById('thinking').style.display = 'block';
+  document.getElementById('meal-result').style.display = 'none';
   let ti = 0;
   const interval = setInterval(() => {
     document.getElementById('thinking-text').textContent = thinkingTexts[ti++ % thinkingTexts.length];
@@ -354,7 +391,7 @@ async function generate() {
     const meal = JSON.parse(clean);
     displayResult(meal);
     suggestions.unshift({...meal, generatedAt: new Date().toISOString()});
-    if (suggestions.length>10) suggestions.pop();
+    if (suggestions.length > 10) suggestions.pop();
     localStorage.setItem('ical_suggestions', JSON.stringify(suggestions));
     renderHistory();
   } catch(e) {
@@ -362,25 +399,24 @@ async function generate() {
   } finally {
     clearInterval(interval);
     btn.classList.remove('loading'); btn.disabled = false;
-    document.getElementById('thinking').classList.remove('show');
+    document.getElementById('thinking').style.display = 'none';
   }
 }
 
 function displayResult(meal) {
   lastResult = meal;
-  document.getElementById('result-emoji').textContent = meal.emoji || '🍽️';
-  document.getElementById('result-name').textContent  = meal.name || 'Your Meal';
-  document.getElementById('result-desc').textContent  = meal.description || '';
+  document.getElementById('result-name').textContent = meal.name || 'Your Meal';
+  document.getElementById('result-desc').textContent = meal.description || '';
   document.getElementById('result-meta').innerHTML = `
-    <div class="result-meta-item">
+    <div class="suggest-meta-chip">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       ${meal.prep_time||'?'} min
     </div>
-    <div class="result-meta-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
+    <div class="suggest-meta-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
       ${meal.difficulty||'Easy'}
     </div>
-    <div class="result-meta-item">
+    <div class="suggest-meta-chip">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
       ${meal.servings||1} serving
     </div>`;
@@ -393,17 +429,17 @@ function displayResult(meal) {
   ingList.innerHTML = '';
   (meal.ingredients||[]).forEach(ing => {
     const row = document.createElement('div');
-    row.className = 'ingredient-row';
-    row.innerHTML = `<span class="ingredient-name">${ing.name}</span><span class="ingredient-qty">${ing.qty}</span><span class="ingredient-cal">${ing.kcal} kcal</span>`;
+    row.className = 'suggest-ingredient-row';
+    row.innerHTML = `<span class="suggest-ingredient-name">${ing.name} <span style="font-weight:400;color:var(--t3);font-size:12px">${ing.qty}</span></span><span class="suggest-ingredient-kcal">${ing.kcal} kcal</span>`;
     ingList.appendChild(row);
   });
 
   const stepList = document.getElementById('step-list');
   stepList.innerHTML = '';
-  (meal.steps||[]).forEach((step,i) => {
+  (meal.steps||[]).forEach((step, i) => {
     const row = document.createElement('div');
-    row.className = 'step-row';
-    row.innerHTML = `<div class="step-num">${i+1}</div><div class="step-text">${step}</div>`;
+    row.className = 'suggest-step';
+    row.innerHTML = `<div class="suggest-step-num">${i+1}</div><div class="suggest-step-text">${step}</div>`;
     stepList.appendChild(row);
   });
 
@@ -413,15 +449,15 @@ function displayResult(meal) {
   if (subs.length) {
     subs.forEach(s => {
       const row = document.createElement('div');
-      row.className = 'sub-row';
-      row.innerHTML = `<span class="sub-from">${s.from}</span><span class="sub-arrow">→</span><span class="sub-to">${s.to}</span>`;
+      row.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--s3);border-radius:var(--r-sm);font-size:13px;font-weight:500';
+      row.innerHTML = `<span style="color:var(--t1)">${s.from}</span><span style="color:var(--t4)">→</span><span style="color:var(--a)">${s.to}</span>`;
       subsList.appendChild(row);
     });
     document.getElementById('subs-section').style.display = 'block';
   } else {
     document.getElementById('subs-section').style.display = 'none';
   }
-  document.getElementById('meal-result').classList.add('show');
+  document.getElementById('meal-result').style.display = 'block';
   setTimeout(() => {
     document.getElementById('meal-result').scrollIntoView({behavior:'smooth', block:'start'});
   }, 100);
@@ -436,6 +472,9 @@ document.getElementById('log-meal-btn').addEventListener('click', () => {
 });
 document.getElementById('log-cancel-btn').addEventListener('click', () => {
   document.getElementById('log-confirm-overlay').classList.remove('show');
+});
+document.getElementById('log-confirm-overlay').addEventListener('click', e => {
+  if (e.target.id === 'log-confirm-overlay') document.getElementById('log-confirm-overlay').classList.remove('show');
 });
 document.getElementById('log-confirm-btn').addEventListener('click', async () => {
   if (!lastResult) return;
@@ -463,8 +502,8 @@ function renderHistory() {
   list.innerHTML = '';
   suggestions.slice(0,5).forEach(s => {
     const item = document.createElement('div');
-    item.className = 'sh-item';
-    item.innerHTML = `<div><div class="sh-name">${s.emoji||'🍽️'} ${s.name}</div><div class="sh-meta">${s.macros?.carbs||0}g C · ${s.macros?.fat||0}g F · ${s.macros?.protein||0}g P</div></div><div class="sh-kcal">${s.macros?.kcal||0} kcal</div>`;
+    item.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--s1);border:0.5px solid var(--bdr);border-radius:var(--r-md);cursor:pointer;gap:12px;min-height:44px';
+    item.innerHTML = `<div style="min-width:0"><div style="font-size:14px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em">${s.name}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${s.macros?.carbs||0}g C · ${s.macros?.fat||0}g F · ${s.macros?.protein||0}g P</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:15px;font-weight:900;color:var(--a);letter-spacing:-.02em">${s.macros?.kcal||0}</div><div style="font-size:9px;color:var(--t3)">kcal</div></div>`;
     item.addEventListener('click', () => displayResult(s));
     list.appendChild(item);
   });

@@ -5,33 +5,38 @@
   <span class="sb-time">9:41</span>
   <div class="sb-icons">
     <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
-    <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="10.5" r="1" fill="currentColor" stroke="none"/><path d="M5 8A4.5 4.5 0 018 6.5a4.5 4.5 0 013 1.5"/><path d="M2 5A8.5 8.5 0 018 2.5a8.5 8.5 0 016 2.5"/></svg>
     <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/></svg>
   </div>
 </div>
+
 <div class="auth-page">
-  <div class="auth-hero" style="height:160px">
-    <img class="auth-hero-img"
-      src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&q=80&fit=crop&crop=center"
-      alt="Healthy meal prep"
-      onerror="this.style.display='none'"
-    />
-    <div class="auth-hero-overlay"></div>
-    <div style="position:absolute;bottom:14px;left:24px;z-index:3">
-      <div style="font-size:11px;font-weight:700;color:var(--coral-d);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px">New here?</div>
-      <div style="font-size:22px;font-weight:900;color:var(--txt);letter-spacing:-.03em">Join <span style="color:var(--coral-d)">iCal</span></div>
+  <div class="auth-brand" style="padding-top:32px;padding-bottom:24px">
+    <div class="auth-logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+        <circle cx="12" cy="9" r="2.5"/>
+      </svg>
     </div>
+    <div class="auth-logo-wordmark">iCal</div>
   </div>
+
+  <a href="/login" class="auth-back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Sign in instead
+  </a>
+
+  <h1 class="auth-heading">Create account</h1>
+  <p class="auth-sub">Start tracking your nutrition with AI</p>
 
   <div class="err-box" id="err-box"></div>
 
   <form id="form" novalidate style="display:flex;flex-direction:column;gap:16px">
-    <div class="fg fade-up">
+    <div class="fg">
       <label class="fl" for="email">Email address</label>
       <input id="email" type="email" class="fc" placeholder="you@example.com" autocomplete="email" inputmode="email"/>
       <span id="email-err" class="fe hidden"></span>
     </div>
-    <div class="fg fade-up d1">
+    <div class="fg">
       <label class="fl" for="password">Password</label>
       <div class="pw-wrap">
         <input id="password" type="password" class="fc" placeholder="Min. 6 characters" autocomplete="new-password"/>
@@ -42,16 +47,16 @@
       <div class="str-track"><div class="str-bar" id="str-bar"></div></div>
       <span id="pw-err" class="fe hidden"></span>
     </div>
-    <div class="fg fade-up d2">
+    <div class="fg">
       <label class="fl" for="calgoal">Daily calorie goal</label>
       <input id="calgoal" type="number" class="fc" placeholder="e.g. 2000" min="500" max="5000" value="2000" inputmode="numeric"/>
     </div>
-    <div class="fg fade-up d2">
-      <label class="fl" for="weight">Weight (kg) <span style="font-weight:400;color:var(--txt-3);font-size:11px">— optional</span></label>
+    <div class="fg">
+      <label class="fl" for="weight">Weight (kg) <span style="font-weight:400;color:var(--t3);font-size:11px">— optional</span></label>
       <input id="weight" type="number" class="fc" placeholder="e.g. 70" min="20" max="400" step="0.1" inputmode="decimal"/>
     </div>
-    <div class="fg fade-up d3">
-      <label class="fl">Your goal <span style="font-weight:400;color:var(--txt-3);font-size:11px">— optional</span></label>
+    <div class="fg">
+      <label class="fl">Your goal <span style="font-weight:400;color:var(--t3);font-size:11px">— optional</span></label>
       <div class="goal-grid">
         <div>
           <input type="radio" name="goal" value="lose" id="g-l" class="goal-radio"/>
@@ -63,7 +68,7 @@
         <div>
           <input type="radio" name="goal" value="maintain" id="g-m" class="goal-radio"/>
           <label for="g-m" class="goal-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Maintain
           </label>
         </div>
@@ -76,47 +81,45 @@
         </div>
       </div>
     </div>
-    <div class="fade-up d4" style="padding-top:4px">
+    <div style="padding-top:4px">
       <button type="button" id="btn" class="btn btn-primary btn-full btn-lg">
         <div class="sp"></div><span class="bt">Create Account</span>
       </button>
     </div>
   </form>
-
-  <div class="divider fade-up d4" style="margin:24px 0">already have an account?</div>
-  <p class="fade-up d4" style="text-align:center;font-size:15px;color:var(--txt-2)">
-    <a href="/login" style="color:var(--coral-d);font-weight:700">Sign in instead</a>
-  </p>
 </div>
 {% endblock %}
 {% block scripts %}
 <script>
-if(localStorage.getItem('token'))window.location.href='/dashboard';
-const strColors=['','#ef4444','#f97316','#eab308','#22c55e','#E8524A'];
-document.getElementById('password').addEventListener('input',function(){const s=pwStrength(this.value);const bar=document.getElementById('str-bar');bar.style.width=(s*20)+'%';bar.style.background=strColors[s]||'transparent';});
-document.getElementById('eye').addEventListener('click',()=>{const pw=document.getElementById('password');pw.type=pw.type==='text'?'password':'text';});
-const errBox=document.getElementById('err-box'),btn=document.getElementById('btn');
+const emailEl=document.getElementById('email'), pwEl=document.getElementById('password');
+const strBar=document.getElementById('str-bar');
+const errBox=document.getElementById('err-box'), btn=document.getElementById('btn');
+const colors=['#FF453A','#FF9F0A','#FFD60A','#32D74B','#32D74B'];
+pwEl.addEventListener('input',()=>{
+  const s=pwStrength(pwEl.value);
+  strBar.style.width=(s*20)+'%';
+  strBar.style.background=colors[Math.max(0,s-1)]||'transparent';
+});
+document.getElementById('eye').addEventListener('click',()=>{pwEl.type=pwEl.type==='text'?'password':'text'});
 btn.addEventListener('click',async()=>{
   errBox.style.display='none';
-  const emailEl=document.getElementById('email'),pwEl=document.getElementById('password');
   const ok1=markField(emailEl,'email-err',validateEmail(emailEl.value),'Enter a valid email');
-  const ok2=markField(pwEl,'pw-err',pwEl.value.length>=6,'Minimum 6 characters');
-  if(!ok1||!ok2)return;
-  const goal=document.querySelector('input[name="goal"]:checked')?.value??null;
-  const weight=document.getElementById('weight').value;
-  const calgoal=parseInt(document.getElementById('calgoal').value)||2000;
+  const ok2=markField(pwEl,'pw-err',pwEl.value.length>=6,'Password must be at least 6 characters');
+  if(!ok1||!ok2) return;
   setLoading(btn,true);
   try{
-    const body={email:emailEl.value.trim().toLowerCase(),password:pwEl.value,calorie_goal:calgoal};
-    if(weight)body.weight=parseFloat(weight);
-    if(goal)body.goal=goal;
-    const data=await api('/register','POST',body);
-    localStorage.setItem('token',data.token);localStorage.setItem('user_email',data.email);
-    localStorage.setItem('user_id',data.user_id);localStorage.setItem('username',data.username||data.email.split('@')[0]);
-    localStorage.setItem('calorie_goal',data.calorie_goal||2000);
+    const goal=document.querySelector('input[name="goal"]:checked')?.value||'';
+    const weight=parseFloat(document.getElementById('weight').value)||null;
+    const calGoal=parseInt(document.getElementById('calgoal').value)||2000;
+    const data=await api('/register','POST',{email:emailEl.value.trim().toLowerCase(),password:pwEl.value,calorie_goal:calGoal,weight,goal});
+    localStorage.setItem('token',data.token);
+    localStorage.setItem('user_email',data.email);
+    localStorage.setItem('user_id',data.user_id);
+    localStorage.setItem('username',data.username||data.email.split('@')[0]);
+    localStorage.setItem('calorie_goal',calGoal);
     window.location.href='/dashboard';
-  }catch(err){errBox.textContent=err.message||'Registration failed.';errBox.style.display='block';setLoading(btn,false);}
+  }catch(err){errBox.textContent=err.message||'Registration failed. Please try again.';errBox.style.display='block';setLoading(btn,false);}
 });
-document.getElementById('form').addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+document.getElementById('form').addEventListener('keydown',e=>{if(e.key==='Enter')btn.click()});
 </script>
 {% endblock %}

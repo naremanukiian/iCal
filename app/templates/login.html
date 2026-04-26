@@ -5,34 +5,35 @@
   <span class="sb-time">9:41</span>
   <div class="sb-icons">
     <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
-    <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="10.5" r="1" fill="currentColor" stroke="none"/><path d="M5 8A4.5 4.5 0 018 6.5a4.5 4.5 0 013 1.5"/><path d="M2 5A8.5 8.5 0 018 2.5a8.5 8.5 0 016 2.5"/></svg>
     <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/></svg>
   </div>
 </div>
+
 <div class="auth-page">
-  <!-- Hero with real food photo -->
-  <div class="auth-hero">
-    <img class="auth-hero-img"
-      src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&q=80&fit=crop&crop=center"
-      alt="Healthy food"
-      onerror="this.style.display='none'"
-    />
-    <div class="auth-hero-overlay"></div>
-    <div class="auth-hero-brand">iCal</div>
+  <!-- Brand mark — no photos -->
+  <div class="auth-brand">
+    <div class="auth-logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+        <circle cx="12" cy="9" r="2.5"/>
+      </svg>
+    </div>
+    <div class="auth-logo-wordmark">iCal</div>
+    <div class="auth-logo-tagline">AI Calorie Tracker</div>
   </div>
 
-  <h1 class="auth-heading fade-up">Welcome back</h1>
-  <p class="auth-sub fade-up d1">Sign in to continue tracking your nutrition</p>
+  <h1 class="auth-heading">Welcome back</h1>
+  <p class="auth-sub">Sign in to continue tracking your nutrition</p>
 
   <div class="err-box" id="err-box"></div>
 
   <form id="form" novalidate style="display:flex;flex-direction:column;gap:16px">
-    <div class="fg fade-up d2">
+    <div class="fg">
       <label class="fl" for="email">Email address</label>
       <input id="email" type="email" class="fc" placeholder="you@example.com" autocomplete="email" inputmode="email"/>
       <span id="email-err" class="fe hidden"></span>
     </div>
-    <div class="fg fade-up d2">
+    <div class="fg">
       <label class="fl" for="password">Password</label>
       <div class="pw-wrap">
         <input id="password" type="password" class="fc" placeholder="Your password" autocomplete="current-password"/>
@@ -42,38 +43,41 @@
       </div>
       <span id="pw-err" class="fe hidden"></span>
     </div>
-    <div class="fade-up d3" style="padding-top:4px">
+    <div style="padding-top:4px">
       <button type="button" id="btn" class="btn btn-primary btn-full btn-lg">
         <div class="sp"></div><span class="bt">Sign In</span>
       </button>
     </div>
   </form>
 
-  <div class="divider fade-up d3" style="margin:24px 0">or</div>
-  <p class="fade-up d3" style="text-align:center;font-size:15px;color:var(--txt-2)">
-    No account? <a href="/register" style="color:var(--coral-d);font-weight:700">Create one</a>
+  <div class="divider" style="margin:24px 0">or</div>
+  <p style="text-align:center;font-size:15px;color:var(--t2)">
+    No account?&nbsp;<a href="/register" style="color:var(--a);font-weight:700">Create one</a>
   </p>
 </div>
 {% endblock %}
 {% block scripts %}
 <script>
 if(localStorage.getItem('token')) window.location.href='/dashboard';
-const emailEl=document.getElementById('email'),pwEl=document.getElementById('password'),errBox=document.getElementById('err-box'),btn=document.getElementById('btn');
-document.getElementById('eye').addEventListener('click',()=>{pwEl.type=pwEl.type==='text'?'password':'text';});
+const emailEl=document.getElementById('email'), pwEl=document.getElementById('password');
+const errBox=document.getElementById('err-box'), btn=document.getElementById('btn');
+document.getElementById('eye').addEventListener('click',()=>{pwEl.type=pwEl.type==='text'?'password':'text'});
 btn.addEventListener('click',async()=>{
   errBox.style.display='none';
   const ok1=markField(emailEl,'email-err',validateEmail(emailEl.value),'Enter a valid email');
   const ok2=markField(pwEl,'pw-err',pwEl.value.length>=1,'Password is required');
-  if(!ok1||!ok2)return;
+  if(!ok1||!ok2) return;
   setLoading(btn,true);
   try{
     const data=await api('/login','POST',{email:emailEl.value.trim().toLowerCase(),password:pwEl.value});
-    localStorage.setItem('token',data.token);localStorage.setItem('user_email',data.email);
-    localStorage.setItem('user_id',data.user_id);localStorage.setItem('username',data.username||data.email.split('@')[0]);
+    localStorage.setItem('token',data.token);
+    localStorage.setItem('user_email',data.email);
+    localStorage.setItem('user_id',data.user_id);
+    localStorage.setItem('username',data.username||data.email.split('@')[0]);
     localStorage.setItem('calorie_goal',data.calorie_goal||2000);
     window.location.href='/dashboard';
   }catch(err){errBox.textContent=err.message||'Incorrect email or password.';errBox.style.display='block';setLoading(btn,false);}
 });
-document.getElementById('form').addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+document.getElementById('form').addEventListener('keydown',e=>{if(e.key==='Enter')btn.click()});
 </script>
 {% endblock %}
