@@ -38,7 +38,7 @@ html,body{width:100%;height:100%;overflow:hidden;margin:0;padding:0}
 .di-lens::after{content:'';position:absolute;top:2px;left:2px;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.14)}
 .di-sensor{width:7px;height:7px;border-radius:50%;background:#050510;flex-shrink:0}
 .home-indicator{position:absolute;bottom:calc(100%*8/852);left:50%;transform:translateX(-50%);width:calc(100%*134/393);height:5px;background:rgba(255,255,255,.18);border-radius:3px;z-index:400;pointer-events:none}
-#phone-screen{position:absolute;inset:0;border-radius:calc(100%*39/393);background:#000;overflow:hidden;pointer-events:auto;display:flex;flex-direction:column}
+#phone-screen{position:absolute;inset:0;border-radius:calc(100%*39/393);background:#000;overflow:hidden;pointer-events:auto;display:flex;flex-direction:column;touch-action:pan-y;overscroll-behavior:none}
 #phone-screen::-webkit-scrollbar{display:none}
 .app{width:100%;position:relative;background:#000;flex:1;overflow:hidden;display:flex;flex-direction:column}
 .bottom-nav{flex:0 0 auto!important;position:sticky!important;bottom:0!important;width:100%!important;z-index:400!important}

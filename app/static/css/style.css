@@ -76,7 +76,7 @@ input,select,textarea{font-family:inherit}svg{display:block}
 /* ── Shell ── */
 .app{background:var(--bg);width:100%;flex:1;overflow:hidden;display:flex;flex-direction:column}
 .page{display:none}
-.page.active{display:flex;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;animation:pg-in .20s ease both}
+.page.active{display:flex;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;animation:pg-in .20s ease both;touch-action:pan-y}
 @keyframes pg-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -361,7 +361,7 @@ textarea.fc{height:auto;padding:14px 16px;line-height:1.5;resize:none}
 .confirm-btns{display:flex;flex-direction:column;gap:8px}
 
 /* Slide panel */
-.slide-panel{position:absolute;inset:0;background:var(--bg);z-index:200;transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);overflow-y:auto;scrollbar-width:none}
+.slide-panel{position:absolute;inset:0;background:var(--bg);z-index:200;transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);overflow-y:auto;scrollbar-width:none;will-change:transform;max-width:100%;overflow-x:hidden}
 .slide-panel::-webkit-scrollbar{display:none}
 .slide-panel.open{transform:translateX(0)}
 .panel-hdr{display:flex;align-items:center;gap:14px;padding:16px 20px;position:sticky;top:0;background:rgba(0,0,0,.88);backdrop-filter:blur(28px);z-index:10;border-bottom:.5px solid var(--bdr)}
@@ -697,7 +697,7 @@ textarea.fc{height:auto;padding:14px 16px;line-height:1.5;resize:none}
 .filter-chip.active{background:var(--g-l);color:var(--g);border-color:rgba(16,185,129,.35)}
 
 /* ── Suggest topbar ── */
-.suggest-page{background:var(--bg);min-height:100%;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.suggest-page{background:var(--bg);flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
 .suggest-topbar{display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(0,0,0,.90);backdrop-filter:blur(28px);border-bottom:.5px solid var(--bdr);position:sticky;top:52px;z-index:49}
 .suggest-back{width:36px;height:36px;border-radius:50%;background:var(--s3);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--g);min-width:36px;flex-shrink:0}
 .suggest-back:active{opacity:.6}
@@ -1105,3 +1105,21 @@ input::placeholder, textarea::placeholder { color: rgba(245,245,245,.28) !import
 .auth-page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
 .page.active::-webkit-scrollbar{display:none}
+
+/* ── Horizontal overflow prevention (global) ── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+.app, .page, .page.active {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+.slide-panel {
+  max-width: 100%;
+}
+/* Prevent iOS overscroll/rubber-band from showing content to the right */
+#phone-screen {
+  overscroll-behavior: none;
+  touch-action: pan-y;
+}
