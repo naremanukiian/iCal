@@ -120,7 +120,7 @@ def get_history(current_user: dict):
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 """SELECT id,meal_type,total_calories,total_carbs,total_fat,
-                          total_protein,food_summary,created_at
+                          total_protein,food_summary,photo_url,created_at
                    FROM meal_sessions WHERE user_id=%s
                    ORDER BY created_at DESC LIMIT %s""",
                 (uid, limit)
@@ -173,6 +173,7 @@ def get_history(current_user: dict):
         "total_protein":  float(s["total_protein"]),
         "food_summary":   s["food_summary"],
         "created_at":     s["created_at"].isoformat(),
+        "photo_url":      s.get("photo_url"),
         "items":          logs_by.get(s["id"], []),
     } for s in sessions]
 

@@ -1,511 +1,237 @@
 {% extends "base.html" %}
 {% block title %}AI Meal Ideas — iCal{% endblock %}
 {% block body %}
-
-<!-- Status bar -->
 <div class="status-bar">
-  <span class="sb-time">9:41</span>
-  <div class="sb-icons">
-    <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
-    <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/></svg>
-  </div>
+  <span class="sb-time" id="sb-time-sug">9:41</span>
+  <div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div>
 </div>
-
-<!-- Log confirm overlay -->
-<div class="overlay" id="log-confirm-overlay">
+<div class="overlay" id="log-overlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <h3 class="sheet-title" id="log-confirm-title">Log this meal?</h3>
-    <p class="sheet-sub" id="log-confirm-sub">This will be added to today's log</p>
+    <h3 class="sheet-title" id="log-title">Log this meal?</h3>
+    <p class="sheet-sub" id="log-sub">Added to today's log</p>
     <div style="display:flex;gap:10px;margin-top:4px">
-      <button class="btn btn-ghost" id="log-cancel-btn" style="flex:1">Cancel</button>
-      <button class="btn btn-primary btn-lg" id="log-confirm-btn" style="flex:2">
-        <div class="sp"></div><span class="bt">Log Meal</span>
-      </button>
+      <button class="btn btn-ghost" id="log-cancel" style="flex:1">Cancel</button>
+      <button class="btn btn-primary btn-lg" id="log-confirm" style="flex:2"><div class="sp"></div><span class="bt">Log Meal</span></button>
     </div>
   </div>
 </div>
-
 <div class="suggest-page">
-  <!-- Top bar -->
   <div class="suggest-topbar">
-    <a href="/dashboard" class="suggest-back" aria-label="Back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-    </a>
-    <div>
-      <div class="suggest-topbar-title">AI Meal Ideas</div>
-      <div class="suggest-topbar-sub">Powered by GPT-4o</div>
-    </div>
+    <a href="/dashboard" class="suggest-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <div><div class="suggest-topbar-title">AI Meal Ideas</div><div class="suggest-topbar-sub">Powered by GPT-4o</div></div>
   </div>
-
   <div class="suggest-body">
-
-    <!-- Calorie limit -->
+    <!-- Calorie slider -->
     <div class="form-section">
-      <div class="form-section-label">
-        Calorie Limit
-        <span class="slider-val" id="cal-val">600 kcal</span>
-      </div>
-      <div class="slider-wrap">
-        <input type="range" class="slider" id="cal-slider" min="200" max="1200" step="50" value="600"/>
-        <div class="slider-labels"><span>200</span><span>1200 kcal</span></div>
-      </div>
+      <div class="form-section-label">Calorie Limit<span class="sval" id="cal-val">600 kcal</span></div>
+      <div class="slider-wrap"><input type="range" class="slider" id="cal-slider" min="200" max="1200" step="50" value="600"/><div class="slider-labels"><span>200</span><span>1200 kcal</span></div></div>
     </div>
-
     <!-- Prep time -->
     <div class="form-section">
-      <div class="form-section-label">
-        Prep Time
-        <span class="slider-val" id="time-val">20 min</span>
-      </div>
-      <div class="slider-wrap">
-        <input type="range" class="slider" id="time-slider" min="5" max="60" step="5" value="20"/>
-        <div class="slider-labels"><span>5 min</span><span>60 min</span></div>
-      </div>
+      <div class="form-section-label">Prep Time<span class="sval" id="time-val">20 min</span></div>
+      <div class="slider-wrap"><input type="range" class="slider" id="time-slider" min="5" max="60" step="5" value="20"/><div class="slider-labels"><span>5 min</span><span>60 min</span></div></div>
     </div>
-
-    <!-- Diet type — SVG icons, no emojis -->
+    <!-- Diet -->
     <div class="form-section">
-      <div class="form-section-label">Diet Type</div>
+      <div class="form-section-label" style="margin-bottom:12px">Diet Type</div>
       <div class="diet-grid">
-        <div>
-          <input type="radio" name="diet" value="any" id="d-any" class="diet-radio" checked/>
-          <label for="d-any" class="diet-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-            Any
-          </label>
-        </div>
-        <div>
-          <input type="radio" name="diet" value="vegetarian" id="d-veg" class="diet-radio"/>
-          <label for="d-veg" class="diet-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22V12M12 12C12 7 7 4 2 5c0 5 3 10 10 7M12 12c0-5 5-8 10-7-1 5-4 9-10 7"/></svg>
-            Vegetarian
-          </label>
-        </div>
-        <div>
-          <input type="radio" name="diet" value="vegan" id="d-vgn" class="diet-radio"/>
-          <label for="d-vgn" class="diet-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-            Vegan
-          </label>
-        </div>
-        <div>
-          <input type="radio" name="diet" value="keto" id="d-ket" class="diet-radio"/>
-          <label for="d-ket" class="diet-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>
-            Keto
-          </label>
-        </div>
-        <div>
-          <input type="radio" name="diet" value="high-protein" id="d-hp" class="diet-radio"/>
-          <label for="d-hp" class="diet-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4v6a6 6 0 006 6 6 6 0 006-6V4"/><line x1="4" y1="20" x2="20" y2="20"/></svg>
-            High Protein
-          </label>
-        </div>
-        <div>
-          <input type="radio" name="diet" value="mediterranean" id="d-med" class="diet-radio"/>
-          <label for="d-med" class="diet-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-            Mediterranean
-          </label>
-        </div>
+        <div><input type="radio" name="diet" value="any" id="d-any" class="diet-radio" checked/><label for="d-any" class="diet-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Any</label></div>
+        <div><input type="radio" name="diet" value="vegetarian" id="d-veg" class="diet-radio"/><label for="d-veg" class="diet-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22V12M12 12C12 7 7 4 2 5c0 5 3 10 10 7M12 12c0-5 5-8 10-7-1 5-4 9-10 7"/></svg>Vegetarian</label></div>
+        <div><input type="radio" name="diet" value="vegan" id="d-vgn" class="diet-radio"/><label for="d-vgn" class="diet-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>Vegan</label></div>
+        <div><input type="radio" name="diet" value="keto" id="d-ket" class="diet-radio"/><label for="d-ket" class="diet-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.153.433-2.294 1-3 .558.29 1.28.5 1.5.5z"/></svg>Keto</label></div>
+        <div><input type="radio" name="diet" value="high-protein" id="d-hp" class="diet-radio"/><label for="d-hp" class="diet-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4v6a6 6 0 006 6 6 6 0 006-6V4"/><line x1="4" y1="20" x2="20" y2="20"/></svg>High Protein</label></div>
+        <div><input type="radio" name="diet" value="mediterranean" id="d-med" class="diet-radio"/><label for="d-med" class="diet-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Mediterranean</label></div>
       </div>
     </div>
-
-    <!-- Difficulty — SVG icons, no emojis -->
+    <!-- Difficulty -->
     <div class="form-section">
-      <div class="form-section-label">Difficulty</div>
+      <div class="form-section-label" style="margin-bottom:12px">Difficulty</div>
       <div class="diff-grid">
-        <div>
-          <input type="radio" name="diff" value="easy" id="df-e" class="diff-radio" checked/>
-          <label for="df-e" class="diff-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-            Easy
-          </label>
-        </div>
-        <div>
-          <input type="radio" name="diff" value="medium" id="df-m" class="diff-radio"/>
-          <label for="df-m" class="diff-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
-            Medium
-          </label>
-        </div>
-        <div>
-          <input type="radio" name="diff" value="hard" id="df-h" class="diff-radio"/>
-          <label for="df-h" class="diff-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            Hard
-          </label>
-        </div>
+        <div><input type="radio" name="diff" value="easy" id="df-e" class="diff-radio" checked/><label for="df-e" class="diff-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>Easy</label></div>
+        <div><input type="radio" name="diff" value="medium" id="df-m" class="diff-radio"/><label for="df-m" class="diff-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg>Medium</label></div>
+        <div><input type="radio" name="diff" value="hard" id="df-h" class="diff-radio"/><label for="df-h" class="diff-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Hard</label></div>
       </div>
     </div>
-
     <!-- Ingredients -->
     <div class="form-section">
-      <div class="form-section-label">
-        Include Ingredients
-        <span style="font-size:11px;font-weight:400;color:var(--t3)">optional</span>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input type="text" class="fc" id="ingr-input" placeholder="e.g. chicken, rice…" style="height:44px;flex:1;font-size:15px"/>
-        <button class="btn btn-ghost btn-sm" id="ingr-add-btn" style="height:44px;flex-shrink:0">Add</button>
-      </div>
+      <div class="form-section-label" style="margin-bottom:12px">Include Ingredients <span style="font-size:11px;font-weight:400;color:var(--t3)">optional</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:8px"><input type="text" class="fc" id="ingr-input" placeholder="e.g. chicken, rice…" style="height:44px;flex:1;font-size:15px"/><button class="btn btn-ghost btn-sm" id="ingr-add" style="height:44px;flex-shrink:0">Add</button></div>
       <div id="ingr-tags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     </div>
-
     <!-- Exclude -->
     <div class="form-section">
-      <div class="form-section-label">
-        Exclude Ingredients
-        <span style="font-size:11px;font-weight:400;color:var(--t3)">allergies</span>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input type="text" class="fc" id="excl-input" placeholder="e.g. nuts, dairy…" style="height:44px;flex:1;font-size:15px"/>
-        <button class="btn btn-ghost btn-sm" id="excl-add-btn" style="height:44px;flex-shrink:0">Add</button>
-      </div>
+      <div class="form-section-label" style="margin-bottom:12px">Exclude Ingredients <span style="font-size:11px;font-weight:400;color:var(--t3)">allergies</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:8px"><input type="text" class="fc" id="excl-input" placeholder="e.g. nuts, dairy…" style="height:44px;flex:1;font-size:15px"/><button class="btn btn-ghost btn-sm" id="excl-add" style="height:44px;flex-shrink:0">Add</button></div>
       <div id="excl-tags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     </div>
-
-    <!-- Macro goals -->
+    <!-- Macros -->
     <div class="form-section">
-      <div class="form-section-label">Macro Goals <span style="font-size:11px;font-weight:400;color:var(--t3)">optional</span></div>
+      <div class="form-section-label" style="margin-bottom:12px">Macro Goals <span style="font-size:11px;font-weight:400;color:var(--t3)">optional</span></div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="fg"><label class="fl">Min Protein (g)</label><input type="number" class="fc" id="min-protein" placeholder="e.g. 30" min="0" max="200" inputmode="numeric" style="font-size:16px"/></div>
         <div class="fg"><label class="fl">Max Carbs (g)</label><input type="number" class="fc" id="max-carbs" placeholder="e.g. 50" min="0" max="500" inputmode="numeric" style="font-size:16px"/></div>
         <div class="fg"><label class="fl">Max Fat (g)</label><input type="number" class="fc" id="max-fat" placeholder="e.g. 20" min="0" max="200" inputmode="numeric" style="font-size:16px"/></div>
       </div>
     </div>
-
-    <!-- Personalize from history -->
+    <!-- Personalize -->
     <div class="form-section" id="personalize-card" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div>
-          <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px">Personalize from history</div>
-          <div style="font-size:12px;color:var(--t3)">Suggest something you haven't eaten recently</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="personalize-toggle" checked/>
-          <span class="toggle-slider"></span>
-        </label>
+        <div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px">Personalize from history</div><div style="font-size:12px;color:var(--t3)">Suggest something you haven't had recently</div></div>
+        <label class="toggle"><input type="checkbox" id="personalize-toggle" checked/><span class="toggle-slider"></span></label>
       </div>
     </div>
-
-    <!-- Generate button -->
+    <!-- Generate -->
     <button class="btn btn-primary btn-full btn-lg" id="generate-btn" style="gap:10px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
       <div class="sp"></div><span class="bt">Generate Meal Idea</span>
     </button>
-
-    <!-- Thinking state -->
-    <div id="thinking" style="display:none;background:var(--s1);border:0.5px solid var(--bdr);border-radius:var(--r-lg);padding:28px;text-align:center">
-      <div class="suggest-loading-ring"></div>
-      <div class="suggest-loading-text" id="thinking-text">GPT-4o is crafting your meal…</div>
+    <!-- Loading -->
+    <div id="sug-thinking" style="display:none;background:var(--s1);border:.5px solid var(--bdr);border-radius:var(--r-lg);padding:32px;text-align:center">
+      <div class="sug-loading-ring"></div>
+      <div style="font-size:15px;font-weight:600;color:var(--t2);margin-top:12px" id="thinking-text">GPT-4o is crafting your meal…</div>
       <div style="font-size:12px;color:var(--t3);margin-top:4px">Calculating exact calories and macros</div>
     </div>
-
     <!-- Result -->
-    <div id="meal-result" style="display:none">
-      <div class="suggest-result">
-        <!-- Header -->
-        <div class="suggest-result-header">
-          <div class="suggest-recipe-title" id="result-name">—</div>
-          <div class="suggest-recipe-meta" id="result-meta"></div>
+    <div id="sug-result" style="display:none">
+      <div class="sug-result">
+        <div class="sug-result-hdr">
+          <div class="sug-name" id="r-name">—</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px" id="r-meta"></div>
         </div>
-        <div class="suggest-result-body">
-          <!-- Description -->
-          <div id="result-desc" style="font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:16px"></div>
-
+        <div class="sug-result-body">
+          <div id="r-desc" style="font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:16px"></div>
           <!-- Macros -->
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
-            <div style="background:var(--s3);border:0.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center">
-              <span style="font-size:16px;font-weight:900;color:var(--a);display:block;letter-spacing:-.02em" id="r-kcal">0</span>
-              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">kcal</span>
-            </div>
-            <div style="background:var(--s3);border:0.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center">
-              <span style="font-size:16px;font-weight:900;color:var(--carbs);display:block;letter-spacing:-.02em" id="r-carbs">0g</span>
-              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Carbs</span>
-            </div>
-            <div style="background:var(--s3);border:0.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center">
-              <span style="font-size:16px;font-weight:900;color:var(--fat);display:block;letter-spacing:-.02em" id="r-fat">0g</span>
-              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Fat</span>
-            </div>
-            <div style="background:var(--s3);border:0.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center">
-              <span style="font-size:16px;font-weight:900;color:var(--protein);display:block;letter-spacing:-.02em" id="r-protein">0g</span>
-              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Protein</span>
-            </div>
+            <div style="background:var(--s3);border:.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center"><span style="font-size:16px;font-weight:900;color:var(--g);display:block;letter-spacing:-.02em" id="r-kcal">0</span><span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">kcal</span></div>
+            <div style="background:var(--s3);border:.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center"><span style="font-size:16px;font-weight:900;color:var(--carbs);display:block;letter-spacing:-.02em" id="r-carbs">0g</span><span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Carbs</span></div>
+            <div style="background:var(--s3);border:.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center"><span style="font-size:16px;font-weight:900;color:var(--fat);display:block;letter-spacing:-.02em" id="r-fat">0g</span><span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Fat</span></div>
+            <div style="background:var(--s3);border:.5px solid var(--bdr);border-radius:var(--r-md);padding:10px;text-align:center"><span style="font-size:16px;font-weight:900;color:var(--protein);display:block;letter-spacing:-.02em" id="r-protein">0g</span><span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Protein</span></div>
           </div>
-
-          <!-- Ingredients -->
-          <div class="suggest-result-section">
-            <div class="suggest-result-section-title">Ingredients</div>
-            <div id="ingredient-list"></div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:8px">Ingredients</div>
+          <div id="r-ingr" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px"></div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:8px">Instructions</div>
+          <div id="r-steps" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
+          <div id="r-subs-wrap" style="display:none;margin-bottom:16px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:8px">Substitutions</div>
+            <div id="r-subs" style="display:flex;flex-direction:column;gap:6px"></div>
           </div>
-
-          <!-- Steps -->
-          <div class="suggest-result-section">
-            <div class="suggest-result-section-title">Instructions</div>
-            <div id="step-list"></div>
-          </div>
-
-          <!-- Substitutions -->
-          <div id="subs-section" style="display:none">
-            <div class="suggest-result-section-title">Substitutions</div>
-            <div id="subs-list" style="display:flex;flex-direction:column;gap:6px"></div>
-          </div>
-
-          <!-- Actions -->
-          <div style="display:flex;gap:8px;margin-top:20px">
-            <button class="btn btn-ghost btn-full" id="regen-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-              Regenerate
-            </button>
-            <button class="btn btn-primary btn-full" id="log-meal-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Log Meal
-            </button>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-full" id="regen-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Regenerate</button>
+            <button class="btn btn-primary btn-full" id="log-meal-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Log Meal</button>
           </div>
         </div>
       </div>
     </div>
-
     <!-- History -->
-    <div id="suggestion-history" style="display:none">
-      <div style="font-size:12px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Recent Suggestions</div>
-      <div id="sh-list" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div id="sug-history" style="display:none">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:8px">Recent Ideas</div>
+      <div id="sug-hist-list" style="display:flex;flex-direction:column;gap:6px"></div>
     </div>
-
-  </div><!-- /suggest-body -->
-</div><!-- /suggest-page -->
-
+  </div>
+</div>
 {% endblock %}
 {% block scripts %}
 <script>
-const token = localStorage.getItem('token');
-if (!token) window.location.href = '/login';
-
-let ingredients = [];
-let excludes    = [];
-let lastResult  = null;
-let suggestions = JSON.parse(localStorage.getItem('ical_suggestions') || '[]');
-
-// Sliders
-const calSlider  = document.getElementById('cal-slider');
-const timeSlider = document.getElementById('time-slider');
-calSlider.addEventListener('input',  () => { document.getElementById('cal-val').textContent  = calSlider.value  + ' kcal'; });
-timeSlider.addEventListener('input', () => { document.getElementById('time-val').textContent = timeSlider.value + ' min';  });
-
-// Tags
-function addTag(input, listEl, arr, color) {
-  const val = input.value.trim();
-  if (!val) return;
-  if (arr.includes(val.toLowerCase())) { input.value = ''; return; }
-  arr.push(val.toLowerCase());
-  input.value = '';
-  renderTags(listEl, arr, color);
+const token=localStorage.getItem('token');if(!token)window.location.href='/login';
+const t3=new Date();document.getElementById('sb-time-sug').textContent=t3.getHours().toString().padStart(2,'0')+':'+t3.getMinutes().toString().padStart(2,'0');
+const calSlider=document.getElementById('cal-slider'),timeSlider=document.getElementById('time-slider');
+calSlider.addEventListener('input',()=>document.getElementById('cal-val').textContent=calSlider.value+' kcal');
+timeSlider.addEventListener('input',()=>document.getElementById('time-val').textContent=timeSlider.value+' min');
+let ingredients=[],excludes=[],lastResult=null;
+let suggestions=JSON.parse(localStorage.getItem('ical_suggestions')||'[]');
+function addTag(input,container,arr,isExcl){
+  const val=input.value.trim();if(!val)return;
+  if(arr.includes(val.toLowerCase())){input.value='';return}
+  arr.push(val.toLowerCase());input.value='';renderTags(container,arr,isExcl);
 }
-function renderTags(container, arr, color) {
-  container.innerHTML = '';
-  arr.forEach((tag, i) => {
-    const el = document.createElement('div');
-    el.className = 'tag-pill';
-    if (color === 'excluded') {
-      el.style.background = 'rgba(255,69,58,.12)';
-      el.style.borderColor = 'rgba(255,69,58,.30)';
-      el.style.color = 'var(--red)';
-    }
-    el.innerHTML = `<span>${tag}</span><button aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-    el.querySelector('button').addEventListener('click', () => { arr.splice(i, 1); renderTags(container, arr, color); });
+function renderTags(container,arr,isExcl){
+  container.innerHTML='';
+  arr.forEach((tag,i)=>{
+    const el=document.createElement('div');el.className='tag-pill'+(isExcl?' excl':'');
+    el.innerHTML=`<span>${tag}</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    el.querySelector('button').addEventListener('click',()=>{arr.splice(i,1);renderTags(container,arr,isExcl)});
     container.appendChild(el);
   });
 }
-document.getElementById('ingr-add-btn').addEventListener('click', () =>
-  addTag(document.getElementById('ingr-input'), document.getElementById('ingr-tags'), ingredients, 'included')
-);
-document.getElementById('ingr-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addTag(e.target, document.getElementById('ingr-tags'), ingredients, 'included');
-});
-document.getElementById('excl-add-btn').addEventListener('click', () =>
-  addTag(document.getElementById('excl-input'), document.getElementById('excl-tags'), excludes, 'excluded')
-);
-document.getElementById('excl-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addTag(e.target, document.getElementById('excl-tags'), excludes, 'excluded');
-});
-
-// History personalization
-let mealHistory = [];
-(async () => {
-  try {
-    const data = await api('/history?limit=20');
-    mealHistory = data.sessions || [];
-    if (mealHistory.length >= 3) document.getElementById('personalize-card').style.display = 'block';
-  } catch(e) {}
-})();
-
-// Build prompt
-function buildPrompt() {
-  const calLimit    = calSlider.value;
-  const diet        = document.querySelector('input[name="diet"]:checked')?.value || 'any';
-  const prepTime    = timeSlider.value;
-  const difficulty  = document.querySelector('input[name="diff"]:checked')?.value || 'easy';
-  const minProtein  = document.getElementById('min-protein').value;
-  const maxCarbs    = document.getElementById('max-carbs').value;
-  const maxFat      = document.getElementById('max-fat').value;
-  const personalize = document.getElementById('personalize-toggle')?.checked;
-  let histCtx = '';
-  if (personalize && mealHistory.length) {
-    const recent = mealHistory.slice(0,5).map(s=>s.food_summary).join('; ');
-    histCtx = `\nUser recently ate: ${recent}. Suggest something different and complementary.`;
-  }
-  const c = [];
-  if (diet !== 'any')    c.push(`Diet: ${diet}`);
-  if (minProtein)        c.push(`Minimum protein: ${minProtein}g`);
-  if (maxCarbs)          c.push(`Maximum carbs: ${maxCarbs}g`);
-  if (maxFat)            c.push(`Maximum fat: ${maxFat}g`);
-  if (ingredients.length) c.push(`Use these ingredients: ${ingredients.join(', ')}`);
-  if (excludes.length)    c.push(`NEVER include: ${excludes.join(', ')}`);
-  return `You are a professional nutritionist and chef. Create ONE specific meal suggestion.\n\nRequirements:\n- Maximum calories: ${calLimit} kcal\n- Prep time: under ${prepTime} minutes\n- Difficulty: ${difficulty}\n${c.map(x=>`- ${x}`).join('\n')}\n${histCtx}\n\nRespond ONLY with a valid JSON object — no markdown, no explanation:\n{\n  "name": "Meal name",\n  "description": "2-3 sentence description",\n  "prep_time": 20,\n  "difficulty": "Easy",\n  "servings": 1,\n  "macros": {"kcal": 450,"carbs": 35,"fat": 18,"protein": 32},\n  "ingredients": [{"name": "Chicken breast","qty": "150g","kcal": 165}],\n  "steps": ["Season chicken with salt, pepper and garlic.","Cook 6-7 minutes per side."],\n  "substitutions": [{"from": "Chicken breast","to": "Tofu for vegetarian"}]\n}\n\nRules: macros must be accurate, steps must be clear and numbered.`;
+document.getElementById('ingr-add').addEventListener('click',()=>addTag(document.getElementById('ingr-input'),document.getElementById('ingr-tags'),ingredients,false));
+document.getElementById('ingr-input').addEventListener('keydown',e=>{if(e.key==='Enter')addTag(e.target,document.getElementById('ingr-tags'),ingredients,false)});
+document.getElementById('excl-add').addEventListener('click',()=>addTag(document.getElementById('excl-input'),document.getElementById('excl-tags'),excludes,true));
+document.getElementById('excl-input').addEventListener('keydown',e=>{if(e.key==='Enter')addTag(e.target,document.getElementById('excl-tags'),excludes,true)});
+let mealHistory=[];
+(async()=>{try{const data=await api('/history?limit=20');mealHistory=data.sessions||[];if(mealHistory.length>=3)document.getElementById('personalize-card').style.display='block';}catch(e){}})();
+function buildPrompt(){
+  const calLimit=calSlider.value,diet=document.querySelector('input[name="diet"]:checked')?.value||'any',prepTime=timeSlider.value,difficulty=document.querySelector('input[name="diff"]:checked')?.value||'easy',minProtein=document.getElementById('min-protein').value,maxCarbs=document.getElementById('max-carbs').value,maxFat=document.getElementById('max-fat').value,personalize=document.getElementById('personalize-toggle')?.checked;
+  let histCtx='';
+  if(personalize&&mealHistory.length){const recent=mealHistory.slice(0,5).map(s=>s.food_summary).join('; ');histCtx='\nUser recently ate: '+recent+'. Suggest something different and nutritionally complementary.';}
+  const c=[];
+  if(diet!=='any')c.push('Diet: '+diet);if(minProtein)c.push('Minimum protein: '+minProtein+'g');if(maxCarbs)c.push('Maximum carbs: '+maxCarbs+'g');if(maxFat)c.push('Maximum fat: '+maxFat+'g');if(ingredients.length)c.push('Use these ingredients: '+ingredients.join(', '));if(excludes.length)c.push('NEVER include: '+excludes.join(', '));
+  return`You are a professional nutritionist and chef. Create ONE specific, realistic meal suggestion with ACCURATE nutritional data.\n\nRequirements:\n- Maximum calories: ${calLimit} kcal\n- Prep time: under ${prepTime} minutes\n- Difficulty: ${difficulty}\n${c.map(x=>'- '+x).join('\n')}\n${histCtx}\n\nIMPORTANT accuracy rules:\n- Calories must be physiologically accurate based on ingredient weights\n- Use standard USDA-based nutritional values\n- Total macros must sum to approximately the total calories: (carbs*4) + (fat*9) + (protein*4) ≈ total kcal\n- Serving sizes must be realistic (not "1 cup" of steak)\n\nRespond ONLY with valid JSON (no markdown, no backticks):\n{"name":"Meal name","description":"2-3 sentence description","prep_time":20,"difficulty":"Easy","servings":1,"macros":{"kcal":450,"carbs":35,"fat":18,"protein":32},"ingredients":[{"name":"Chicken breast","qty":"150g","kcal":165}],"steps":["Step 1 instructions.","Step 2 instructions."],"substitutions":[{"from":"Chicken","to":"Tofu for vegetarian option"}]}`;
 }
-
-// Generate
-const thinkingTexts = ['GPT-4o is crafting your meal…','Calculating exact macros…','Optimizing ingredients…','Writing the recipe…','Almost ready…'];
-async function generate() {
-  const btn = document.getElementById('generate-btn');
-  btn.classList.add('loading'); btn.disabled = true;
-  document.getElementById('thinking').style.display = 'block';
-  document.getElementById('meal-result').style.display = 'none';
-  let ti = 0;
-  const interval = setInterval(() => {
-    document.getElementById('thinking-text').textContent = thinkingTexts[ti++ % thinkingTexts.length];
-  }, 1800);
-  try {
-    const res = await fetch(API_BASE + '/suggest', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
-      body: JSON.stringify({ prompt: buildPrompt() }),
-    });
-    if (res.status === 401) { localStorage.clear(); window.location.href='/login'; return; }
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || 'Failed to generate.');
-    const clean = (data.result||'').replace(/```json|```/g,'').trim();
-    const meal = JSON.parse(clean);
+const thinkingTexts=['GPT-4o is crafting your meal…','Calculating exact macros…','Optimizing ingredients…','Writing the recipe…','Almost ready…'];
+async function generate(){
+  const btn=document.getElementById('generate-btn');btn.classList.add('loading');btn.disabled=true;
+  document.getElementById('sug-thinking').style.display='block';
+  document.getElementById('sug-result').style.display='none';
+  let ti=0;const interval=setInterval(()=>{document.getElementById('thinking-text').textContent=thinkingTexts[ti++%thinkingTexts.length]},1800);
+  try{
+    const res=await fetch(API_BASE+'/suggest',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({prompt:buildPrompt()})});
+    if(res.status===401){localStorage.clear();window.location.href='/login';return}
+    const data=await res.json();if(!res.ok)throw new Error(data.detail||'Failed');
+    const clean=(data.result||'').replace(/```json|```/g,'').trim();
+    const meal=JSON.parse(clean);
     displayResult(meal);
-    suggestions.unshift({...meal, generatedAt: new Date().toISOString()});
-    if (suggestions.length > 10) suggestions.pop();
-    localStorage.setItem('ical_suggestions', JSON.stringify(suggestions));
+    suggestions.unshift({...meal,generatedAt:new Date().toISOString()});
+    if(suggestions.length>10)suggestions.pop();
+    localStorage.setItem('ical_suggestions',JSON.stringify(suggestions));
     renderHistory();
-  } catch(e) {
-    showToast('Failed to generate — try again', 'error');
-  } finally {
-    clearInterval(interval);
-    btn.classList.remove('loading'); btn.disabled = false;
-    document.getElementById('thinking').style.display = 'none';
-  }
+  }catch(e){showToast('Failed to generate — try again','error');}
+  finally{clearInterval(interval);btn.classList.remove('loading');btn.disabled=false;document.getElementById('sug-thinking').style.display='none';}
 }
-
-function displayResult(meal) {
-  lastResult = meal;
-  document.getElementById('result-name').textContent = meal.name || 'Your Meal';
-  document.getElementById('result-desc').textContent = meal.description || '';
-  document.getElementById('result-meta').innerHTML = `
-    <div class="suggest-meta-chip">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      ${meal.prep_time||'?'} min
-    </div>
-    <div class="suggest-meta-chip">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      ${meal.difficulty||'Easy'}
-    </div>
-    <div class="suggest-meta-chip">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-      ${meal.servings||1} serving
-    </div>`;
-  document.getElementById('r-kcal').textContent    = meal.macros?.kcal    || 0;
-  document.getElementById('r-carbs').textContent   = (meal.macros?.carbs  || 0)+'g';
-  document.getElementById('r-fat').textContent     = (meal.macros?.fat    || 0)+'g';
-  document.getElementById('r-protein').textContent = (meal.macros?.protein|| 0)+'g';
-
-  const ingList = document.getElementById('ingredient-list');
-  ingList.innerHTML = '';
-  (meal.ingredients||[]).forEach(ing => {
-    const row = document.createElement('div');
-    row.className = 'suggest-ingredient-row';
-    row.innerHTML = `<span class="suggest-ingredient-name">${ing.name} <span style="font-weight:400;color:var(--t3);font-size:12px">${ing.qty}</span></span><span class="suggest-ingredient-kcal">${ing.kcal} kcal</span>`;
-    ingList.appendChild(row);
-  });
-
-  const stepList = document.getElementById('step-list');
-  stepList.innerHTML = '';
-  (meal.steps||[]).forEach((step, i) => {
-    const row = document.createElement('div');
-    row.className = 'suggest-step';
-    row.innerHTML = `<div class="suggest-step-num">${i+1}</div><div class="suggest-step-text">${step}</div>`;
-    stepList.appendChild(row);
-  });
-
-  const subs = meal.substitutions||[];
-  const subsList = document.getElementById('subs-list');
-  subsList.innerHTML = '';
-  if (subs.length) {
-    subs.forEach(s => {
-      const row = document.createElement('div');
-      row.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--s3);border-radius:var(--r-sm);font-size:13px;font-weight:500';
-      row.innerHTML = `<span style="color:var(--t1)">${s.from}</span><span style="color:var(--t4)">→</span><span style="color:var(--a)">${s.to}</span>`;
-      subsList.appendChild(row);
-    });
-    document.getElementById('subs-section').style.display = 'block';
-  } else {
-    document.getElementById('subs-section').style.display = 'none';
-  }
-  document.getElementById('meal-result').style.display = 'block';
-  setTimeout(() => {
-    document.getElementById('meal-result').scrollIntoView({behavior:'smooth', block:'start'});
-  }, 100);
+function displayResult(meal){
+  lastResult=meal;
+  document.getElementById('r-name').textContent=meal.name||'Your Meal';
+  document.getElementById('r-desc').textContent=meal.description||'';
+  document.getElementById('r-meta').innerHTML=`<div style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--t3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${meal.prep_time||'?'} min</div><div style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--t3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${meal.difficulty||'Easy'}</div><div style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--t3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${meal.servings||1} serving</div>`;
+  document.getElementById('r-kcal').textContent=meal.macros?.kcal||0;
+  document.getElementById('r-carbs').textContent=(meal.macros?.carbs||0)+'g';
+  document.getElementById('r-fat').textContent=(meal.macros?.fat||0)+'g';
+  document.getElementById('r-protein').textContent=(meal.macros?.protein||0)+'g';
+  const ingr=document.getElementById('r-ingr');ingr.innerHTML='';
+  (meal.ingredients||[]).forEach(ing=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--s3);border-radius:var(--r-sm);border:.5px solid var(--bdr)';row.innerHTML=`<span style="font-size:14px;font-weight:600;color:var(--t1)">${ing.name} <span style="font-weight:400;color:var(--t3);font-size:12px">${ing.qty}</span></span><span style="font-size:12px;color:var(--t3)">${ing.kcal} kcal</span>`;ingr.appendChild(row)});
+  const steps=document.getElementById('r-steps');steps.innerHTML='';
+  (meal.steps||[]).forEach((step,i)=>{const row=document.createElement('div');row.style.cssText='display:flex;gap:12px';row.innerHTML=`<div style="width:24px;height:24px;border-radius:50%;background:var(--g);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">${i+1}</div><div style="font-size:13px;color:var(--t2);line-height:1.6;flex:1;padding-top:2px">${step}</div>`;steps.appendChild(row)});
+  const subs=meal.substitutions||[];
+  const subsList=document.getElementById('r-subs');subsList.innerHTML='';
+  if(subs.length){subs.forEach(s=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--s3);border-radius:var(--r-sm);font-size:13px;font-weight:500';row.innerHTML=`<span style="color:var(--t1)">${s.from}</span><span style="color:var(--t4)">→</span><span style="color:var(--g)">${s.to}</span>`;subsList.appendChild(row)});document.getElementById('r-subs-wrap').style.display='block';}
+  else document.getElementById('r-subs-wrap').style.display='none';
+  document.getElementById('sug-result').style.display='block';
+  setTimeout(()=>document.getElementById('sug-result').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
-
-// Log
-document.getElementById('log-meal-btn').addEventListener('click', () => {
-  if (!lastResult) return;
-  document.getElementById('log-confirm-title').textContent = `Log "${lastResult.name}"?`;
-  document.getElementById('log-confirm-sub').textContent = `${lastResult.macros?.kcal} kcal · ${lastResult.macros?.carbs}g C · ${lastResult.macros?.fat}g F · ${lastResult.macros?.protein}g P`;
-  document.getElementById('log-confirm-overlay').classList.add('show');
+document.getElementById('log-meal-btn').addEventListener('click',()=>{
+  if(!lastResult)return;
+  document.getElementById('log-title').textContent='Log "'+lastResult.name+'"?';
+  document.getElementById('log-sub').textContent=(lastResult.macros?.kcal||0)+' kcal · '+(lastResult.macros?.carbs||0)+'g C · '+(lastResult.macros?.fat||0)+'g F · '+(lastResult.macros?.protein||0)+'g P';
+  document.getElementById('log-overlay').classList.add('show');
 });
-document.getElementById('log-cancel-btn').addEventListener('click', () => {
-  document.getElementById('log-confirm-overlay').classList.remove('show');
+document.getElementById('log-cancel').addEventListener('click',()=>document.getElementById('log-overlay').classList.remove('show'));
+document.getElementById('log-overlay').addEventListener('click',e=>{if(e.target.id==='log-overlay')document.getElementById('log-overlay').classList.remove('show')});
+document.getElementById('log-confirm').addEventListener('click',async()=>{
+  if(!lastResult)return;
+  const btn=document.getElementById('log-confirm');setLoading(btn,true);
+  setTimeout(()=>{document.getElementById('log-overlay').classList.remove('show');showToast('"'+lastResult.name+'" saved!','success');setLoading(btn,false);
+  const pending=JSON.parse(localStorage.getItem('ical_pending_log')||'[]');pending.push({name:lastResult.name,kcal:lastResult.macros?.kcal||0,carbs:lastResult.macros?.carbs||0,fat:lastResult.macros?.fat||0,protein:lastResult.macros?.protein||0,meal_type:'other',timestamp:new Date().toISOString()});localStorage.setItem('ical_pending_log',JSON.stringify(pending));},700);
 });
-document.getElementById('log-confirm-overlay').addEventListener('click', e => {
-  if (e.target.id === 'log-confirm-overlay') document.getElementById('log-confirm-overlay').classList.remove('show');
-});
-document.getElementById('log-confirm-btn').addEventListener('click', async () => {
-  if (!lastResult) return;
-  const btn = document.getElementById('log-confirm-btn');
-  setLoading(btn, true);
-  setTimeout(() => {
-    document.getElementById('log-confirm-overlay').classList.remove('show');
-    showToast(`"${lastResult.name}" saved!`, 'success');
-    setLoading(btn, false);
-    const pending = JSON.parse(localStorage.getItem('ical_pending_log')||'[]');
-    pending.push({ name:lastResult.name, kcal:lastResult.macros?.kcal||0, carbs:lastResult.macros?.carbs||0, fat:lastResult.macros?.fat||0, protein:lastResult.macros?.protein||0, meal_type:'other', timestamp: new Date().toISOString() });
-    localStorage.setItem('ical_pending_log', JSON.stringify(pending));
-  }, 700);
-});
-
-document.getElementById('regen-btn').addEventListener('click', generate);
-document.getElementById('generate-btn').addEventListener('click', generate);
-
-// History
-function renderHistory() {
-  const section = document.getElementById('suggestion-history');
-  const list    = document.getElementById('sh-list');
-  if (!suggestions.length) { section.style.display='none'; return; }
-  section.style.display = 'block';
-  list.innerHTML = '';
-  suggestions.slice(0,5).forEach(s => {
-    const item = document.createElement('div');
-    item.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--s1);border:0.5px solid var(--bdr);border-radius:var(--r-md);cursor:pointer;gap:12px;min-height:44px';
-    item.innerHTML = `<div style="min-width:0"><div style="font-size:14px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em">${s.name}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${s.macros?.carbs||0}g C · ${s.macros?.fat||0}g F · ${s.macros?.protein||0}g P</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:15px;font-weight:900;color:var(--a);letter-spacing:-.02em">${s.macros?.kcal||0}</div><div style="font-size:9px;color:var(--t3)">kcal</div></div>`;
-    item.addEventListener('click', () => displayResult(s));
-    list.appendChild(item);
+document.getElementById('regen-btn').addEventListener('click',generate);
+document.getElementById('generate-btn').addEventListener('click',generate);
+function renderHistory(){
+  const section=document.getElementById('sug-history'),list=document.getElementById('sug-hist-list');
+  if(!suggestions.length){section.style.display='none';return}
+  section.style.display='block';list.innerHTML='';
+  suggestions.slice(0,5).forEach(s=>{
+    const item=document.createElement('div');item.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--s1);border:.5px solid var(--bdr);border-radius:var(--r-md);cursor:pointer;gap:12px;min-height:44px';
+    item.innerHTML=`<div style="min-width:0"><div style="font-size:14px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em">${s.name}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${s.macros?.carbs||0}g C · ${s.macros?.fat||0}g F · ${s.macros?.protein||0}g P</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:15px;font-weight:900;color:var(--g);letter-spacing:-.02em">${s.macros?.kcal||0}</div><div style="font-size:9px;color:var(--t3)">kcal</div></div>`;
+    item.addEventListener('click',()=>displayResult(s));list.appendChild(item);
   });
 }
 renderHistory();

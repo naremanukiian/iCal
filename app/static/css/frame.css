@@ -1,70 +1,53 @@
-/* iCal frame.css v12 — iPhone 15 Pro · iOS HIG */
+/* iCal frame.css v13 — iPhone 15 Pro · True Black */
 *,*::before,*::after{box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;margin:0;padding:0}
 
 .frame-body{
   width:100vw;height:100dvh;overflow:hidden;
-  background:#09090E;
+  background:#060608;
   background-image:
-    radial-gradient(ellipse 65% 50% at 18% 25%,rgba(99,179,237,.07) 0%,transparent 55%),
-    radial-gradient(ellipse 55% 60% at 82% 75%,rgba(246,135,179,.05) 0%,transparent 55%);
-  display:flex;align-items:center;justify-content:center;position:relative;
+    radial-gradient(ellipse 60% 50% at 15% 20%,rgba(139,92,246,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 55% at 85% 80%,rgba(16,185,129,.05) 0%,transparent 60%);
+  display:flex;align-items:center;justify-content:center;
 }
 .phone-frame-wrap{
   position:relative;z-index:1;
   height:94dvh;max-height:852px;aspect-ratio:393/852;
   filter:
     drop-shadow(0 0 2px rgba(0,0,0,1))
-    drop-shadow(0 16px 48px rgba(0,0,0,.85))
-    drop-shadow(0 48px 100px rgba(0,0,0,.65))
-    drop-shadow(0 80px 140px rgba(0,0,0,.40));
+    drop-shadow(0 20px 50px rgba(0,0,0,.85))
+    drop-shadow(0 50px 110px rgba(0,0,0,.65))
+    drop-shadow(0 90px 150px rgba(0,0,0,.40));
 }
 .phone-frame{
   position:relative;width:100%;height:100%;
-  border-radius:calc(100% * 47 / 393);
+  border-radius:calc(100%*47/393);
   background:#1C1C1E;
-  background-image:linear-gradient(158deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,.05) 30%,rgba(255,255,255,0) 55%,rgba(255,255,255,.02) 75%,rgba(255,255,255,.12) 100%);
-  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.32),inset 0 -1.5px 0 rgba(0,0,0,.40),inset 0 0 0 1px rgba(255,255,255,.07);
+  background-image:linear-gradient(158deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.04) 30%,rgba(255,255,255,0) 55%,rgba(255,255,255,.02) 75%,rgba(255,255,255,.12) 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.30),inset 0 -1.5px 0 rgba(0,0,0,.40),inset 0 0 0 1px rgba(255,255,255,.07);
   overflow:hidden;
 }
-.btn-mute{position:absolute;left:-3.5px;top:calc(100%*110/852);width:3.5px;height:calc(100%*30/852);background:#2C2C2E;border-radius:2px 0 0 2px}
-.btn-vol-up{position:absolute;left:-3.5px;top:calc(100%*158/852);width:3.5px;height:calc(100%*60/852);background:#2C2C2E;border-radius:2px 0 0 2px}
-.btn-vol-dn{position:absolute;left:-3.5px;top:calc(100%*232/852);width:3.5px;height:calc(100%*60/852);background:#2C2C2E;border-radius:2px 0 0 2px}
-.btn-power{position:absolute;right:-3.5px;top:calc(100%*170/852);width:3.5px;height:calc(100%*80/852);background:#2C2C2E;border-radius:0 2px 2px 0}
-
-.screen-glass{
-  position:absolute;
-  inset:calc(100%*8/852) calc(100%*8/393);
-  border-radius:calc(100%*39/393);
-  overflow:hidden;background:#000;
-  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.06);
-  isolation:isolate;
-}
-.screen-glass::after{content:'';position:absolute;inset:0;z-index:600;background:linear-gradient(148deg,rgba(255,255,255,.035) 0%,transparent 40%);border-radius:calc(100%*39/393);pointer-events:none}
+.btn-mute{position:absolute;left:-3.5px;top:calc(100%*110/852);width:3.5px;height:calc(100%*30/852);background:#2A2A2C;border-radius:2px 0 0 2px}
+.btn-vol-up{position:absolute;left:-3.5px;top:calc(100%*158/852);width:3.5px;height:calc(100%*60/852);background:#2A2A2C;border-radius:2px 0 0 2px}
+.btn-vol-dn{position:absolute;left:-3.5px;top:calc(100%*232/852);width:3.5px;height:calc(100%*60/852);background:#2A2A2C;border-radius:2px 0 0 2px}
+.btn-power{position:absolute;right:-3.5px;top:calc(100%*170/852);width:3.5px;height:calc(100%*80/852);background:#2A2A2C;border-radius:0 2px 2px 0}
+.screen-glass{position:absolute;inset:calc(100%*8/852) calc(100%*8/393);border-radius:calc(100%*39/393);overflow:hidden;background:#000;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.06);isolation:isolate}
+.screen-glass::after{content:'';position:absolute;inset:0;z-index:600;background:linear-gradient(148deg,rgba(255,255,255,.03) 0%,transparent 40%);border-radius:calc(100%*39/393);pointer-events:none}
 .dynamic-island{position:absolute;top:calc(100%*12/852);left:50%;transform:translateX(-50%);z-index:20;width:calc(100%*126/393);min-width:94px;max-width:130px;height:calc(100%*37/852);min-height:27px;max-height:40px;background:#000;border-radius:999px;display:flex;align-items:center;justify-content:flex-end;padding-right:11px;gap:6px;pointer-events:none}
 .di-lens{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#111130,#000);position:relative;flex-shrink:0}
 .di-lens::after{content:'';position:absolute;top:2px;left:2px;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.14)}
 .di-sensor{width:7px;height:7px;border-radius:50%;background:#050510;flex-shrink:0}
-.home-indicator{position:absolute;bottom:calc(100%*8/852);left:50%;transform:translateX(-50%);width:calc(100%*134/393);height:5px;background:rgba(255,255,255,.20);border-radius:3px;z-index:400;pointer-events:none}
-
+.home-indicator{position:absolute;bottom:calc(100%*8/852);left:50%;transform:translateX(-50%);width:calc(100%*134/393);height:5px;background:rgba(255,255,255,.18);border-radius:3px;z-index:400;pointer-events:none}
 #phone-screen{position:absolute;inset:0;border-radius:calc(100%*39/393);background:#000;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;pointer-events:auto}
 #phone-screen::-webkit-scrollbar{display:none}
-
 .app{width:100%;position:relative;background:#000;min-height:100%;padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 .bottom-nav{position:sticky!important;bottom:0!important;width:100%!important;z-index:400!important}
-
-@media(min-width:768px){
-  html,body{overflow:hidden!important;height:100dvh!important}
-  .frame-body{pointer-events:none}
-  .phone-frame-wrap{pointer-events:all}
-}
+@media(min-width:768px){html,body{overflow:hidden!important;height:100dvh!important}.frame-body{pointer-events:none}.phone-frame-wrap{pointer-events:all}}
 @media(max-width:767px){
   .frame-body{background:#000;display:block;pointer-events:auto}
   .phone-frame-wrap{width:100%;height:100dvh;aspect-ratio:unset;filter:none}
   .phone-frame{width:100%;height:100dvh;border-radius:0;background:none;box-shadow:none}
-  .btn-mute,.btn-vol-up,.btn-vol-dn,.btn-power{display:none}
+  .btn-mute,.btn-vol-up,.btn-vol-dn,.btn-power,.screen-glass::after,.dynamic-island,.home-indicator{display:none}
   .screen-glass{inset:0;border-radius:0;box-shadow:none}
-  .screen-glass::after{display:none}
-  .dynamic-island,.home-indicator{display:none}
   #phone-screen{border-radius:0}
 }

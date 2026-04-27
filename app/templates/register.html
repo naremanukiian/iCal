@@ -2,124 +2,233 @@
 {% block title %}Create Account — iCal{% endblock %}
 {% block body %}
 <div class="status-bar">
-  <span class="sb-time">9:41</span>
+  <span class="sb-time" id="sb-time-reg">9:41</span>
   <div class="sb-icons">
     <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
     <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/></svg>
   </div>
 </div>
-
 <div class="auth-page">
-  <div class="auth-brand" style="padding-top:32px;padding-bottom:24px">
-    <div class="auth-logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-        <circle cx="12" cy="9" r="2.5"/>
-      </svg>
+  <div class="auth-brand" style="padding-top:32px;padding-bottom:20px">
+    <div class="auth-logo-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="rgba(255,255,255,.3)"/></svg>
     </div>
-    <div class="auth-logo-wordmark">iCal</div>
+    <div class="auth-app-name">iCal</div>
   </div>
 
-  <a href="/login" class="auth-back">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-    Sign in instead
-  </a>
-
-  <h1 class="auth-heading">Create account</h1>
-  <p class="auth-sub">Start tracking your nutrition with AI</p>
+  <!-- Step indicators -->
+  <div class="step-dots">
+    <div class="step-dot active" id="dot-0"></div>
+    <div class="step-dot" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+  </div>
 
   <div class="err-box" id="err-box"></div>
 
-  <form id="form" novalidate style="display:flex;flex-direction:column;gap:16px">
-    <div class="fg">
-      <label class="fl" for="email">Email address</label>
-      <input id="email" type="email" class="fc" placeholder="you@example.com" autocomplete="email" inputmode="email"/>
-      <span id="email-err" class="fe hidden"></span>
-    </div>
-    <div class="fg">
-      <label class="fl" for="password">Password</label>
-      <div class="pw-wrap">
-        <input id="password" type="password" class="fc" placeholder="Min. 6 characters" autocomplete="new-password"/>
-        <button type="button" class="pw-eye" id="eye" aria-label="Show password">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
+  <!-- Step 0: Credentials -->
+  <div class="ob-step active" id="step-0">
+    <h1 class="auth-heading">Create account</h1>
+    <p class="auth-sub">Start tracking your nutrition with AI</p>
+    <a href="/login" class="auth-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Already have an account
+    </a>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="fg">
+        <label class="fl" for="email">Email address</label>
+        <input id="email" type="email" class="fc" placeholder="you@example.com" autocomplete="email" inputmode="email"/>
+        <span id="email-err" class="fe hidden"></span>
       </div>
-      <div class="str-track"><div class="str-bar" id="str-bar"></div></div>
-      <span id="pw-err" class="fe hidden"></span>
+      <div class="fg">
+        <label class="fl" for="password">Password</label>
+        <div class="pw-wrap">
+          <input id="password" type="password" class="fc" placeholder="Min. 6 characters" autocomplete="new-password"/>
+          <button type="button" class="pw-eye" id="eye"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="str-track"><div class="str-bar" id="str-bar"></div></div>
+        <span id="pw-err" class="fe hidden"></span>
+      </div>
+      <button type="button" id="btn-0" class="btn btn-primary btn-full btn-lg">Continue</button>
     </div>
-    <div class="fg">
-      <label class="fl" for="calgoal">Daily calorie goal</label>
-      <input id="calgoal" type="number" class="fc" placeholder="e.g. 2000" min="500" max="5000" value="2000" inputmode="numeric"/>
+  </div>
+
+  <!-- Step 1: Body metrics -->
+  <div class="ob-step" id="step-1">
+    <h1 class="auth-heading">About you</h1>
+    <p class="auth-sub">Used to calculate your personalized calorie goal</p>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="fg">
+        <label class="fl">Gender</label>
+        <div class="option-grid">
+          <div><input type="radio" name="gender" value="male" id="g-m" class="opt-radio" checked/>
+            <label for="g-m" class="opt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/><line x1="17" y1="8" x2="21" y2="4"/><line x1="17" y1="4" x2="21" y2="4" stroke-width="2.5"/><line x1="21" y1="4" x2="21" y2="8" stroke-width="2.5"/></svg>Male</label></div>
+          <div><input type="radio" name="gender" value="female" id="g-f" class="opt-radio"/>
+            <label for="g-f" class="opt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><line x1="12" y1="14" x2="12" y2="22"/><line x1="8" y1="18" x2="16" y2="18"/></svg>Female</label></div>
+          <div><input type="radio" name="gender" value="other" id="g-o" class="opt-radio"/>
+            <label for="g-o" class="opt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/><line x1="12" y1="5" x2="12" y2="2"/><line x1="9" y1="3" x2="15" y2="3"/></svg>Other</label></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div class="fg">
+          <label class="fl" for="age">Age</label>
+          <input id="age" type="number" class="fc" placeholder="25" min="10" max="100" inputmode="numeric" style="text-align:center"/>
+        </div>
+        <div class="fg">
+          <label class="fl" for="height">Height (cm)</label>
+          <input id="height" type="number" class="fc" placeholder="170" min="100" max="250" inputmode="numeric" style="text-align:center"/>
+        </div>
+        <div class="fg">
+          <label class="fl" for="weight">Weight (kg)</label>
+          <input id="weight" type="number" class="fc" placeholder="70" min="30" max="300" inputmode="decimal" style="text-align:center"/>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Activity Level</label>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div><input type="radio" name="activity" value="sedentary" id="a-s" class="opt-radio"/>
+            <label for="a-s" class="opt-lbl" style="flex-direction:row;justify-content:flex-start;text-align:left;padding:12px 14px;min-height:auto;gap:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="10" rx="2"/><line x1="8" y1="21" x2="8" y2="18"/><line x1="16" y1="21" x2="16" y2="18"/></svg><div><div style="font-size:13px">Sedentary</div><div style="font-size:11px;color:var(--t3);font-weight:400;margin-top:1px">Desk job, little exercise</div></div></label></div>
+          <div><input type="radio" name="activity" value="light" id="a-l" class="opt-radio"/>
+            <label for="a-l" class="opt-lbl" style="flex-direction:row;justify-content:flex-start;text-align:left;padding:12px 14px;min-height:auto;gap:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><div><div style="font-size:13px">Light</div><div style="font-size:11px;color:var(--t3);font-weight:400;margin-top:1px">1–3 workouts/week</div></div></label></div>
+          <div><input type="radio" name="activity" value="moderate" id="a-m" class="opt-radio" checked/>
+            <label for="a-m" class="opt-lbl" style="flex-direction:row;justify-content:flex-start;text-align:left;padding:12px 14px;min-height:auto;gap:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><div><div style="font-size:13px">Moderate</div><div style="font-size:11px;color:var(--t3);font-weight:400;margin-top:1px">3–5 workouts/week</div></div></label></div>
+          <div><input type="radio" name="activity" value="active" id="a-a" class="opt-radio"/>
+            <label for="a-a" class="opt-lbl" style="flex-direction:row;justify-content:flex-start;text-align:left;padding:12px 14px;min-height:auto;gap:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div><div style="font-size:13px">Active</div><div style="font-size:11px;color:var(--t3);font-weight:400;margin-top:1px">Hard exercise 6–7 days/week</div></div></label></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button type="button" id="btn-1-back" class="btn btn-ghost" style="flex:1">Back</button>
+        <button type="button" id="btn-1" class="btn btn-primary" style="flex:2">Continue</button>
+      </div>
     </div>
-    <div class="fg">
-      <label class="fl" for="weight">Weight (kg) <span style="font-weight:400;color:var(--t3);font-size:11px">— optional</span></label>
-      <input id="weight" type="number" class="fc" placeholder="e.g. 70" min="20" max="400" step="0.1" inputmode="decimal"/>
-    </div>
-    <div class="fg">
-      <label class="fl">Your goal <span style="font-weight:400;color:var(--t3);font-size:11px">— optional</span></label>
-      <div class="goal-grid">
-        <div>
-          <input type="radio" name="goal" value="lose" id="g-l" class="goal-radio"/>
-          <label for="g-l" class="goal-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+  </div>
+
+  <!-- Step 2: Goal -->
+  <div class="ob-step" id="step-2">
+    <h1 class="auth-heading">Your goal</h1>
+    <p class="auth-sub">We'll build your personalized plan using science-based formulas</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="option-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:4px">
+        <div><input type="radio" name="goal" value="lose" id="goal-l" class="opt-radio" checked/>
+          <label for="goal-l" class="opt-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             Lose weight
           </label>
         </div>
-        <div>
-          <input type="radio" name="goal" value="maintain" id="g-m" class="goal-radio"/>
-          <label for="g-m" class="goal-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <div><input type="radio" name="goal" value="maintain" id="goal-m" class="opt-radio"/>
+          <label for="goal-m" class="opt-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             Maintain
           </label>
         </div>
-        <div>
-          <input type="radio" name="goal" value="gain" id="g-g" class="goal-radio"/>
-          <label for="g-g" class="goal-lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+        <div><input type="radio" name="goal" value="gain" id="goal-g" class="opt-radio"/>
+          <label for="goal-g" class="opt-lbl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
             Gain muscle
           </label>
         </div>
       </div>
+      <!-- Calorie preview -->
+      <div id="cal-preview" style="background:var(--g-l);border:.5px solid rgba(16,185,129,.25);border-radius:var(--r-lg);padding:16px;display:none">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Your personalized plan</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px">
+          <span style="font-size:34px;font-weight:900;color:var(--g);letter-spacing:-.04em" id="cal-preview-num">—</span>
+          <span style="font-size:14px;color:var(--t2);font-weight:500">kcal / day</span>
+        </div>
+        <div style="display:flex;gap:12px">
+          <div style="text-align:center"><span style="font-size:16px;font-weight:800;color:var(--carbs)" id="cp-carbs">—</span><div style="font-size:9px;color:var(--t3);margin-top:2px;text-transform:uppercase;letter-spacing:.05em;font-weight:600">Carbs</div></div>
+          <div style="text-align:center"><span style="font-size:16px;font-weight:800;color:var(--fat)" id="cp-fat">—</span><div style="font-size:9px;color:var(--t3);margin-top:2px;text-transform:uppercase;letter-spacing:.05em;font-weight:600">Fat</div></div>
+          <div style="text-align:center"><span style="font-size:16px;font-weight:800;color:var(--protein)" id="cp-protein">—</span><div style="font-size:9px;color:var(--t3);margin-top:2px;text-transform:uppercase;letter-spacing:.05em;font-weight:600">Protein</div></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button type="button" id="btn-2-back" class="btn btn-ghost" style="flex:1">Back</button>
+        <button type="button" id="btn-2" class="btn btn-primary btn-lg" style="flex:2"><div class="sp"></div><span class="bt">Create Account</span></button>
+      </div>
     </div>
-    <div style="padding-top:4px">
-      <button type="button" id="btn" class="btn btn-primary btn-full btn-lg">
-        <div class="sp"></div><span class="bt">Create Account</span>
-      </button>
-    </div>
-  </form>
+  </div>
 </div>
 {% endblock %}
 {% block scripts %}
 <script>
-const emailEl=document.getElementById('email'), pwEl=document.getElementById('password');
-const strBar=document.getElementById('str-bar');
-const errBox=document.getElementById('err-box'), btn=document.getElementById('btn');
-const colors=['#FF453A','#FF9F0A','#FFD60A','#32D74B','#32D74B'];
-pwEl.addEventListener('input',()=>{
-  const s=pwStrength(pwEl.value);
-  strBar.style.width=(s*20)+'%';
-  strBar.style.background=colors[Math.max(0,s-1)]||'transparent';
-});
+const t2=new Date(),h2=t2.getHours().toString().padStart(2,'0'),mi2=t2.getMinutes().toString().padStart(2,'0');
+document.getElementById('sb-time-reg').textContent=h2+':'+mi2;
+
+// Mifflin-St Jeor client-side preview
+function calcTDEE(w,h,a,gender,activity,goal){
+  const wt=parseFloat(w)||70,ht=parseFloat(h)||170,age=parseInt(a)||25;
+  let bmr = gender==='female' ? 10*wt+6.25*ht-5*age-161 : 10*wt+6.25*ht-5*age+5;
+  bmr=Math.max(bmr,1000);
+  const mult={sedentary:1.2,light:1.375,moderate:1.55,active:1.725,very_active:1.9}[activity]||1.55;
+  const adj={lose:-500,maintain:0,gain:300}[goal]||0;
+  const cal=Math.max(Math.round(bmr*mult+adj),1200);
+  const pf={lose:2.0,gain:1.8,maintain:1.6}[goal]||1.6;
+  const pro=Math.round(wt*pf);
+  const fat=Math.round(cal*.28/9);
+  const carbs=Math.max(Math.round((cal-pro*4-fat*9)/4),50);
+  return{cal,pro,fat,carbs};
+}
+function updatePreview(){
+  const goal=document.querySelector('input[name="goal"]:checked')?.value||'maintain';
+  const activity=document.querySelector('input[name="activity"]:checked')?.value||'moderate';
+  const gender=document.querySelector('input[name="gender"]:checked')?.value||'male';
+  const {cal,pro,fat,carbs}=calcTDEE(document.getElementById('weight').value,document.getElementById('height').value,document.getElementById('age').value,gender,activity,goal);
+  document.getElementById('cal-preview-num').textContent=cal;
+  document.getElementById('cp-carbs').textContent=carbs+'g';
+  document.getElementById('cp-fat').textContent=fat+'g';
+  document.getElementById('cp-protein').textContent=pro+'g';
+  document.getElementById('cal-preview').style.display='block';
+}
+['goal-l','goal-m','goal-g'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{if(document.getElementById('step-2').classList.contains('active'))updatePreview()}));
+
+// Steps
+let step=0;
+function goStep(n){
+  document.querySelectorAll('.ob-step').forEach(e=>e.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  document.querySelectorAll('.step-dot').forEach((d,i)=>{d.classList.toggle('active',i===n);d.classList.toggle('done',i<n)});
+  step=n;
+  if(n===2) setTimeout(updatePreview,100);
+}
+const pwEl=document.getElementById('password');
+const strColors=['#FF453A','#FF9F0A','#FFD60A','#30D158','#30D158'];
+pwEl.addEventListener('input',()=>{const s=pwStrength(pwEl.value);const b=document.getElementById('str-bar');b.style.width=(s*20)+'%';b.style.background=strColors[Math.max(0,s-1)]||'transparent'});
 document.getElementById('eye').addEventListener('click',()=>{pwEl.type=pwEl.type==='text'?'password':'text'});
-btn.addEventListener('click',async()=>{
-  errBox.style.display='none';
+document.getElementById('btn-0').addEventListener('click',()=>{
+  const emailEl=document.getElementById('email');
   const ok1=markField(emailEl,'email-err',validateEmail(emailEl.value),'Enter a valid email');
-  const ok2=markField(pwEl,'pw-err',pwEl.value.length>=6,'Password must be at least 6 characters');
-  if(!ok1||!ok2) return;
+  const ok2=markField(pwEl,'pw-err',pwEl.value.length>=6,'Minimum 6 characters');
+  if(ok1&&ok2) goStep(1);
+});
+document.getElementById('btn-1-back').addEventListener('click',()=>goStep(0));
+document.getElementById('btn-1').addEventListener('click',()=>goStep(2));
+document.getElementById('btn-2-back').addEventListener('click',()=>goStep(1));
+
+document.getElementById('btn-2').addEventListener('click',async()=>{
+  const errBox=document.getElementById('err-box');
+  errBox.style.display='none';
+  const btn=document.getElementById('btn-2');
   setLoading(btn,true);
+  const email=document.getElementById('email').value.trim().toLowerCase();
+  const password=pwEl.value;
+  const gender=document.querySelector('input[name="gender"]:checked')?.value||'male';
+  const age=parseInt(document.getElementById('age').value)||null;
+  const height=parseFloat(document.getElementById('height').value)||null;
+  const weight=parseFloat(document.getElementById('weight').value)||null;
+  const activity=document.querySelector('input[name="activity"]:checked')?.value||'moderate';
+  const goal=document.querySelector('input[name="goal"]:checked')?.value||'maintain';
   try{
-    const goal=document.querySelector('input[name="goal"]:checked')?.value||'';
-    const weight=parseFloat(document.getElementById('weight').value)||null;
-    const calGoal=parseInt(document.getElementById('calgoal').value)||2000;
-    const data=await api('/register','POST',{email:emailEl.value.trim().toLowerCase(),password:pwEl.value,calorie_goal:calGoal,weight,goal});
+    const data=await api('/register','POST',{email,password,gender,age,height,weight,activity_level:activity,goal});
     localStorage.setItem('token',data.token);
     localStorage.setItem('user_email',data.email);
     localStorage.setItem('user_id',data.user_id);
     localStorage.setItem('username',data.username||data.email.split('@')[0]);
-    localStorage.setItem('calorie_goal',calGoal);
+    localStorage.setItem('calorie_goal',data.calorie_goal||2000);
+    localStorage.setItem('protein_goal',data.protein_goal||150);
+    localStorage.setItem('carbs_goal',data.carbs_goal||200);
+    localStorage.setItem('fat_goal',data.fat_goal||65);
+    localStorage.setItem('user_goal',data.goal||'maintain');
     window.location.href='/dashboard';
-  }catch(err){errBox.textContent=err.message||'Registration failed. Please try again.';errBox.style.display='block';setLoading(btn,false);}
+  }catch(err){errBox.textContent=err.message||'Registration failed. Try again.';errBox.style.display='block';setLoading(btn,false);}
 });
-document.getElementById('form').addEventListener('keydown',e=>{if(e.key==='Enter')btn.click()});
 </script>
 {% endblock %}

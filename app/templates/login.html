@@ -2,31 +2,26 @@
 {% block title %}Sign In — iCal{% endblock %}
 {% block body %}
 <div class="status-bar">
-  <span class="sb-time">9:41</span>
+  <span class="sb-time" id="sb-time-login">9:41</span>
   <div class="sb-icons">
     <svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
     <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/></svg>
   </div>
 </div>
-
 <div class="auth-page">
-  <!-- Brand mark — no photos -->
   <div class="auth-brand">
-    <div class="auth-logo-mark">
+    <div class="auth-logo-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-        <circle cx="12" cy="9" r="2.5"/>
+        <circle cx="12" cy="9" r="2.5" fill="rgba(255,255,255,.3)"/>
       </svg>
     </div>
-    <div class="auth-logo-wordmark">iCal</div>
-    <div class="auth-logo-tagline">AI Calorie Tracker</div>
+    <div class="auth-app-name">iCal</div>
+    <div class="auth-tagline">AI Nutrition Tracker</div>
   </div>
-
   <h1 class="auth-heading">Welcome back</h1>
   <p class="auth-sub">Sign in to continue tracking your nutrition</p>
-
   <div class="err-box" id="err-box"></div>
-
   <form id="form" novalidate style="display:flex;flex-direction:column;gap:16px">
     <div class="fg">
       <label class="fl" for="email">Email address</label>
@@ -37,32 +32,31 @@
       <label class="fl" for="password">Password</label>
       <div class="pw-wrap">
         <input id="password" type="password" class="fc" placeholder="Your password" autocomplete="current-password"/>
-        <button type="button" class="pw-eye" id="eye" aria-label="Show password">
+        <button type="button" class="pw-eye" id="eye">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
       <span id="pw-err" class="fe hidden"></span>
     </div>
     <div style="padding-top:4px">
-      <button type="button" id="btn" class="btn btn-primary btn-full btn-lg">
-        <div class="sp"></div><span class="bt">Sign In</span>
-      </button>
+      <button type="button" id="btn" class="btn btn-primary btn-full btn-lg"><div class="sp"></div><span class="bt">Sign In</span></button>
     </div>
   </form>
-
   <div class="divider" style="margin:24px 0">or</div>
   <p style="text-align:center;font-size:15px;color:var(--t2)">
-    No account?&nbsp;<a href="/register" style="color:var(--a);font-weight:700">Create one</a>
+    No account? <a href="/register" style="color:var(--g);font-weight:700">Create one free</a>
   </p>
 </div>
 {% endblock %}
 {% block scripts %}
 <script>
 if(localStorage.getItem('token')) window.location.href='/dashboard';
-const emailEl=document.getElementById('email'), pwEl=document.getElementById('password');
-const errBox=document.getElementById('err-box'), btn=document.getElementById('btn');
+const t=new Date(),h=t.getHours().toString().padStart(2,'0'),mi=t.getMinutes().toString().padStart(2,'0');
+document.getElementById('sb-time-login').textContent=h+':'+mi;
+const emailEl=document.getElementById('email'),pwEl=document.getElementById('password');
+const errBox=document.getElementById('err-box'),btn=document.getElementById('btn');
 document.getElementById('eye').addEventListener('click',()=>{pwEl.type=pwEl.type==='text'?'password':'text'});
-btn.addEventListener('click',async()=>{
+async function doLogin(){
   errBox.style.display='none';
   const ok1=markField(emailEl,'email-err',validateEmail(emailEl.value),'Enter a valid email');
   const ok2=markField(pwEl,'pw-err',pwEl.value.length>=1,'Password is required');
@@ -75,9 +69,14 @@ btn.addEventListener('click',async()=>{
     localStorage.setItem('user_id',data.user_id);
     localStorage.setItem('username',data.username||data.email.split('@')[0]);
     localStorage.setItem('calorie_goal',data.calorie_goal||2000);
+    localStorage.setItem('protein_goal',data.protein_goal||150);
+    localStorage.setItem('carbs_goal',data.carbs_goal||200);
+    localStorage.setItem('fat_goal',data.fat_goal||65);
+    localStorage.setItem('user_goal',data.goal||'maintain');
     window.location.href='/dashboard';
   }catch(err){errBox.textContent=err.message||'Incorrect email or password.';errBox.style.display='block';setLoading(btn,false);}
-});
-document.getElementById('form').addEventListener('keydown',e=>{if(e.key==='Enter')btn.click()});
+}
+btn.addEventListener('click',doLogin);
+document.getElementById('form').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 </script>
 {% endblock %}
