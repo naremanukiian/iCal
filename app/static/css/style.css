@@ -76,7 +76,7 @@ input,select,textarea{font-family:inherit}svg{display:block}
 /* ── Shell ── */
 .app{background:var(--bg);width:100%;flex:1;overflow:hidden;display:flex;flex-direction:column}
 .page{display:none}
-.page.active{display:flex;flex-direction:column;flex:1;overflow:hidden;animation:pg-in .20s ease both}
+.page.active{display:flex;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;animation:pg-in .20s ease both}
 @keyframes pg-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -1103,3 +1103,5 @@ input::placeholder, textarea::placeholder { color: rgba(245,245,245,.28) !import
 .status-bar{flex-shrink:0}
 
 .auth-page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+.page.active::-webkit-scrollbar{display:none}
