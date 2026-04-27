@@ -105,31 +105,65 @@
 <div class="overlay" id="share-overlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <h3 class="sheet-title">Meal Logged</h3>
-    <p class="sheet-sub">Share to your profile?</p>
-    <div class="share-preview">
-      <div class="sp-meal" id="sp-meal">—</div>
-      <div class="sp-kcal" id="sp-kcal">0 kcal</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px" id="sp-macros"></div>
-      <div class="sp-foods" id="sp-foods">—</div>
+
+    <!-- Header row -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <h3 style="font-size:20px;font-weight:800;color:var(--t1);letter-spacing:-.03em;margin-bottom:3px">Meal Logged!</h3>
+        <p style="font-size:13px;color:var(--t3)">Share with your community?</p>
+      </div>
+      <button id="skip-share-btn" style="width:34px;height:34px;border-radius:50%;background:var(--s3);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--t3);flex-shrink:0;cursor:pointer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
-    <div class="fg" style="margin-bottom:14px">
-      <label class="fl">Caption (optional)</label>
-      <textarea id="share-caption" class="fc" rows="2" placeholder="How was this meal?" style="min-height:70px;resize:none"></textarea>
+
+    <!-- Meal summary card -->
+    <div style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(5,150,105,.06));border:.5px solid rgba(16,185,129,.22);border-radius:18px;padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:13px;background:rgba(16,185,129,.20);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="1.8" style="width:22px;height:22px"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:3px" id="sp-meal">Breakfast</div>
+          <div style="font-size:22px;font-weight:900;color:var(--g);letter-spacing:-.04em;line-height:1" id="sp-kcal">0 kcal</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:14px;color:var(--t2);line-height:1.4" id="sp-foods">—</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px" id="sp-macros"></div>
     </div>
-    <label class="fl" style="margin-bottom:8px;display:block">Visibility</label>
-    <div class="priv-grid">
-      <div><input type="radio" name="priv" value="public" id="priv-pub" class="priv-radio" checked/>
-        <label for="priv-pub" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Public</label></div>
-      <div><input type="radio" name="priv" value="private" id="priv-priv" class="priv-radio"/>
-        <label for="priv-priv" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Private</label></div>
-      <div><input type="radio" name="priv" value="skip" id="priv-skip" class="priv-radio"/>
-        <label for="priv-skip" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Skip</label></div>
+
+    <!-- Caption -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">Caption <span style="font-weight:400;font-size:11px;text-transform:none">(optional)</span></label>
+      <textarea id="share-caption" class="fc" rows="2" placeholder="What did you think of this meal?" style="font-size:15px;padding:12px 14px;border-radius:14px;min-height:72px;resize:none;line-height:1.5"></textarea>
     </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost" id="skip-share-btn" style="flex:1">Skip</button>
-      <button class="btn btn-primary btn-lg" id="do-share-btn" style="flex:2"><div class="sp"></div><span class="bt">Post to Profile</span></button>
+
+    <!-- Visibility toggle -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--s2);border:.5px solid var(--bdr);border-radius:14px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="1.8" style="width:18px;height:18px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--t1)">Post publicly</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:1px">Visible to everyone on the feed</div>
+        </div>
+      </div>
+      <label class="toggle" style="flex-shrink:0">
+        <input type="checkbox" id="priv-pub-toggle" checked/>
+        <span class="toggle-slider"></span>
+      </label>
     </div>
+
+    <!-- Action buttons -->
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-primary btn-full btn-lg" id="do-share-btn" style="height:52px;border-radius:18px;font-size:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <div class="sp"></div><span class="bt">Share Meal</span>
+      </button>
+      <button class="btn btn-outline btn-full" id="save-only-btn" style="height:46px;border-radius:18px;font-size:15px;color:var(--t2)">
+        Save to log only
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -662,8 +696,7 @@ function renderMeal(t){
   list.innerHTML='';
   m.foods.forEach(f=>{
     const row=document.createElement('div');row.className='mc-food-row';
-    row.innerHTML=(f.photoUrl?`<img class="mc-food-thumb" src="${f.photoUrl}" alt="${f.name}" onerror="this.className='mc-food-thumb-ph';this.outerHTML='<div class=\\'mc-food-thumb-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg></div>'"/>`:'<div class="mc-food-thumb-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>')+
-    `<div class="mc-food-info"><div class="mc-food-name">${f.name}</div><div class="mc-food-srv">${f.serving||'1 serving'}</div><div class="mc-food-chips"><span class="mc-chip" style="background:rgba(96,165,250,.12);color:var(--carbs)">${f.carbs.toFixed(1)}g C</span><span class="mc-chip" style="background:rgba(251,191,36,.12);color:var(--fat)">${f.fat.toFixed(1)}g F</span><span class="mc-chip" style="background:rgba(52,211,153,.12);color:var(--protein)">${f.protein.toFixed(1)}g P</span></div></div><div class="mc-food-kcal">${f.kcal}</div>`;
+    row.innerHTML=`<div class="mc-food-info"><div class="mc-food-name">${f.name}</div><div class="mc-food-srv">${f.serving||'1 serving'}</div><div class="mc-food-chips"><span class="mc-chip" style="background:rgba(96,165,250,.12);color:var(--carbs)">${f.carbs.toFixed(1)}g C</span><span class="mc-chip" style="background:rgba(251,191,36,.12);color:var(--fat)">${f.fat.toFixed(1)}g F</span><span class="mc-chip" style="background:rgba(52,211,153,.12);color:var(--protein)">${f.protein.toFixed(1)}g P</span></div></div><div class="mc-food-kcal">${f.kcal}</div>`;
     list.appendChild(row);
   });
 }
@@ -743,21 +776,26 @@ document.getElementById('analyze-btn').addEventListener('click',async()=>{
 // ── Share ──
 function openShare(){
   if(!pendShare)return;
-  document.getElementById('sp-meal').textContent=pendShare.meal_type;
+  const mt=pendShare.meal_type||'meal';
+  const icons={breakfast:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>',lunch:'<path d="M3 11l19-9-9 19-2-8-8-2z"/>',dinner:'<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>',snacks:'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>',other:'<circle cx="12" cy="12" r="10"/>'}; 
+  const icon=document.getElementById('sp-meal-ico');
+  if(icon) icon.innerHTML=icons[mt]||icons.other;
+  document.getElementById('sp-meal').textContent=mt.charAt(0).toUpperCase()+mt.slice(1);
   document.getElementById('sp-kcal').textContent=pendShare.kcal+' kcal';
   document.getElementById('sp-foods').textContent=pendShare.foods.map(f=>f.name).join(', ');
-  document.getElementById('sp-macros').innerHTML=`<span class="mc-chip" style="background:rgba(96,165,250,.12);color:var(--carbs)">${pendShare.carbs.toFixed(1)}g C</span><span class="mc-chip" style="background:rgba(251,191,36,.12);color:var(--fat)">${pendShare.fat.toFixed(1)}g F</span><span class="mc-chip" style="background:rgba(52,211,153,.12);color:var(--protein)">${pendShare.protein.toFixed(1)}g P</span>`;
+  document.getElementById('sp-macros').innerHTML=`<span style="font-size:11px;font-weight:600;color:var(--carbs)">${pendShare.carbs.toFixed(1)}g Carbs</span><span style="font-size:11px;color:var(--t4)">·</span><span style="font-size:11px;font-weight:600;color:var(--fat)">${pendShare.fat.toFixed(1)}g Fat</span><span style="font-size:11px;color:var(--t4)">·</span><span style="font-size:11px;font-weight:600;color:var(--protein)">${pendShare.protein.toFixed(1)}g Protein</span>`;
   document.getElementById('share-overlay').classList.add('show');
 }
 function closeShare(){document.getElementById('share-overlay').classList.remove('show');pendShare=null;document.getElementById('share-caption').value=''}
 document.getElementById('skip-share-btn').addEventListener('click',closeShare);
+document.getElementById('save-only-btn').addEventListener('click',closeShare);
 document.getElementById('share-overlay').addEventListener('click',e=>{if(e.target.id==='share-overlay')closeShare()});
 document.getElementById('do-share-btn').addEventListener('click',async()=>{
   if(!pendShare)return;
   const btn=document.getElementById('do-share-btn');setLoading(btn,true);
-  const priv=document.querySelector('input[name="priv"]:checked')?.value||'public';
-  if(priv==='skip'){closeShare();setLoading(btn,false);return}
-  try{await api('/posts','POST',{session_id:pendShare.session_id,caption:document.getElementById('share-caption').value.trim(),status:priv});showToast('Posted to profile','success');closeShare();}
+  const isPublic=document.getElementById('priv-pub-toggle').checked;
+  const status=isPublic?'public':'private';
+  try{await api('/posts','POST',{session_id:pendShare.session_id,caption:document.getElementById('share-caption').value.trim(),status});showToast('Meal shared!','success');closeShare();}
   catch(err){showToast(err.message,'error');}
   finally{setLoading(btn,false)}
 });
@@ -768,13 +806,12 @@ function buildPost(p){
   const author=p.author_username||p.username||(p.author_email||'').split('@')[0]||'user';
   const dispName=isOwner?'You':('@'+author);
   const card=document.createElement('div');card.className='post-card';
-  let photoHtml='';
-  if(p.photo_url){
-    const safeSummary=(p.food_summary||'Meal').replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-    photoHtml=`<div class="post-photo-wrap"><img class="post-photo" src="${p.photo_url}" alt="${safeSummary}" onerror="imgError(this)"/><div class="post-photo-overlay"></div><div class="post-photo-meta"><span class="post-photo-kcal">${p.total_calories||0} kcal</span><span style="font-size:11px;color:rgba(255,255,255,.7)">${timeAgo(p.created_at)}</span></div></div>`;
-  }else{
-    photoHtml=`<div class="post-photo-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="width:36px;height:36px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${p.food_summary||'Meal photo'}</span></div>`;
-  }
+  // No photo display — clean card header instead
+  const mealIcons={breakfast:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>',lunch:'<path d="M3 11l19-9-9 19-2-8-8-2z"/>',dinner:'<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>',snacks:'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>',other:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'};
+  const mealColors={breakfast:'rgba(245,158,11,.12)',lunch:'rgba(16,185,129,.12)',dinner:'rgba(139,92,246,.12)',snacks:'rgba(59,130,246,.12)',other:'rgba(255,255,255,.06)'};
+  const mealStrokes={breakfast:'#F59E0B',lunch:'#10B981',dinner:'#8B5CF6',snacks:'#3B82F6',other:'rgba(245,245,247,.4)'};
+  const mt=p.meal_type||'other';
+  let photoHtml=`<div style="background:${mealColors[mt]||mealColors.other};padding:16px 16px 14px;border-bottom:.5px solid var(--bdr);display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="${mealStrokes[mt]||'currentColor'}" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px">${mealIcons[mt]||mealIcons.other}</svg></div><div><div style="font-size:11px;font-weight:700;text-transform:capitalize;color:var(--t2);letter-spacing:.01em">${mt}</div><div style="font-size:20px;font-weight:900;color:${mealStrokes[mt]||'var(--t1)'};letter-spacing:-.04em;line-height:1.1">${p.total_calories||0} kcal</div></div></div><div style="text-align:right"><div style="font-size:11px;color:var(--t3)">${timeAgo(p.created_at)}</div></div></div>`;
   card.innerHTML=`${photoHtml}
   <div class="post-inner">
     <div class="post-hdr">
@@ -939,7 +976,7 @@ function buildAnalytics(){
   if(!sessions.length){hist.innerHTML='<div class="empty-state"><div class="empty-title">No history yet</div></div>';return}
   sessions.slice(0,40).forEach(s=>{
     const row=document.createElement('div');row.className='hist-row';
-    row.innerHTML=(s.photo_url?`<img class="hist-thumb" src="${s.photo_url}" alt="meal" onerror="imgError(this,'hist-thumb-ph')"/>`:'<div class="hist-thumb-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>')+
+    row.innerHTML=
     `<div class="hist-info"><div class="hist-foods">${s.food_summary||'Meal'}</div><div class="hist-meta">${timeAgo(s.created_at)} · ${s.meal_type}</div></div><div style="text-align:right;flex-shrink:0"><div class="hist-kcal-num">${s.total_calories}</div><div class="hist-kcal-lbl">kcal</div></div>`;
     row.addEventListener('click',()=>openDayPanel(new Date(s.created_at).toDateString()));
     hist.appendChild(row);
