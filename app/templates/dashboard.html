@@ -817,7 +817,13 @@ function buildPost(p){
     <div class="post-hdr">
       <div class="post-author">
         <div class="post-av ${isOwner?'is-me':''}">${author[0].toUpperCase()}</div>
-        <div style="min-width:0;flex:1"><div class="post-author-name ${isOwner?'is-me':''}">${dispName}</div><div class="post-time">${p.photo_url?'':timeAgo(p.created_at)}</div></div>
+        <div style="min-width:0;flex:1">
+          <div style="display:flex;align-items:center;gap:5px">
+            <span class="post-author-name ${isOwner?'is-me':''}">@${author}</span>
+            ${isOwner?'<span style="font-size:9px;font-weight:700;background:var(--g-l);color:var(--g);padding:1px 6px;border-radius:99px;letter-spacing:.03em">You</span>':''}
+          </div>
+          <div class="post-time">${timeAgo(p.created_at)}</div>
+        </div>
       </div>
       <div class="post-menu-wrap">
         <button class="post-menu-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>

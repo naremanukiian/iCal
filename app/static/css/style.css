@@ -74,7 +74,7 @@ input,select,textarea{font-family:inherit}svg{display:block}
 }
 
 /* ── Shell ── */
-.app{background:var(--bg);width:100%;min-height:100%;position:relative;flex:1 1 auto;}
+.app{background:var(--bg);width:100%;position:relative;flex:1 1 auto;padding-bottom:calc(var(--nav-h) + 16px)}
 .page{display:none}
 .page.active{display:block;animation:pg-in .20s ease both}
 @keyframes pg-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
