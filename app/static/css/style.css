@@ -74,9 +74,9 @@ input,select,textarea{font-family:inherit}svg{display:block}
 }
 
 /* ── Shell ── */
-.app{background:var(--bg);width:100%;min-height:100%;position:relative;padding-bottom:calc(var(--nav-h) + 20px)}
+.app{background:var(--bg);width:100%;flex:1;overflow:hidden;display:flex;flex-direction:column}
 .page{display:none}
-.page.active{display:block;animation:pg-in .20s ease both}
+.page.active{display:flex;flex-direction:column;flex:1;overflow:hidden;animation:pg-in .20s ease both}
 @keyframes pg-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -697,7 +697,7 @@ textarea.fc{height:auto;padding:14px 16px;line-height:1.5;resize:none}
 .filter-chip.active{background:var(--g-l);color:var(--g);border-color:rgba(16,185,129,.35)}
 
 /* ── Suggest topbar ── */
-.suggest-page{background:var(--bg);min-height:100%}
+.suggest-page{background:var(--bg);min-height:100%;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .suggest-topbar{display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(0,0,0,.90);backdrop-filter:blur(28px);border-bottom:.5px solid var(--bdr);position:sticky;top:52px;z-index:49}
 .suggest-back{width:36px;height:36px;border-radius:50%;background:var(--s3);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--g);min-width:36px;flex-shrink:0}
 .suggest-back:active{opacity:.6}
@@ -1088,3 +1088,18 @@ input::placeholder, textarea::placeholder { color: rgba(245,245,245,.28) !import
 .hist-thumb { display: none; }
 .hist-thumb-ph { display: none; }
 .hist-row { padding: 12px 14px; }
+
+/* ── Per-page scroll area (nuclear scroll fix) ── */
+.page-scroll{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  scrollbar-width:none;
+}
+.page-scroll::-webkit-scrollbar{display:none}
+/* Status bar never shrinks */
+.status-bar{flex-shrink:0}
+
+.auth-page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
