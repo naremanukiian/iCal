@@ -6,38 +6,99 @@
 <div class="overlay" id="overlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <h3 class="sheet-title">Log a Meal</h3>
-    <p class="sheet-sub">Choose meal type and upload a photo</p>
-    <div class="mt-grid">
-      <div><input type="radio" name="mt" value="breakfast" id="mt-b" class="mt-radio" checked/>
-        <label for="mt-b" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>Breakfast</label></div>
-      <div><input type="radio" name="mt" value="lunch" id="mt-l" class="mt-radio"/>
-        <label for="mt-l" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Lunch</label></div>
-      <div><input type="radio" name="mt" value="dinner" id="mt-d" class="mt-radio"/>
-        <label for="mt-d" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>Dinner</label></div>
-      <div><input type="radio" name="mt" value="snacks" id="mt-s" class="mt-radio"/>
-        <label for="mt-s" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Snacks</label></div>
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div>
+        <h3 class="sheet-title" style="margin-bottom:2px">Log a Meal</h3>
+        <p style="font-size:13px;color:var(--t3);font-weight:400">Snap your food to track instantly</p>
+      </div>
+      <button id="cancel-btn" style="width:36px;height:36px;border-radius:50%;background:var(--s3);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--t3);flex-shrink:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
+
+    <!-- Meal type — 4 tiles -->
+    <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Meal Type</div>
+    <div class="mt-grid">
+      <div>
+        <input type="radio" name="mt" value="breakfast" id="mt-b" class="mt-radio" checked/>
+        <label for="mt-b" class="mt-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+          Breakfast
+        </label>
+      </div>
+      <div>
+        <input type="radio" name="mt" value="lunch" id="mt-l" class="mt-radio"/>
+        <label for="mt-l" class="mt-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+          Lunch
+        </label>
+      </div>
+      <div>
+        <input type="radio" name="mt" value="dinner" id="mt-d" class="mt-radio"/>
+        <label for="mt-d" class="mt-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          Dinner
+        </label>
+      </div>
+      <div>
+        <input type="radio" name="mt" value="snacks" id="mt-s" class="mt-radio"/>
+        <label for="mt-s" class="mt-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          Snacks
+        </label>
+      </div>
+    </div>
+
+    <!-- Upload zone -->
+    <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Photo</div>
     <div class="upload-zone" id="uz">
       <input type="file" id="fi" accept="image/jpeg,image/png,image/webp,image/heic"/>
       <div id="uz-ph">
-        <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-        <div class="upload-title">Tap to upload photo</div>
-        <div class="upload-sub">JPEG, PNG or WebP — max 10MB</div>
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+            <line x1="15" y1="3" x2="15" y2="9"/>
+            <line x1="12" y1="6" x2="18" y2="6"/>
+          </svg>
+        </div>
+        <div class="upload-title">Tap to upload food photo</div>
+        <div class="upload-sub">JPEG, PNG or WebP · max 10MB</div>
       </div>
       <img id="preview" class="preview-img" alt=""/>
     </div>
-    <button class="btn btn-ghost btn-sm btn-full" id="change-btn" style="display:none;margin-bottom:10px">Change photo</button>
+
+    <!-- Change photo link (shown after upload) -->
+    <button class="btn btn-outline btn-sm btn-full" id="change-btn" style="display:none;margin-bottom:12px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+      Change photo
+    </button>
+
+    <!-- Scanning state -->
     <div class="scanning" id="scanning">
       <div class="scan-ring"></div>
       <div class="scan-text">Analyzing your meal...</div>
-      <div class="scan-sub">GPT-4o Vision + 60k food database</div>
+      <div class="scan-sub">GPT-4o Vision · 60,000 foods</div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:12px" id="modal-actions">
-      <button class="btn btn-ghost" id="cancel-btn" style="flex:1">Cancel</button>
-      <button class="btn btn-primary btn-lg" id="analyze-btn" style="flex:2" disabled><div class="sp"></div><span class="bt">Analyze Meal</span></button>
+
+    <!-- Actions -->
+    <div id="modal-actions">
+      <button class="btn btn-ghost" id="cancel-btn-2" style="flex:1">Cancel</button>
+      <button class="btn btn-primary btn-lg" id="analyze-btn" style="flex:2" disabled>
+        <div class="sp"></div>
+        <span class="bt">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;vertical-align:middle;margin-right:5px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Analyze Meal
+        </span>
+      </button>
     </div>
+
   </div>
+</div>
+
 </div>
 
 <!-- ═══ SHARE SHEET ═══ -->
@@ -409,6 +470,14 @@
 {% endblock %}
 {% block scripts %}
 <script>
+
+// Photo error handler — replaces broken img with placeholder div
+function imgError(img, cls) {
+  const ph = document.createElement('div');
+  ph.className = cls || 'post-photo-ph';
+  ph.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="width:36px;height:36px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+  img.parentNode.replaceChild(ph, img);
+}
 // ── Auth guard ──
 const token = localStorage.getItem('token');
 if (!token) window.location.href = '/login';
@@ -553,7 +622,7 @@ function openDayPanel(ds){
   daySessions.forEach(s=>{
     const t=new Date(s.created_at).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
     html+='<div style="background:var(--s1);border:.5px solid var(--bdr);border-radius:var(--r-lg);overflow:hidden;margin-bottom:8px">';
-    if(s.photo_url) html+=`<img src="${s.photo_url}" style="width:100%;height:140px;object-fit:cover;display:block" loading="lazy" onerror="this.remove()"/>`;
+    if(s.photo_url) html+=`<img src="${s.photo_url}" style="width:100%;height:140px;object-fit:cover;display:block" onerror="this.remove()"/>`;
     html+=`<div style="padding:12px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:14px;font-weight:700;color:var(--t1);text-transform:capitalize">${s.meal_type}</span><span style="font-size:14px;font-weight:700;color:var(--t2)">${t}</span></div><div style="font-size:13px;color:var(--t2)">${s.food_summary||''}</div><div style="font-size:20px;font-weight:900;color:var(--g);margin-top:6px">${s.total_calories} kcal</div></div></div>`;
   });
   body.innerHTML=html;
@@ -593,7 +662,7 @@ function renderMeal(t){
   list.innerHTML='';
   m.foods.forEach(f=>{
     const row=document.createElement('div');row.className='mc-food-row';
-    row.innerHTML=(f.photoUrl?`<img class="mc-food-thumb" src="${f.photoUrl}" alt="${f.name}" loading="lazy" onerror="this.className='mc-food-thumb-ph';this.outerHTML='<div class=\\'mc-food-thumb-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg></div>'"/>`:'<div class="mc-food-thumb-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>')+
+    row.innerHTML=(f.photoUrl?`<img class="mc-food-thumb" src="${f.photoUrl}" alt="${f.name}" onerror="this.className='mc-food-thumb-ph';this.outerHTML='<div class=\\'mc-food-thumb-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg></div>'"/>`:'<div class="mc-food-thumb-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>')+
     `<div class="mc-food-info"><div class="mc-food-name">${f.name}</div><div class="mc-food-srv">${f.serving||'1 serving'}</div><div class="mc-food-chips"><span class="mc-chip" style="background:rgba(96,165,250,.12);color:var(--carbs)">${f.carbs.toFixed(1)}g C</span><span class="mc-chip" style="background:rgba(251,191,36,.12);color:var(--fat)">${f.fat.toFixed(1)}g F</span><span class="mc-chip" style="background:rgba(52,211,153,.12);color:var(--protein)">${f.protein.toFixed(1)}g P</span></div></div><div class="mc-food-kcal">${f.kcal}</div>`;
     list.appendChild(row);
   });
@@ -637,6 +706,7 @@ function applyFile(file){
 document.getElementById('fi').addEventListener('change',()=>applyFile(document.getElementById('fi').files[0]));
 document.getElementById('change-btn').addEventListener('click',resetUpload);
 document.getElementById('cancel-btn').addEventListener('click',closeModal);
+document.getElementById('cancel-btn-2').addEventListener('click',closeModal);
 document.getElementById('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal()});
 const uz=document.getElementById('uz');
 uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag')});
@@ -700,7 +770,8 @@ function buildPost(p){
   const card=document.createElement('div');card.className='post-card';
   let photoHtml='';
   if(p.photo_url){
-    photoHtml=`<div class="post-photo-wrap"><img class="post-photo" src="${p.photo_url}" alt="${p.food_summary||'Meal'}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'post-photo-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.3\\' style=\\'width:36px;height:36px\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg><span>${p.food_summary||'Meal'}</span></div>'"/><div class="post-photo-overlay"></div><div class="post-photo-meta"><span class="post-photo-kcal">${p.total_calories||0} kcal</span><span style="font-size:11px;color:rgba(255,255,255,.7)">${timeAgo(p.created_at)}</span></div></div>`;
+    const safeSummary=(p.food_summary||'Meal').replace(/'/g,"&#39;").replace(/"/g,"&quot;");
+    photoHtml=`<div class="post-photo-wrap"><img class="post-photo" src="${p.photo_url}" alt="${safeSummary}" onerror="imgError(this)"/><div class="post-photo-overlay"></div><div class="post-photo-meta"><span class="post-photo-kcal">${p.total_calories||0} kcal</span><span style="font-size:11px;color:rgba(255,255,255,.7)">${timeAgo(p.created_at)}</span></div></div>`;
   }else{
     photoHtml=`<div class="post-photo-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="width:36px;height:36px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${p.food_summary||'Meal photo'}</span></div>`;
   }
@@ -868,7 +939,7 @@ function buildAnalytics(){
   if(!sessions.length){hist.innerHTML='<div class="empty-state"><div class="empty-title">No history yet</div></div>';return}
   sessions.slice(0,40).forEach(s=>{
     const row=document.createElement('div');row.className='hist-row';
-    row.innerHTML=(s.photo_url?`<img class="hist-thumb" src="${s.photo_url}" alt="meal" loading="lazy" onerror="this.outerHTML='<div class=\\'hist-thumb-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg></div>'"/>`:'<div class="hist-thumb-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>')+
+    row.innerHTML=(s.photo_url?`<img class="hist-thumb" src="${s.photo_url}" alt="meal" onerror="imgError(this,'hist-thumb-ph')"/>`:'<div class="hist-thumb-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>')+
     `<div class="hist-info"><div class="hist-foods">${s.food_summary||'Meal'}</div><div class="hist-meta">${timeAgo(s.created_at)} · ${s.meal_type}</div></div><div style="text-align:right;flex-shrink:0"><div class="hist-kcal-num">${s.total_calories}</div><div class="hist-kcal-lbl">kcal</div></div>`;
     row.addEventListener('click',()=>openDayPanel(new Date(s.created_at).toDateString()));
     hist.appendChild(row);
