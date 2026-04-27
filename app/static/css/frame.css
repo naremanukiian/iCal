@@ -38,9 +38,9 @@ html,body{width:100%;height:100%;overflow:hidden;margin:0;padding:0}
 .di-lens::after{content:'';position:absolute;top:2px;left:2px;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.14)}
 .di-sensor{width:7px;height:7px;border-radius:50%;background:#050510;flex-shrink:0}
 .home-indicator{position:absolute;bottom:calc(100%*8/852);left:50%;transform:translateX(-50%);width:calc(100%*134/393);height:5px;background:rgba(255,255,255,.18);border-radius:3px;z-index:400;pointer-events:none}
-#phone-screen{position:absolute;inset:0;border-radius:calc(100%*39/393);background:#000;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;pointer-events:auto;display:flex;flex-direction:column}
+#phone-screen{position:absolute;inset:0;border-radius:calc(100%*39/393);background:#000;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;pointer-events:auto}
 #phone-screen::-webkit-scrollbar{display:none}
-.app{width:100%;position:relative;background:#000;flex:1 1 auto;}
+.app{width:100%;position:relative;background:#000;min-height:100%;padding-bottom:calc(82px + env(safe-area-inset-bottom,0px) + 16px)}
 .bottom-nav{position:sticky!important;bottom:0!important;width:100%!important;z-index:400!important;flex-shrink:0!important}
 @media(min-width:768px){html,body{overflow:hidden!important;height:100dvh!important}.frame-body{pointer-events:none}.phone-frame-wrap{pointer-events:all}}
 @media(max-width:767px){

@@ -74,7 +74,7 @@ input,select,textarea{font-family:inherit}svg{display:block}
 }
 
 /* ── Shell ── */
-.app{background:var(--bg);width:100%;position:relative;flex:1 1 auto;padding-bottom:calc(var(--nav-h) + 16px)}
+.app{background:var(--bg);width:100%;min-height:100%;position:relative;padding-bottom:calc(var(--nav-h) + 20px)}
 .page{display:none}
 .page.active{display:block;animation:pg-in .20s ease both}
 @keyframes pg-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -1023,15 +1023,7 @@ input::placeholder, textarea::placeholder { color: rgba(245,245,245,.28) !import
 /* ══════════════════════════════════════════════
    SCROLL FIX — proper flex layout
    ══════════════════════════════════════════════ */
-/* Ensure phone-screen children lay out correctly */
-#phone-screen > .app { min-height: 0; }
-
 /* Pages should be full-width within app */
-.page.active {
-  display: block;
-  animation: pg-in .20s ease both;
-  min-height: 50vh; /* Ensure enough height to show content */
-}
 
 /* ══════════════════════════════════════════════
    SHARE SHEET v2 — clean redesign
