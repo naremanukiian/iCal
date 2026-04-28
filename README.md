@@ -1,7 +1,18 @@
 # iCal — AI Calorie Tracker
 ### Flask + Gunicorn + NGINX on AWS EC2
 
-> Snap a meal photo → GPT-4o identifies every food item → instant calories, carbs, fat and protein.
+> Snap a meal photo → GPT-4o Vision identifies every food item → instant calories, carbs, fat and protein. Share to your social feed, explore what others are eating, and track weekly trends.
+
+---
+
+## Features
+
+- **Photo → Nutrition in seconds** — GPT-4o Vision + 60 k-item food database
+- **AI Meal Suggestions** — text-based meal logging without a photo (`/suggest`)
+- **Social Feed & Explore** — post meals, follow friends, like and save posts
+- **Weekly Analytics** — bar chart, macro breakdown, streak tracking
+- **iPhone-style PWA** — Dynamic Island frame, bottom nav, bottom sheets
+- **Offline-ready** — service worker caches assets for repeat visits
 
 ---
 
@@ -11,16 +22,16 @@
 Internet
     │
     ▼
-[NGINX :80/:443]          ← reverse proxy, static files, SSL
+[NGINX :80/:443]          ← reverse proxy, static files, SSL termination
     │
-    ├── /static/*  → served directly from disk (fast, cached)
+    ├── /static/*  → served directly from disk (30-day cache)
     │
     └── /api/* + /  → proxy to Gunicorn :8000
                             │
                             └── Flask app (4+ workers)
                                     │
-                                    ├── PostgreSQL (Neon.tech)
-                                    └── OpenAI GPT-4o API
+                                    ├── PostgreSQL (Neon.tech serverless)
+                                    └── OpenAI GPT-4o Vision API
 ```
 
 ---
@@ -33,25 +44,25 @@ ical/
 │   ├── __init__.py          # Flask app factory
 │   ├── routes/
 │   │   ├── auth.py          # /api/register  /api/login  /api/me
-│   │   ├── meals.py         # /api/analyze   /api/history  /api/suggest
-│   │   ├── social.py        # /api/posts     /api/feed     /api/follow
+│   │   ├── meals.py         # /api/analyze  /api/log  /api/history  /api/suggest
+│   │   ├── social.py        # /api/posts  /api/feed  /api/follow  /api/explore
 │   │   └── pages.py         # HTML page routes (/ /dashboard etc.)
 │   ├── services/
-│   │   ├── database.py      # PostgreSQL connection pool
+│   │   ├── database.py      # PostgreSQL connection pool (Neon-safe)
 │   │   ├── auth.py          # JWT + bcrypt + @require_auth decorator
-│   │   └── analyzer.py      # GPT-4o Vision + 60k food database
-│   ├── templates/           # Jinja2 HTML (served by Flask)
-│   │   ├── base.html        # iPhone 17 Pro frame + PWA meta
+│   │   └── analyzer.py      # GPT-4o Vision + 60k food database lookup
+│   ├── templates/           # Jinja2 HTML (server-rendered)
+│   │   ├── base.html        # iPhone 15 Pro frame + PWA meta + cache busting
 │   │   ├── index.html       # Landing page
 │   │   ├── login.html
 │   │   ├── register.html
-│   │   ├── dashboard.html   # Main SPA (all 5 tabs)
-│   │   └── suggest.html     # AI meal suggestions
+│   │   ├── dashboard.html   # Main SPA (Home / Feed / Explore / Analytics / Profile)
+│   │   └── suggest.html     # AI text-based meal suggestion UI
 │   └── static/
 │       ├── css/
-│       │   ├── style.css    # Design system (tokens, components)
-│       │   └── frame.css    # iPhone 17 Pro frame (desktop only)
-│       ├── js/script.js     # Shared utilities (api(), toast, etc.)
+│       │   ├── style.css    # Design system (dark tokens, components, sheets)
+│       │   └── frame.css    # iPhone 15 Pro frame (desktop only)
+│       ├── js/script.js     # Shared utilities (api(), toast, setLoading, etc.)
 │       ├── manifest.json    # PWA manifest
 │       ├── sw.js            # Service worker (offline support)
 │       └── icons/           # App icons (192×192, 512×512)
@@ -61,7 +72,7 @@ ical/
 ├── ical.service             # systemd service unit
 ├── setup.sh                 # One-command EC2 setup
 ├── requirements.txt
-├── download_dataset.py      # Downloads 60k food database
+├── download_dataset.py      # Downloads 60k food JSON database
 └── .env.example             # Environment variable template
 ```
 
@@ -71,10 +82,10 @@ ical/
 
 ### Step 1 — Launch EC2 instance
 
-1. Go to **AWS Console → EC2 → Launch Instance**
-2. Choose **Ubuntu Server 22.04 LTS (64-bit)**
-3. Instance type: **t3.small** (minimum) or **t3.medium** (recommended)
-4. Key pair: create or select one
+1. **AWS Console → EC2 → Launch Instance**
+2. AMI: **Ubuntu Server 22.04 LTS (64-bit)**
+3. Instance type: **t3.small** (min) or **t3.medium** (recommended)
+4. Create or select a key pair
 5. Security Group — open these ports:
 
 | Port | Protocol | Source | Purpose |
@@ -84,11 +95,10 @@ ical/
 | 443  | TCP | 0.0.0.0/0 | HTTPS (after SSL) |
 
 6. Storage: **20 GB** minimum
-7. Launch the instance
 
 ---
 
-### Step 2 — SSH into your instance
+### Step 2 — SSH in
 
 ```bash
 chmod 400 your-key.pem
@@ -97,19 +107,17 @@ ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
 
 ---
 
-### Step 3 — Upload your project
+### Step 3 — Upload the project
 
-**Option A — from GitHub (recommended)**
+**From GitHub (recommended)**
 ```bash
-# On EC2, edit setup.sh first to set your repo URL
-# Then just run it:
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/setup.sh | bash
+git clone https://github.com/naremanukiian/iCal.git
+cd iCal
 ```
 
-**Option B — upload from local machine**
+**Or from local machine**
 ```bash
-# From your local machine:
-scp -i your-key.pem -r ./ical-ec2/* ubuntu@YOUR_EC2_IP:/home/ubuntu/ical/
+scp -i your-key.pem -r ./ical/* ubuntu@YOUR_EC2_IP:/home/ubuntu/ical/
 ```
 
 ---
@@ -117,18 +125,15 @@ scp -i your-key.pem -r ./ical-ec2/* ubuntu@YOUR_EC2_IP:/home/ubuntu/ical/
 ### Step 4 — Run the setup script
 
 ```bash
-cd /home/ubuntu/ical
 chmod +x setup.sh
 ./setup.sh
 ```
 
 This automatically:
 - Installs Python 3.11, pip, NGINX
-- Creates a virtualenv
-- Installs all Python dependencies
-- Downloads the 60k food database
+- Creates a virtualenv and installs dependencies (including Pillow)
+- Downloads the 60 k food database
 - Configures systemd + NGINX
-- Opens firewall ports
 - Starts everything
 
 ---
@@ -139,7 +144,6 @@ This automatically:
 nano /home/ubuntu/ical/.env
 ```
 
-Fill in:
 ```env
 DATABASE_URL=postgresql://neondb_owner:YOUR_PASS@ep-xxx.neon.tech/neondb?sslmode=require
 OPENAI_API_KEY=sk-...
@@ -152,118 +156,86 @@ Generate a secure JWT secret:
 python3 -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-Restart the app:
 ```bash
 sudo systemctl restart ical
 ```
 
 ---
 
-### Step 6 — Verify it's running
+### Step 6 — Verify
 
 ```bash
-# Check app status
 sudo systemctl status ical
-
-# Health check
-curl http://localhost:8000/api/health
-
-# Check NGINX
+curl http://localhost:8000/api/health   # → {"status":"healthy","db":"connected"}
 sudo nginx -t && sudo systemctl status nginx
-
-# View logs live
 sudo journalctl -u ical -f
 ```
 
-Open your browser: `http://YOUR_EC2_PUBLIC_IP`
+Open `http://YOUR_EC2_PUBLIC_IP` in a browser.
 
 ---
 
-### Step 7 — Add SSL (HTTPS) — optional but recommended
+### Step 7 — SSL (optional but recommended)
 
 ```bash
-# Point your domain's A record to your EC2 IP first, then:
+# Point your domain A record to the EC2 IP first, then:
 sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
-
-# Auto-renewal is set up automatically
-sudo systemctl status certbot.timer
-```
-
-Then update `nginx.conf` to uncomment the SSL + redirect blocks.
-
----
-
-## Management Commands
-
-```bash
-# App service
-sudo systemctl start   ical
-sudo systemctl stop    ical
-sudo systemctl restart ical
-sudo systemctl status  ical
-
-# Live logs
-sudo journalctl -u ical -f
-sudo tail -f /var/log/ical/access.log
-sudo tail -f /var/log/nginx/ical_access.log
-
-# NGINX
-sudo nginx -t                   # test config
-sudo systemctl reload nginx     # reload without downtime
-sudo systemctl restart nginx    # full restart
-
-# Deploy new code (after git push)
-cd /home/ubuntu/ical
-git pull
-source venv/bin/activate
-pip install -r requirements.txt
-sudo systemctl restart ical
-
-# Create a deploy alias
-echo 'alias deploy="cd /home/ubuntu/ical && git pull && sudo systemctl restart ical"' >> ~/.bashrc
-source ~/.bashrc
-# Then just run: deploy
 ```
 
 ---
 
-## API Endpoints
+## API Reference
 
 All endpoints are prefixed with `/api/`.
 
 ### Auth
+
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/api/register` | — | Create account |
-| POST | `/api/login` | — | Login, get JWT |
-| GET | `/api/me` | JWT | Get profile |
-| PATCH | `/api/me` | JWT | Update profile |
+| POST | `/register` | — | Create account |
+| POST | `/login` | — | Login → JWT |
+| GET | `/me` | JWT | Get own profile |
+| PATCH | `/me` | JWT | Update profile / goals |
 
 ### Meals
+
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/api/analyze` | JWT | Upload photo → macros |
-| GET | `/api/history` | JWT | Meal history |
-| DELETE | `/api/history/<id>` | JWT | Delete session |
-| POST | `/api/suggest` | JWT | AI meal suggestion |
+| POST | `/analyze` | JWT | Photo upload → macros (multipart) |
+| POST | `/log` | JWT | Log AI-suggested foods without a photo |
+| GET | `/history` | JWT | Meal session history |
+| DELETE | `/history/<id>` | JWT | Delete a session |
+| POST | `/suggest` | JWT | AI text-based meal suggestion |
+
+#### `POST /api/log` body
+
+```json
+{
+  "meal_type": "lunch",
+  "foods": [
+    { "name": "Grilled Chicken", "kcal": 280, "carbs": 0, "fat": 6, "protein": 53, "serving": "200g" }
+  ]
+}
+```
 
 ### Social
+
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/api/posts` | JWT | Share a meal |
-| GET | `/api/posts/feed` | JWT | Social feed |
-| GET | `/api/posts/explore` | JWT | Browse public posts |
-| GET | `/api/posts/profile/<id>` | JWT | User's posts |
-| PATCH | `/api/posts/<id>/status` | JWT | Toggle public/private |
-| DELETE | `/api/posts/<id>` | JWT | Delete post |
-| POST | `/api/posts/<id>/like` | JWT | Like |
-| DELETE | `/api/posts/<id>/like` | JWT | Unlike |
-| POST | `/api/posts/<id>/save` | JWT | Save |
-| DELETE | `/api/posts/<id>/save` | JWT | Unsave |
-| GET | `/api/users/search?q=` | JWT | Search users |
-| GET | `/api/users/<id>/profile` | JWT | User profile |
-| POST | `/api/follow/<id>` | JWT | Follow user |
-| DELETE | `/api/follow/<id>` | JWT | Unfollow user |
+| POST | `/posts` | JWT | Share a meal to profile |
+| GET | `/posts/feed` | JWT | Posts from followed users |
+| GET | `/posts/explore` | JWT | Public posts (filter, search) |
+| GET | `/posts/profile/<id>` | JWT | A user's posts |
+| GET | `/posts/saved` | JWT | Your saved posts |
+| DELETE | `/posts/<id>` | JWT | Delete own post |
+| POST | `/posts/<id>/like` | JWT | Like |
+| DELETE | `/posts/<id>/like` | JWT | Unlike |
+| POST | `/posts/<id>/save` | JWT | Save |
+| DELETE | `/posts/<id>/save` | JWT | Unsave |
+| GET | `/users/search?q=` | JWT | Search users by username |
+| GET | `/users/<id>/profile` | JWT | User profile + stats |
+| POST | `/follow/<id>` | JWT | Follow a user |
+| DELETE | `/follow/<id>` | JWT | Unfollow a user |
 
 ---
 
@@ -271,24 +243,51 @@ All endpoints are prefixed with `/api/`.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `OPENAI_API_KEY` | Yes | OpenAI key for GPT-4o |
-| `JWT_SECRET` | Yes | Secret for signing tokens |
-| `FOOD_DB_PATH` | Yes | Path to food_data.json |
-| `FLASK_DEBUG` | No | Set `true` for dev only |
+| `DATABASE_URL` | Yes | PostgreSQL (Neon) connection string |
+| `OPENAI_API_KEY` | Yes | OpenAI key for GPT-4o Vision |
+| `JWT_SECRET` | Yes | Random secret for signing tokens |
+| `FOOD_DB_PATH` | Yes | Absolute path to `food_data.json` |
+| `FLASK_DEBUG` | No | `true` for development only |
+
+---
+
+## Management Commands
+
+```bash
+# App lifecycle
+sudo systemctl start   ical
+sudo systemctl stop    ical
+sudo systemctl restart ical
+sudo systemctl status  ical
+
+# Live logs
+sudo journalctl -u ical -f
+sudo tail -f /var/log/nginx/ical_access.log
+
+# NGINX
+sudo nginx -t           # validate config
+sudo systemctl reload nginx
+
+# Deploy after git push
+cd /home/ubuntu/ical && git pull && pip install -r requirements.txt && sudo systemctl restart ical
+
+# One-liner alias
+echo 'alias deploy="cd /home/ubuntu/ical && git pull && sudo systemctl restart ical"' >> ~/.bashrc
+source ~/.bashrc
+```
 
 ---
 
 ## Performance
 
-On a **t3.small** (2 vCPU, 2 GB RAM):
+On **t3.small** (2 vCPU, 2 GB RAM):
 - Gunicorn workers: `(2×2)+1 = 5`
-- Static files served by NGINX (no Python overhead)
-- Gzip compression on all text assets
-- 30-day cache headers on static assets
-- Connection pool: 2–20 PostgreSQL connections
+- Static assets served by NGINX (zero Python overhead)
+- Gzip on all text responses
+- 30-day cache on `/static/*`
+- PostgreSQL pool: 0–20 connections (Neon-safe idle reconnect)
 
-Upgrade to **t3.medium** if you expect > 50 concurrent users.
+Upgrade to **t3.medium** for > 50 concurrent users.
 
 ---
 
@@ -297,37 +296,31 @@ Upgrade to **t3.medium** if you expect > 50 concurrent users.
 **App won't start**
 ```bash
 sudo journalctl -u ical -n 50 --no-pager
-# Usually: wrong DATABASE_URL or missing .env
+# Common causes: wrong DATABASE_URL, missing .env, import error
 ```
 
 **502 Bad Gateway**
 ```bash
-# Gunicorn not running
 sudo systemctl start ical
-# Or check if port 8000 is in use
-sudo ss -tlnp | grep 8000
+sudo ss -tlnp | grep 8000   # confirm Gunicorn is listening
 ```
+
+**DB health returns `connection already closed`**  
+Neon serverless closes idle TCP connections. The app automatically detects stale connections and reconnects — no action needed. If it persists, restart: `sudo systemctl restart ical`.
 
 **Food database missing**
 ```bash
-cd /home/ubuntu/ical
-source venv/bin/activate
-python download_dataset.py
+cd /home/ubuntu/ical && source venv/bin/activate && python download_dataset.py
 sudo systemctl restart ical
-```
-
-**Permission errors**
-```bash
-sudo chown -R ubuntu:www-data /home/ubuntu/ical
-sudo chmod -R 755 /home/ubuntu/ical/app/static
 ```
 
 **Out of memory (t3.micro)**
 ```bash
-# Add swap space
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ```
+
+**Login inputs appear white / text invisible**  
+Fixed — caused by browser autofill overriding input background. The CSS now uses the `:-webkit-autofill` box-shadow trick and `color-scheme: dark` to force the dark theme.
