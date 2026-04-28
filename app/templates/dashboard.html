@@ -6,164 +6,69 @@
 <div class="overlay" id="overlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
-
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-      <div>
-        <h3 class="sheet-title" style="margin-bottom:2px">Log a Meal</h3>
-        <p style="font-size:13px;color:var(--t3);font-weight:400">Snap your food to track instantly</p>
-      </div>
-      <button id="cancel-btn" style="width:36px;height:36px;border-radius:50%;background:var(--s3);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--t3);flex-shrink:0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-
-    <!-- Meal type — 4 tiles -->
-    <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Meal Type</div>
+    <h3 class="sheet-title">Log a Meal</h3>
+    <p class="sheet-sub">Choose meal type and upload a photo</p>
     <div class="mt-grid">
-      <div>
-        <input type="radio" name="mt" value="breakfast" id="mt-b" class="mt-radio" checked/>
-        <label for="mt-b" class="mt-lbl">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-          Breakfast
-        </label>
-      </div>
-      <div>
-        <input type="radio" name="mt" value="lunch" id="mt-l" class="mt-radio"/>
-        <label for="mt-l" class="mt-lbl">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-          Lunch
-        </label>
-      </div>
-      <div>
-        <input type="radio" name="mt" value="dinner" id="mt-d" class="mt-radio"/>
-        <label for="mt-d" class="mt-lbl">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-          Dinner
-        </label>
-      </div>
-      <div>
-        <input type="radio" name="mt" value="snacks" id="mt-s" class="mt-radio"/>
-        <label for="mt-s" class="mt-lbl">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-          Snacks
-        </label>
-      </div>
+      <div><input type="radio" name="mt" value="breakfast" id="mt-b" class="mt-radio" checked/>
+        <label for="mt-b" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>Breakfast</label></div>
+      <div><input type="radio" name="mt" value="lunch" id="mt-l" class="mt-radio"/>
+        <label for="mt-l" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Lunch</label></div>
+      <div><input type="radio" name="mt" value="dinner" id="mt-d" class="mt-radio"/>
+        <label for="mt-d" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>Dinner</label></div>
+      <div><input type="radio" name="mt" value="snacks" id="mt-s" class="mt-radio"/>
+        <label for="mt-s" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Snacks</label></div>
     </div>
-
-    <!-- Upload zone -->
-    <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Photo</div>
     <div class="upload-zone" id="uz">
       <input type="file" id="fi" accept="image/jpeg,image/png,image/webp,image/heic"/>
       <div id="uz-ph">
-        <div class="upload-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <rect x="3" y="3" width="18" height="18" rx="2.5"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-            <line x1="15" y1="3" x2="15" y2="9"/>
-            <line x1="12" y1="6" x2="18" y2="6"/>
-          </svg>
-        </div>
-        <div class="upload-title">Tap to upload food photo</div>
-        <div class="upload-sub">JPEG, PNG or WebP · max 10MB</div>
+        <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        <div class="upload-title">Tap to upload photo</div>
+        <div class="upload-sub">JPEG, PNG or WebP — max 10MB</div>
       </div>
       <img id="preview" class="preview-img" alt=""/>
     </div>
-
-    <!-- Change photo link (shown after upload) -->
-    <button class="btn btn-outline btn-sm btn-full" id="change-btn" style="display:none;margin-bottom:12px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-      Change photo
-    </button>
-
-    <!-- Scanning state -->
+    <button class="btn btn-ghost btn-sm btn-full" id="change-btn" style="display:none;margin-bottom:10px">Change photo</button>
     <div class="scanning" id="scanning">
       <div class="scan-ring"></div>
       <div class="scan-text">Analyzing your meal...</div>
-      <div class="scan-sub">GPT-4o Vision · 60,000 foods</div>
+      <div class="scan-sub">GPT-4o Vision + 60k food database</div>
     </div>
-
-    <!-- Actions -->
-    <div id="modal-actions">
-      <button class="btn btn-ghost" id="cancel-btn-2" style="flex:1">Cancel</button>
-      <button class="btn btn-primary btn-lg" id="analyze-btn" style="flex:2" disabled>
-        <div class="sp"></div>
-        <span class="bt">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;vertical-align:middle;margin-right:5px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Analyze Meal
-        </span>
-      </button>
+    <div style="display:flex;gap:10px;margin-top:12px" id="modal-actions">
+      <button class="btn btn-ghost" id="cancel-btn" style="flex:1">Cancel</button>
+      <button class="btn btn-primary btn-lg" id="analyze-btn" style="flex:2" disabled><div class="sp"></div><span class="bt">Analyze Meal</span></button>
     </div>
-
   </div>
-</div>
-
 </div>
 
 <!-- ═══ SHARE SHEET ═══ -->
 <div class="overlay" id="share-overlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
-
-    <!-- Header row -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
-      <div>
-        <h3 style="font-size:20px;font-weight:800;color:var(--t1);letter-spacing:-.03em;margin-bottom:3px">Meal Logged!</h3>
-        <p style="font-size:13px;color:var(--t3)">Share with your community?</p>
-      </div>
-      <button id="skip-share-btn" style="width:34px;height:34px;border-radius:50%;background:var(--s3);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--t3);flex-shrink:0;cursor:pointer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+    <h3 class="sheet-title">Meal Logged</h3>
+    <p class="sheet-sub">Share to your profile?</p>
+    <div class="share-preview">
+      <div class="sp-meal" id="sp-meal">—</div>
+      <div class="sp-kcal" id="sp-kcal">0 kcal</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px" id="sp-macros"></div>
+      <div class="sp-foods" id="sp-foods">—</div>
     </div>
-
-    <!-- Meal summary card -->
-    <div style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(5,150,105,.06));border:.5px solid rgba(16,185,129,.22);border-radius:18px;padding:16px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:13px;background:rgba(16,185,129,.20);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="1.8" style="width:22px;height:22px"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:3px" id="sp-meal">Breakfast</div>
-          <div style="font-size:22px;font-weight:900;color:var(--g);letter-spacing:-.04em;line-height:1" id="sp-kcal">0 kcal</div>
-        </div>
-      </div>
-      <div style="margin-top:10px;font-size:14px;color:var(--t2);line-height:1.4" id="sp-foods">—</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px" id="sp-macros"></div>
+    <div class="fg" style="margin-bottom:14px">
+      <label class="fl">Caption (optional)</label>
+      <textarea id="share-caption" class="fc" rows="2" placeholder="How was this meal?" style="min-height:70px;resize:none"></textarea>
     </div>
-
-    <!-- Caption -->
-    <div style="margin-bottom:16px">
-      <label style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px">Caption <span style="font-weight:400;font-size:11px;text-transform:none">(optional)</span></label>
-      <textarea id="share-caption" class="fc" rows="2" placeholder="What did you think of this meal?" style="font-size:15px;padding:12px 14px;border-radius:14px;min-height:72px;resize:none;line-height:1.5"></textarea>
+    <label class="fl" style="margin-bottom:8px;display:block">Visibility</label>
+    <div class="priv-grid">
+      <div><input type="radio" name="priv" value="public" id="priv-pub" class="priv-radio" checked/>
+        <label for="priv-pub" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Public</label></div>
+      <div><input type="radio" name="priv" value="private" id="priv-priv" class="priv-radio"/>
+        <label for="priv-priv" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Private</label></div>
+      <div><input type="radio" name="priv" value="skip" id="priv-skip" class="priv-radio"/>
+        <label for="priv-skip" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Skip</label></div>
     </div>
-
-    <!-- Visibility toggle -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--s2);border:.5px solid var(--bdr);border-radius:14px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="1.8" style="width:18px;height:18px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--t1)">Post publicly</div>
-          <div style="font-size:12px;color:var(--t3);margin-top:1px">Visible to everyone on the feed</div>
-        </div>
-      </div>
-      <label class="toggle" style="flex-shrink:0">
-        <input type="checkbox" id="priv-pub-toggle" checked/>
-        <span class="toggle-slider"></span>
-      </label>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" id="skip-share-btn" style="flex:1">Skip</button>
+      <button class="btn btn-primary btn-lg" id="do-share-btn" style="flex:2"><div class="sp"></div><span class="bt">Post to Profile</span></button>
     </div>
-
-    <!-- Action buttons -->
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-primary btn-full btn-lg" id="do-share-btn" style="height:52px;border-radius:18px;font-size:16px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        <div class="sp"></div><span class="bt">Share Meal</span>
-      </button>
-      <button class="btn btn-outline btn-full" id="save-only-btn" style="height:46px;border-radius:18px;font-size:15px;color:var(--t2)">
-        Save to log only
-      </button>
-    </div>
-
   </div>
 </div>
 
@@ -210,7 +115,6 @@
       <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M22 4v4a2 2 0 000-4z" fill="currentColor"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/></svg>
     </div>
   </div>
-
   <div class="home-header">
     <div>
       <div class="home-greeting" id="greeting">Good morning</div>
@@ -351,22 +255,18 @@
       </div>
     </div>
   </div>
-
 </div><!-- /home -->
 
 <!-- ╔══════ FEED ══════╗ -->
 <div class="page" id="page-feed">
   <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
-
   <div class="page-header"><div><div class="ph-eyebrow">Social</div><div class="ph-title">Feed</div></div></div>
   <div style="padding:12px 16px;display:flex;flex-direction:column;gap:12px" id="feed-list"><div class="empty-state"><div class="empty-title">Loading feed...</div></div></div>
-
 </div>
 
 <!-- ╔══════ EXPLORE ══════╗ -->
 <div class="page" id="page-explore">
   <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
-
   <div class="page-header"><div><div class="ph-eyebrow">Discover</div><div class="ph-title">Explore</div></div></div>
   <div style="padding:12px 16px">
     <div class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="explore-search" placeholder="Search meals or @username..."/></div>
@@ -382,13 +282,11 @@
     <div id="user-results" style="display:none;margin-bottom:10px"></div>
     <div style="display:flex;flex-direction:column;gap:12px" id="explore-grid"><div class="empty-state"><div class="empty-title">Loading...</div></div></div>
   </div>
-
 </div>
 
 <!-- ╔══════ ANALYTICS ══════╗ -->
 <div class="page" id="page-analytics">
   <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
-
   <div class="page-header"><div><div class="ph-eyebrow">Weekly</div><div class="ph-title">Analytics</div></div></div>
   <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
     <div class="an-card" style="background:linear-gradient(145deg,rgba(16,185,129,.11),rgba(5,150,105,.05));border:.5px solid rgba(16,185,129,.22);border-radius:24px;padding:16px">
@@ -415,13 +313,11 @@
       <div id="history-list" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
   </div>
-
 </div>
 
 <!-- ╔══════ PROFILE ══════╗ -->
 <div class="page" id="page-profile">
   <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
-
   <div class="profile-hdr">
     <div class="profile-av" id="profile-av">?</div>
     <div class="profile-uname" id="profile-name">—</div>
@@ -456,13 +352,11 @@
   </div>
   <div class="profile-tab-content" id="ptab-posts"><div id="my-posts-list"><div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="empty-title">No posts yet</div><div class="empty-sub">Log a meal and share it.</div></div></div></div>
   <div class="profile-tab-content" id="ptab-saved"><div id="saved-posts-list"><div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div><div class="empty-title">Nothing saved yet</div><div class="empty-sub">Save posts from the feed.</div></div></div></div>
-
 </div>
 
 <!-- ╔══════ SETTINGS ══════╗ -->
 <div class="page" id="page-settings">
   <div class="status-bar"><span class="sb-time">9:41</span><div class="sb-icons"><svg viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg></div></div>
-
   <div class="page-header"><div><div class="ph-eyebrow">App</div><div class="ph-title">Settings</div></div></div>
   <div style="padding:0 0 16px">
     <div class="settings-section-hdr">Account</div>
@@ -490,7 +384,6 @@
       </div>
     </div>
   </div>
-
 </div>
 
 </div><!-- /app -->
@@ -516,14 +409,6 @@
 {% endblock %}
 {% block scripts %}
 <script>
-
-// Photo error handler — replaces broken img with placeholder div
-function imgError(img, cls) {
-  const ph = document.createElement('div');
-  ph.className = cls || 'post-photo-ph';
-  ph.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="width:36px;height:36px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
-  img.parentNode.replaceChild(ph, img);
-}
 // ── Auth guard ──
 const token = localStorage.getItem('token');
 if (!token) window.location.href = '/login';
@@ -668,7 +553,7 @@ function openDayPanel(ds){
   daySessions.forEach(s=>{
     const t=new Date(s.created_at).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
     html+='<div style="background:var(--s1);border:.5px solid var(--bdr);border-radius:var(--r-lg);overflow:hidden;margin-bottom:8px">';
-    if(s.photo_url) html+=`<img src="${s.photo_url}" style="width:100%;height:140px;object-fit:cover;display:block" onerror="this.remove()"/>`;
+    if(s.photo_url) html+=`<img src="${s.photo_url}" style="width:100%;height:140px;object-fit:cover;display:block" loading="lazy" onerror="this.remove()"/>`;
     html+=`<div style="padding:12px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:14px;font-weight:700;color:var(--t1);text-transform:capitalize">${s.meal_type}</span><span style="font-size:14px;font-weight:700;color:var(--t2)">${t}</span></div><div style="font-size:13px;color:var(--t2)">${s.food_summary||''}</div><div style="font-size:20px;font-weight:900;color:var(--g);margin-top:6px">${s.total_calories} kcal</div></div></div>`;
   });
   body.innerHTML=html;
@@ -708,7 +593,8 @@ function renderMeal(t){
   list.innerHTML='';
   m.foods.forEach(f=>{
     const row=document.createElement('div');row.className='mc-food-row';
-    row.innerHTML=`<div class="mc-food-info"><div class="mc-food-name">${f.name}</div><div class="mc-food-srv">${f.serving||'1 serving'}</div><div class="mc-food-chips"><span class="mc-chip" style="background:rgba(96,165,250,.12);color:var(--carbs)">${f.carbs.toFixed(1)}g C</span><span class="mc-chip" style="background:rgba(251,191,36,.12);color:var(--fat)">${f.fat.toFixed(1)}g F</span><span class="mc-chip" style="background:rgba(52,211,153,.12);color:var(--protein)">${f.protein.toFixed(1)}g P</span></div></div><div class="mc-food-kcal">${f.kcal}</div>`;
+    row.innerHTML=(f.photoUrl?`<img class="mc-food-thumb" src="${f.photoUrl}" alt="${f.name}" loading="lazy" onerror="this.className='mc-food-thumb-ph';this.outerHTML='<div class=\\'mc-food-thumb-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg></div>'"/>`:'<div class="mc-food-thumb-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>')+
+    `<div class="mc-food-info"><div class="mc-food-name">${f.name}</div><div class="mc-food-srv">${f.serving||'1 serving'}</div><div class="mc-food-chips"><span class="mc-chip" style="background:rgba(96,165,250,.12);color:var(--carbs)">${f.carbs.toFixed(1)}g C</span><span class="mc-chip" style="background:rgba(251,191,36,.12);color:var(--fat)">${f.fat.toFixed(1)}g F</span><span class="mc-chip" style="background:rgba(52,211,153,.12);color:var(--protein)">${f.protein.toFixed(1)}g P</span></div></div><div class="mc-food-kcal">${f.kcal}</div>`;
     list.appendChild(row);
   });
 }
@@ -751,7 +637,6 @@ function applyFile(file){
 document.getElementById('fi').addEventListener('change',()=>applyFile(document.getElementById('fi').files[0]));
 document.getElementById('change-btn').addEventListener('click',resetUpload);
 document.getElementById('cancel-btn').addEventListener('click',closeModal);
-document.getElementById('cancel-btn-2').addEventListener('click',closeModal);
 document.getElementById('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal()});
 const uz=document.getElementById('uz');
 uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag')});
@@ -788,26 +673,21 @@ document.getElementById('analyze-btn').addEventListener('click',async()=>{
 // ── Share ──
 function openShare(){
   if(!pendShare)return;
-  const mt=pendShare.meal_type||'meal';
-  const icons={breakfast:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>',lunch:'<path d="M3 11l19-9-9 19-2-8-8-2z"/>',dinner:'<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>',snacks:'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>',other:'<circle cx="12" cy="12" r="10"/>'}; 
-  const icon=document.getElementById('sp-meal-ico');
-  if(icon) icon.innerHTML=icons[mt]||icons.other;
-  document.getElementById('sp-meal').textContent=mt.charAt(0).toUpperCase()+mt.slice(1);
+  document.getElementById('sp-meal').textContent=pendShare.meal_type;
   document.getElementById('sp-kcal').textContent=pendShare.kcal+' kcal';
   document.getElementById('sp-foods').textContent=pendShare.foods.map(f=>f.name).join(', ');
-  document.getElementById('sp-macros').innerHTML=`<span style="font-size:11px;font-weight:600;color:var(--carbs)">${pendShare.carbs.toFixed(1)}g Carbs</span><span style="font-size:11px;color:var(--t4)">·</span><span style="font-size:11px;font-weight:600;color:var(--fat)">${pendShare.fat.toFixed(1)}g Fat</span><span style="font-size:11px;color:var(--t4)">·</span><span style="font-size:11px;font-weight:600;color:var(--protein)">${pendShare.protein.toFixed(1)}g Protein</span>`;
+  document.getElementById('sp-macros').innerHTML=`<span class="mc-chip" style="background:rgba(96,165,250,.12);color:var(--carbs)">${pendShare.carbs.toFixed(1)}g C</span><span class="mc-chip" style="background:rgba(251,191,36,.12);color:var(--fat)">${pendShare.fat.toFixed(1)}g F</span><span class="mc-chip" style="background:rgba(52,211,153,.12);color:var(--protein)">${pendShare.protein.toFixed(1)}g P</span>`;
   document.getElementById('share-overlay').classList.add('show');
 }
 function closeShare(){document.getElementById('share-overlay').classList.remove('show');pendShare=null;document.getElementById('share-caption').value=''}
 document.getElementById('skip-share-btn').addEventListener('click',closeShare);
-document.getElementById('save-only-btn').addEventListener('click',closeShare);
 document.getElementById('share-overlay').addEventListener('click',e=>{if(e.target.id==='share-overlay')closeShare()});
 document.getElementById('do-share-btn').addEventListener('click',async()=>{
   if(!pendShare)return;
   const btn=document.getElementById('do-share-btn');setLoading(btn,true);
-  const isPublic=document.getElementById('priv-pub-toggle').checked;
-  const status=isPublic?'public':'private';
-  try{await api('/posts','POST',{session_id:pendShare.session_id,caption:document.getElementById('share-caption').value.trim(),status});showToast('Meal shared!','success');closeShare();}
+  const priv=document.querySelector('input[name="priv"]:checked')?.value||'public';
+  if(priv==='skip'){closeShare();setLoading(btn,false);return}
+  try{await api('/posts','POST',{session_id:pendShare.session_id,caption:document.getElementById('share-caption').value.trim(),status:priv});showToast('Posted to profile','success');closeShare();}
   catch(err){showToast(err.message,'error');}
   finally{setLoading(btn,false)}
 });
@@ -818,24 +698,18 @@ function buildPost(p){
   const author=p.author_username||p.username||(p.author_email||'').split('@')[0]||'user';
   const dispName=isOwner?'You':('@'+author);
   const card=document.createElement('div');card.className='post-card';
-  // No photo display — clean card header instead
-  const mealIcons={breakfast:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>',lunch:'<path d="M3 11l19-9-9 19-2-8-8-2z"/>',dinner:'<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>',snacks:'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>',other:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'};
-  const mealColors={breakfast:'rgba(245,158,11,.12)',lunch:'rgba(16,185,129,.12)',dinner:'rgba(139,92,246,.12)',snacks:'rgba(59,130,246,.12)',other:'rgba(255,255,255,.06)'};
-  const mealStrokes={breakfast:'#F59E0B',lunch:'#10B981',dinner:'#8B5CF6',snacks:'#3B82F6',other:'rgba(245,245,247,.4)'};
-  const mt=p.meal_type||'other';
-  let photoHtml=`<div style="background:${mealColors[mt]||mealColors.other};padding:16px 16px 14px;border-bottom:.5px solid var(--bdr);display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="${mealStrokes[mt]||'currentColor'}" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px">${mealIcons[mt]||mealIcons.other}</svg></div><div><div style="font-size:11px;font-weight:700;text-transform:capitalize;color:var(--t2);letter-spacing:.01em">${mt}</div><div style="font-size:20px;font-weight:900;color:${mealStrokes[mt]||'var(--t1)'};letter-spacing:-.04em;line-height:1.1">${p.total_calories||0} kcal</div></div></div><div style="text-align:right"><div style="font-size:11px;color:var(--t3)">${timeAgo(p.created_at)}</div></div></div>`;
+  let photoHtml='';
+  if(p.photo_url){
+    photoHtml=`<div class="post-photo-wrap"><img class="post-photo" src="${p.photo_url}" alt="${p.food_summary||'Meal'}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'post-photo-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.3\\' style=\\'width:36px;height:36px\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg><span>${p.food_summary||'Meal'}</span></div>'"/><div class="post-photo-overlay"></div><div class="post-photo-meta"><span class="post-photo-kcal">${p.total_calories||0} kcal</span><span style="font-size:11px;color:rgba(255,255,255,.7)">${timeAgo(p.created_at)}</span></div></div>`;
+  }else{
+    photoHtml=`<div class="post-photo-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="width:36px;height:36px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${p.food_summary||'Meal photo'}</span></div>`;
+  }
   card.innerHTML=`${photoHtml}
   <div class="post-inner">
     <div class="post-hdr">
       <div class="post-author">
         <div class="post-av ${isOwner?'is-me':''}">${author[0].toUpperCase()}</div>
-        <div style="min-width:0;flex:1">
-          <div style="display:flex;align-items:center;gap:5px">
-            <span class="post-author-name ${isOwner?'is-me':''}">@${author}</span>
-            ${isOwner?'<span style="font-size:9px;font-weight:700;background:var(--g-l);color:var(--g);padding:1px 6px;border-radius:99px;letter-spacing:.03em">You</span>':''}
-          </div>
-          <div class="post-time">${timeAgo(p.created_at)}</div>
-        </div>
+        <div style="min-width:0;flex:1"><div class="post-author-name ${isOwner?'is-me':''}">${dispName}</div><div class="post-time">${p.photo_url?'':timeAgo(p.created_at)}</div></div>
       </div>
       <div class="post-menu-wrap">
         <button class="post-menu-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
@@ -994,7 +868,7 @@ function buildAnalytics(){
   if(!sessions.length){hist.innerHTML='<div class="empty-state"><div class="empty-title">No history yet</div></div>';return}
   sessions.slice(0,40).forEach(s=>{
     const row=document.createElement('div');row.className='hist-row';
-    row.innerHTML=
+    row.innerHTML=(s.photo_url?`<img class="hist-thumb" src="${s.photo_url}" alt="meal" loading="lazy" onerror="this.outerHTML='<div class=\\'hist-thumb-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg></div>'"/>`:'<div class="hist-thumb-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>')+
     `<div class="hist-info"><div class="hist-foods">${s.food_summary||'Meal'}</div><div class="hist-meta">${timeAgo(s.created_at)} · ${s.meal_type}</div></div><div style="text-align:right;flex-shrink:0"><div class="hist-kcal-num">${s.total_calories}</div><div class="hist-kcal-lbl">kcal</div></div>`;
     row.addEventListener('click',()=>openDayPanel(new Date(s.created_at).toDateString()));
     hist.appendChild(row);

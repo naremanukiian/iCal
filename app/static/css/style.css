@@ -74,9 +74,9 @@ input,select,textarea{font-family:inherit}svg{display:block}
 }
 
 /* ── Shell ── */
-.app{background:var(--bg);width:100%;flex:1;overflow:hidden;display:flex;flex-direction:column}
+.app{background:var(--bg);width:100%;min-height:100%;position:relative}
 .page{display:none}
-.page.active{display:flex;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;animation:pg-in .20s ease both;touch-action:pan-y}
+.page.active{display:block;animation:pg-in .20s ease both}
 @keyframes pg-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -91,7 +91,7 @@ input,select,textarea{font-family:inherit}svg{display:block}
 /* ── Status bar ── */
 .sb{position:sticky;top:0;z-index:60;height:52px;padding:0 20px 8px;background:rgba(0,0,0,.82);backdrop-filter:saturate(180%) blur(28px);-webkit-backdrop-filter:saturate(180%) blur(28px);border-bottom:.5px solid var(--bdr);display:flex;align-items:flex-end;justify-content:space-between}
 .sb-time{font-size:15px;font-weight:700;color:var(--t1);letter-spacing:-.3px}
-.sb-icons{display:flex;align-items:center;gap:6px}.sb-icons svg{height:12px;width:auto;fill:var(--t1)}
+.sb-icons{display:flex;align-items:center;gap:6px}.sb-icons svg{width:14px;height:14px;fill:var(--t1)}
 
 /* ── Glassmorphic Tab Bar ── */
 .bottom-nav{height:var(--nav-h);background:rgba(14,14,16,.85);backdrop-filter:saturate(180%) blur(32px);-webkit-backdrop-filter:saturate(180%) blur(32px);border-top:.5px solid rgba(255,255,255,.10);display:flex;align-items:flex-start;justify-content:space-around;padding:10px 4px 0;padding-bottom:env(safe-area-inset-bottom,0px);position:relative;box-shadow:0 -1px 0 rgba(255,255,255,.04)}
@@ -361,7 +361,7 @@ textarea.fc{height:auto;padding:14px 16px;line-height:1.5;resize:none}
 .confirm-btns{display:flex;flex-direction:column;gap:8px}
 
 /* Slide panel */
-.slide-panel{position:absolute;inset:0;background:var(--bg);z-index:200;transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);overflow-y:auto;scrollbar-width:none;will-change:transform;max-width:100%;overflow-x:hidden}
+.slide-panel{position:absolute;inset:0;background:var(--bg);z-index:200;transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);overflow-y:auto;scrollbar-width:none}
 .slide-panel::-webkit-scrollbar{display:none}
 .slide-panel.open{transform:translateX(0)}
 .panel-hdr{display:flex;align-items:center;gap:14px;padding:16px 20px;position:sticky;top:0;background:rgba(0,0,0,.88);backdrop-filter:blur(28px);z-index:10;border-bottom:.5px solid var(--bdr)}
@@ -697,7 +697,7 @@ textarea.fc{height:auto;padding:14px 16px;line-height:1.5;resize:none}
 .filter-chip.active{background:var(--g-l);color:var(--g);border-color:rgba(16,185,129,.35)}
 
 /* ── Suggest topbar ── */
-.suggest-page{background:var(--bg);flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
+.suggest-page{background:var(--bg);min-height:100%}
 .suggest-topbar{display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(0,0,0,.90);backdrop-filter:blur(28px);border-bottom:.5px solid var(--bdr);position:sticky;top:52px;z-index:49}
 .suggest-back{width:36px;height:36px;border-radius:50%;background:var(--s3);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--g);min-width:36px;flex-shrink:0}
 .suggest-back:active{opacity:.6}
@@ -842,284 +842,3 @@ textarea.fc{height:auto;padding:14px 16px;line-height:1.5;resize:none}
 /* ── Confirm overlay fix ── */
 .confirm-overlay{position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
 .confirm-overlay.show{display:flex}
-
-/* ── Input autofill dark fix (Issue 1) ── */
-.fc:-webkit-autofill,
-.fc:-webkit-autofill:hover,
-.fc:-webkit-autofill:focus,
-.fc:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 50px #1C1C1E inset !important;
-  -webkit-text-fill-color: #F5F5F5 !important;
-  caret-color: #F5F5F5 !important;
-  border-color: rgba(255,255,255,.07) !important;
-}
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 50px #1C1C1E inset !important;
-  -webkit-text-fill-color: #F5F5F5 !important;
-  caret-color: #F5F5F5 !important;
-}
-/* Force text color on all inputs absolutely */
-input, textarea, select {
-  color: #F5F5F5 !important;
-  -webkit-text-fill-color: #F5F5F5 !important;
-  background-color: #1C1C1E;
-}
-input::placeholder, textarea::placeholder { color: rgba(245,245,245,.28) !important; -webkit-text-fill-color: rgba(245,245,245,.28) !important; }
-
-/* ── Status bar icon proportional fix (Issue 2) ── */
-.status-bar { height: 52px; padding: 0 20px 8px; display: flex; align-items: flex-end; justify-content: space-between; position: sticky; top: 0; z-index: 50; background: rgba(0,0,0,.88); backdrop-filter: saturate(180%) blur(28px); -webkit-backdrop-filter: saturate(180%) blur(28px); border-bottom: .5px solid var(--bdr); }
-.sb-time { font-size: 15px; font-weight: 700; color: var(--t1); letter-spacing: -.3px; }
-.sb-icons { display: flex; align-items: center; gap: 5px; }
-/* Each icon gets its natural aspect ratio preserved */
-.sb-icons svg { height: 12px; width: auto; fill: var(--t1); flex-shrink: 0; }
-/* Wifi arc specifically — stroke not fill */
-.sb-icons svg[stroke] { fill: none; stroke: var(--t1); }
-/* Battery svg needs specific width */
-.sb-icons svg:last-child { height: 12px; width: auto; }
-
-/* ── Post photo fixes (Issue 3) ── */
-.post-photo-wrap { position: relative; width: 100%; background: var(--s3); overflow: hidden; display: block; }
-.post-photo {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  display: block;
-  background: var(--s3);
-  /* No lazy loading - phone frame scroll container breaks intersection observer */
-}
-.post-photo-ph {
-  width: 100%;
-  height: 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: var(--s3);
-}
-.post-photo-ph svg { width: 36px; height: 36px; stroke: var(--t4); stroke-width: 1.3; fill: none; }
-.post-photo-ph span { font-size: 12px; color: var(--t3); font-weight: 500; max-width: 80%; text-align: center; line-height: 1.4; }
-
-/* ── Add meal modal redesign (Issue 4) ── */
-.overlay { position: absolute; inset: 0; background: rgba(0,0,0,.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 300; display: none; align-items: flex-end; }
-.overlay.show { display: flex; }
-.sheet {
-  width: 100%;
-  background: rgba(12,12,14,.99);
-  backdrop-filter: saturate(180%) blur(40px);
-  -webkit-backdrop-filter: saturate(180%) blur(40px);
-  border-radius: 24px 24px 0 0;
-  padding: 0 20px 40px;
-  max-height: 92%;
-  overflow-y: auto;
-  scrollbar-width: none;
-  animation: sheet-up .3s cubic-bezier(.16,1,.3,1) both;
-  box-shadow: 0 -12px 60px rgba(0,0,0,.80);
-  border-top: .5px solid rgba(255,255,255,.12);
-}
-.sheet::-webkit-scrollbar { display: none; }
-
-/* Meal type selector — 4-up grid, large touch targets */
-.mt-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.mt-radio { display: none; }
-.mt-lbl {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 12px 6px;
-  border: .5px solid var(--bdr);
-  border-radius: 16px;
-  cursor: pointer;
-  background: var(--s2);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--t2);
-  text-align: center;
-  transition: all .15s cubic-bezier(.16,1,.3,1);
-  min-height: 72px;
-  letter-spacing: -.01em;
-}
-.mt-lbl svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; fill: none; margin-bottom: 1px; }
-.mt-radio:checked + .mt-lbl {
-  border-color: var(--g);
-  background: var(--g-l);
-  color: var(--g);
-  box-shadow: 0 0 0 1px var(--g);
-}
-
-/* Upload zone — premium drag-drop area */
-.upload-zone {
-  border: 1.5px dashed rgba(16,185,129,.30);
-  border-radius: 20px;
-  padding: 32px 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .2s cubic-bezier(.16,1,.3,1);
-  position: relative;
-  margin-bottom: 14px;
-  background: rgba(16,185,129,.04);
-  min-height: 140px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 1; }
-.upload-zone:hover, .upload-zone.drag {
-  border-color: var(--g);
-  background: rgba(16,185,129,.10);
-}
-.upload-zone.has {
-  border-style: solid;
-  border-color: var(--g);
-  padding: 6px;
-  background: transparent;
-  min-height: auto;
-}
-.upload-icon { margin: 0 auto 10px; color: rgba(16,185,129,.60); }
-.upload-icon svg { width: 40px; height: 40px; stroke: currentColor; stroke-width: 1.2; fill: none; }
-.upload-title { font-size: 15px; font-weight: 600; color: var(--t1); margin-bottom: 4px; }
-.upload-sub { font-size: 12px; color: var(--t3); line-height: 1.4; }
-.preview-img { width: 100%; border-radius: 14px; max-height: 200px; object-fit: cover; display: none; }
-
-/* Scanning state */
-.scanning { display: none; text-align: center; padding: 32px 0; }
-.scan-ring { width: 52px; height: 52px; border: 4px solid rgba(16,185,129,.15); border-top-color: var(--g); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px; }
-.scan-text { font-size: 16px; font-weight: 700; color: var(--t1); margin-bottom: 5px; letter-spacing: -.02em; }
-.scan-sub { font-size: 12px; color: var(--t3); }
-
-/* Modal actions row */
-#modal-actions { display: flex; gap: 10px; margin-top: 12px; }
-#modal-actions .btn { height: 52px; border-radius: 18px; font-size: 16px; }
-
-/* ══════════════════════════════════════════════
-   POST CARD — clean version without photo (v14 fix)
-   ══════════════════════════════════════════════ */
-
-/* Remove old photo-related post card rules that cause empty space */
-.post-photo-wrap { display: none !important; }
-.post-photo { display: none !important; }
-.post-photo-ph { display: none !important; }
-.post-photo-overlay { display: none !important; }
-
-/* Clean post card with icon header */
-.post-card {
-  background: var(--s1);
-  border: .5px solid var(--bdr);
-  border-radius: var(--r-xl);
-  overflow: hidden;
-  box-shadow: var(--sh-sm);
-}
-
-/* ══════════════════════════════════════════════
-   SCROLL FIX — proper flex layout
-   ══════════════════════════════════════════════ */
-/* Pages should be full-width within app */
-
-/* ══════════════════════════════════════════════
-   SHARE SHEET v2 — clean redesign
-   ══════════════════════════════════════════════ */
-.share-preview-v2 {
-  background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(5,150,105,.06));
-  border: .5px solid rgba(16,185,129,.22);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 16px;
-}
-
-/* ══════════════════════════════════════════════
-   STATUS BAR — final proportional fix
-   ══════════════════════════════════════════════ */
-.status-bar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  height: 52px;
-  padding: 0 20px 8px;
-  background: rgba(0,0,0,.88);
-  backdrop-filter: saturate(180%) blur(28px);
-  -webkit-backdrop-filter: saturate(180%) blur(28px);
-  border-bottom: .5px solid var(--bdr);
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-shrink: 0; /* Don't shrink in flex container */
-}
-.sb-time {
-  font-size: 15px;
-  font-weight: 700;
-  color: #F5F5F5;
-  letter-spacing: -.3px;
-}
-.sb-icons {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-/* Each icon preserves its native aspect ratio */
-.sb-icons svg {
-  height: 12px !important;
-  width: auto !important;
-  fill: #F5F5F5;
-  flex-shrink: 0;
-  display: block;
-}
-/* Wifi/signal icons use stroke not fill */
-.sb-icons svg[stroke="currentColor"],
-.sb-icons svg[fill="none"] {
-  fill: none !important;
-  stroke: #F5F5F5 !important;
-}
-/* Battery: rect fill override */
-.sb-icons svg rect[fill="currentColor"] { fill: #F5F5F5 !important; }
-
-/* ══════════════════════════════════════════════
-   HISTORY ROWS — remove photo thumbs
-   ══════════════════════════════════════════════ */
-.hist-thumb { display: none; }
-.hist-thumb-ph { display: none; }
-.hist-row { padding: 12px 14px; }
-
-/* ── Per-page scroll area (nuclear scroll fix) ── */
-.page-scroll{
-  flex:1;
-  overflow-y:auto;
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  scrollbar-width:none;
-}
-.page-scroll::-webkit-scrollbar{display:none}
-/* Status bar never shrinks */
-.status-bar{flex-shrink:0}
-
-.auth-page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-
-.page.active::-webkit-scrollbar{display:none}
-
-/* ── Horizontal overflow prevention (global) ── */
-html, body {
-  overflow-x: hidden;
-  max-width: 100%;
-}
-.app, .page, .page.active {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-.slide-panel {
-  max-width: 100%;
-}
-/* Prevent iOS overscroll/rubber-band from showing content to the right */
-#phone-screen {
-  overscroll-behavior: none;
-  touch-action: pan-y;
-}
