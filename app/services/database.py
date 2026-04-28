@@ -33,20 +33,28 @@ _pool = None
 def _get_pool():
     global _pool
     if _pool is None or _pool.closed:
-        _pool = pool.ThreadedConnectionPool(2,20,**_KW)
+        _pool = pool.ThreadedConnectionPool(0,20,**_KW)
     return _pool
 
 @contextmanager
 def get_db():
+    global _pool
     conn = _get_pool().getconn()
+    if conn.closed:
+        try: _get_pool().putconn(conn, close=True)
+        except Exception: pass
+        _pool = None
+        conn = _get_pool().getconn()
     try:
         yield conn
         conn.commit()
     except Exception:
-        conn.rollback()
+        try: conn.rollback()
+        except Exception: pass
         raise
     finally:
-        _get_pool().putconn(conn)
+        try: _get_pool().putconn(conn)
+        except Exception: pass
 
 def init_db():
     ddl = """

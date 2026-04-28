@@ -6,8 +6,32 @@
 <div class="overlay" id="overlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <h3 class="sheet-title">Log a Meal</h3>
-    <p class="sheet-sub">Choose meal type and upload a photo</p>
+    <div class="log-hdr">
+      <div>
+        <div class="log-hdr-title">Log a Meal</div>
+        <div class="log-hdr-sub">Photo &rarr; instant nutrition breakdown</div>
+      </div>
+      <button class="log-close-btn" id="cancel-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="log-pz" id="uz">
+      <input type="file" id="fi" accept="image/jpeg,image/png,image/webp,image/heic" capture="environment"/>
+      <div class="log-pz-empty" id="uz-ph">
+        <div class="log-pz-cam">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <div class="log-pz-cta">Tap to take or choose a photo</div>
+        <div class="log-pz-hint">JPEG &middot; PNG &middot; WebP &middot; max 10 MB</div>
+      </div>
+      <img id="preview" class="preview-img" alt="" style="max-height:260px"/>
+      <button class="log-pz-change" id="change-btn" style="display:none">
+        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="3"/></svg>Change
+      </button>
+    </div>
+
+    <div class="log-section-lbl">Meal Type</div>
     <div class="mt-grid">
       <div><input type="radio" name="mt" value="breakfast" id="mt-b" class="mt-radio" checked/>
         <label for="mt-b" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>Breakfast</label></div>
@@ -18,62 +42,87 @@
       <div><input type="radio" name="mt" value="snacks" id="mt-s" class="mt-radio"/>
         <label for="mt-s" class="mt-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Snacks</label></div>
     </div>
-    <div class="upload-zone" id="uz">
-      <input type="file" id="fi" accept="image/jpeg,image/png,image/webp,image/heic"/>
-      <div id="uz-ph">
-        <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-        <div class="upload-title">Tap to upload photo</div>
-        <div class="upload-sub">JPEG, PNG or WebP — max 10MB</div>
-      </div>
-      <img id="preview" class="preview-img" alt=""/>
-    </div>
-    <button class="btn btn-ghost btn-sm btn-full" id="change-btn" style="display:none;margin-bottom:10px">Change photo</button>
+
     <div class="scanning" id="scanning">
       <div class="scan-ring"></div>
-      <div class="scan-text">Analyzing your meal...</div>
-      <div class="scan-sub">GPT-4o Vision + 60k food database</div>
+      <div class="scan-text">Analyzing your meal&hellip;</div>
+      <div class="scan-steps">
+        <div class="scan-step" id="ss-1"><span class="ss-dot"></span>Identifying food items</div>
+        <div class="scan-step" id="ss-2"><span class="ss-dot"></span>Matching nutrition database</div>
+        <div class="scan-step" id="ss-3"><span class="ss-dot"></span>Calculating macros</div>
+      </div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:12px" id="modal-actions">
-      <button class="btn btn-ghost" id="cancel-btn" style="flex:1">Cancel</button>
-      <button class="btn btn-primary btn-lg" id="analyze-btn" style="flex:2" disabled><div class="sp"></div><span class="bt">Analyze Meal</span></button>
+
+    <div id="modal-actions" style="margin-top:12px">
+      <button class="btn btn-primary btn-full btn-lg" id="analyze-btn" disabled>
+        <div class="sp"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span class="bt">Analyze Meal</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ═══ SHARE SHEET ═══ -->
 <div class="overlay" id="share-overlay">
-  <div class="sheet">
+  <div class="sheet share-sheet">
     <div class="sheet-handle"></div>
-    <h3 class="sheet-title">Meal Logged</h3>
-    <p class="sheet-sub">Share to your profile?</p>
-    <div class="share-preview">
-      <div class="sp-meal" id="sp-meal">—</div>
-      <div class="sp-kcal" id="sp-kcal">0 kcal</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px" id="sp-macros"></div>
-      <div class="sp-foods" id="sp-foods">—</div>
+
+    <!-- Success header -->
+    <div class="sh-success">
+      <div class="sh-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="sh-success-text">
+        <div class="sh-logged">Meal Logged!</div>
+        <div class="sh-meal-name" id="sp-meal">—</div>
+      </div>
     </div>
-    <div class="fg" style="margin-bottom:14px">
-      <label class="fl">Caption (optional)</label>
-      <textarea id="share-caption" class="fc" rows="2" placeholder="How was this meal?" style="min-height:70px;resize:none"></textarea>
+
+    <!-- Macro card -->
+    <div class="sh-macro-card">
+      <div class="sh-kcal-row">
+        <span class="sh-kcal-num" id="sp-kcal">0</span>
+        <span class="sh-kcal-unit">kcal</span>
+      </div>
+      <div class="sh-macro-pills" id="sp-macros"></div>
+      <div class="sh-foods" id="sp-foods">—</div>
     </div>
-    <label class="fl" style="margin-bottom:8px;display:block">Visibility</label>
-    <div class="priv-grid">
-      <div><input type="radio" name="priv" value="public" id="priv-pub" class="priv-radio" checked/>
-        <label for="priv-pub" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Public</label></div>
-      <div><input type="radio" name="priv" value="private" id="priv-priv" class="priv-radio"/>
-        <label for="priv-priv" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Private</label></div>
-      <div><input type="radio" name="priv" value="skip" id="priv-skip" class="priv-radio"/>
-        <label for="priv-skip" class="priv-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Skip</label></div>
-    </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost" id="skip-share-btn" style="flex:1">Skip</button>
-      <button class="btn btn-primary btn-lg" id="do-share-btn" style="flex:2"><div class="sp"></div><span class="bt">Post to Profile</span></button>
+
+    <!-- Share section -->
+    <div class="sh-share-section">
+      <div class="sh-share-label">Share to profile?</div>
+
+      <!-- Visibility pills -->
+      <div class="sh-vis-pills">
+        <input type="radio" name="priv" value="public" id="priv-pub" class="priv-radio" checked/>
+        <label for="priv-pub" class="sh-vis-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Public
+        </label>
+        <input type="radio" name="priv" value="private" id="priv-priv" class="priv-radio"/>
+        <label for="priv-priv" class="sh-vis-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Friends
+        </label>
+      </div>
+
+      <!-- Caption -->
+      <textarea id="share-caption" class="sh-caption" rows="2" placeholder="Add a note… (optional)"></textarea>
+
+      <!-- Actions -->
+      <button class="btn btn-primary btn-full btn-lg" id="do-share-btn">
+        <div class="sp"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span class="bt">Share to Profile</span>
+      </button>
+      <button class="btn btn-ghost btn-full" id="skip-share-btn" style="margin-top:8px">No thanks, just log it</button>
     </div>
   </div>
 </div>
 
 <!-- ═══ CONFIRM ═══ -->
-<div class="confirm-overlay" id="confirm-overlay" style="display:none">
+<div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-title" id="confirm-title">Are you sure?</div>
     <div class="confirm-sub" id="confirm-sub">This cannot be undone.</div>
@@ -600,8 +649,9 @@ function renderMeal(t){
 }
 
 // ── Upload modal ──
+function autoMealType(){const h=new Date().getHours();if(h>=5&&h<11)return'breakfast';if(h>=11&&h<15)return'lunch';if(h>=17&&h<22)return'dinner';return'snacks';}
 function openModal(meal){
-  activeMeal=meal||'breakfast';
+  activeMeal=meal||autoMealType();
   const map={breakfast:'mt-b',lunch:'mt-l',dinner:'mt-d',snacks:'mt-s'};
   const r=document.getElementById(map[activeMeal]);if(r)r.checked=true;
   document.getElementById('overlay').classList.add('show');
@@ -616,7 +666,8 @@ function resetUpload(){
   document.getElementById('uz').classList.remove('has','drag');
   document.getElementById('analyze-btn').disabled=true;
   document.getElementById('scanning').style.display='none';
-  document.getElementById('modal-actions').style.display='flex';
+  document.getElementById('modal-actions').style.display='block';
+  ['ss-1','ss-2','ss-3'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active','done')});
 }
 function applyFile(file){
   if(!file)return;
@@ -628,7 +679,7 @@ function applyFile(file){
     photoUrl=ev.target.result;
     const prev=document.getElementById('preview');prev.src=photoUrl;prev.style.display='block';
     document.getElementById('uz-ph').style.display='none';
-    document.getElementById('change-btn').style.display='block';
+    document.getElementById('change-btn').style.display='flex';
     document.getElementById('uz').classList.add('has');
     document.getElementById('analyze-btn').disabled=false;
   };
@@ -651,6 +702,10 @@ document.getElementById('analyze-btn').addEventListener('click',async()=>{
   setLoading(btn,true);
   document.getElementById('scanning').style.display='block';
   document.getElementById('modal-actions').style.display='none';
+  const _steps=['ss-1','ss-2','ss-3'];let _si=0;
+  _steps.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active','done')});
+  if(document.getElementById('ss-1'))document.getElementById('ss-1').classList.add('active');
+  const _st=setInterval(()=>{if(document.getElementById(_steps[_si]))document.getElementById(_steps[_si]).classList.replace('active','done');_si++;if(_si<_steps.length&&document.getElementById(_steps[_si]))document.getElementById(_steps[_si]).classList.add('active');else clearInterval(_st);},2200);
   const fd=new FormData();fd.append('image',selFile);
   try{
     const res=await fetch(API_BASE+'/analyze?meal_type='+activeMeal,{method:'POST',headers:{Authorization:`Bearer ${token}`},body:fd});
@@ -667,7 +722,7 @@ document.getElementById('analyze-btn').addEventListener('click',async()=>{
   }catch(err){
     document.getElementById('scanning').style.display='none';document.getElementById('modal-actions').style.display='flex';
     showToast(err.message,'error');
-  }finally{setLoading(btn,false)}
+  }finally{setLoading(btn,false);if(typeof _st!=='undefined')clearInterval(_st);}
 });
 
 // ── Share ──
@@ -698,133 +753,122 @@ function buildPost(p){
   const author=p.author_username||p.username||(p.author_email||'').split('@')[0]||'user';
   const dispName=isOwner?'You':('@'+author);
   const card=document.createElement('div');card.className='post-card';
-  let photoHtml='';
-  if(p.photo_url){
-    photoHtml=`<div class="post-photo-wrap"><img class="post-photo" src="${p.photo_url}" alt="${p.food_summary||'Meal'}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'post-photo-ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.3\\' style=\\'width:36px;height:36px\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg><span>${p.food_summary||'Meal'}</span></div>'"/><div class="post-photo-overlay"></div><div class="post-photo-meta"><span class="post-photo-kcal">${p.total_calories||0} kcal</span><span style="font-size:11px;color:rgba(255,255,255,.7)">${timeAgo(p.created_at)}</span></div></div>`;
-  }else{
-    photoHtml=`<div class="post-photo-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="width:36px;height:36px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${p.food_summary||'Meal photo'}</span></div>`;
-  }
-  card.innerHTML=`${photoHtml}
-  <div class="post-inner">
+  const photoHtml='';
+  card.innerHTML=`${photoHtml}<div class="post-inner">
     <div class="post-hdr">
       <div class="post-author">
-        <div class="post-av ${isOwner?'is-me':''}">${author[0].toUpperCase()}</div>
-        <div style="min-width:0;flex:1"><div class="post-author-name ${isOwner?'is-me':''}">${dispName}</div><div class="post-time">${p.photo_url?'':timeAgo(p.created_at)}</div></div>
+        <div class="post-av${isOwner?' is-me':''}"><span>${(author[0]||'U').toUpperCase()}</span></div>
+        <div><div class="post-author-name${isOwner?' is-me':''}">${dispName}</div><div class="post-time">${timeAgo(p.created_at)}</div></div>
       </div>
       <div class="post-menu-wrap">
-        <button class="post-menu-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
-        <div class="post-dd">
-          ${isOwner?`<div class="post-dd-item toggle-status" data-id="${p.id}" data-status="${p.status||'public'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>${(p.status||'public')==='public'?'Make Private':'Make Public'}</div><div class="post-dd-div"></div><div class="post-dd-item danger delete-post" data-id="${p.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Delete</div>`:`<div class="post-dd-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Report</div>`}
-        </div>
+        <button class="post-menu-btn" aria-label="Options"><svg viewBox="0 0 5 20" fill="currentColor"><circle cx="2.5" cy="2.5" r="2.5"/><circle cx="2.5" cy="10" r="2.5"/><circle cx="2.5" cy="17.5" r="2.5"/></svg></button>
+        <div class="post-dd">${isOwner?`<div class="post-dd-item danger del-btn" data-id="${p.id}"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>Delete</div>`:`<div class="post-dd-item report-btn" data-id="${p.id}"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Report</div>`}</div>
       </div>
     </div>
-    <span class="post-meal-tag">${p.meal_type||'meal'}</span>
-    ${isOwner?`<span class="post-stat-badge ${p.status||'public'}">${(p.status||'public')==='public'?'Public':'Private'}</span>`:''}
+    <span class="post-meal-tag">${p.meal_type||'meal'}</span>${p.status==='private'?`<span class="post-stat-badge private">Private</span>`:isOwner?`<span class="post-stat-badge">Public</span>`:''}
     <div class="post-foods">${p.food_summary||'Meal'}</div>
     ${p.caption?`<div class="post-caption">${p.caption}</div>`:''}
     <div class="post-macros">
-      <span class="post-macro" style="background:rgba(96,165,250,.12);color:var(--carbs)">${p.total_carbs.toFixed(1)}g Carbs</span>
-      <span class="post-macro" style="background:rgba(251,191,36,.12);color:var(--fat)">${p.total_fat.toFixed(1)}g Fat</span>
-      <span class="post-macro" style="background:rgba(52,211,153,.12);color:var(--protein)">${p.total_protein.toFixed(1)}g Protein</span>
+      <span class="post-macro" style="background:rgba(96,165,250,.12);color:var(--carbs)">${(p.total_carbs||0).toFixed(1)}g carbs</span>
+      <span class="post-macro" style="background:rgba(251,191,36,.12);color:var(--fat)">${(p.total_fat||0).toFixed(1)}g fat</span>
+      <span class="post-macro" style="background:rgba(52,211,153,.12);color:var(--protein)">${(p.total_protein||0).toFixed(1)}g protein</span>
     </div>
   </div>
   <div class="post-actions">
-    <button class="post-action like-btn ${p.liked?'liked':''}" data-id="${p.id}" data-liked="${p.liked?'1':'0'}">
-      <svg viewBox="0 0 24 24" fill="${p.liked?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-      ${p.like_count||0}
+    <button class="post-action like-btn${p.is_liked?' liked':''}" data-id="${p.id}">
+      <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="${p.is_liked?'currentColor':'none'}"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <span>${p.like_count||0}</span>
     </button>
-    <button class="post-action save-btn ${p.saved?'saved':''}" data-id="${p.id}" data-saved="${p.saved?'1':'0'}">
-      <svg viewBox="0 0 24 24" fill="${p.saved?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-      ${p.saved?'Saved':'Save'}
+    <button class="post-action save-btn${p.is_saved?' saved':''}" data-id="${p.id}">
+      <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="${p.is_saved?'currentColor':'none'}"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
     </button>
+    <span style="flex:1"></span>
+    <span style="font-size:12px;font-weight:700;color:var(--g)">${p.total_calories||0} kcal</span>
   </div>`;
-  // Wire menu
-  const trigger=card.querySelector('.post-menu-btn'),dd=card.querySelector('.post-dd');
-  trigger.addEventListener('click',e=>{e.stopPropagation();document.querySelectorAll('.post-dd.open').forEach(d=>d.classList.remove('open'));dd.classList.toggle('open')});
-  document.addEventListener('click',()=>dd.classList.remove('open'),{once:true});
-  if(!isOwner)card.querySelector('.post-author').addEventListener('click',()=>openUserPanel(p.user_id,author));
-  card.querySelector('.toggle-status')?.addEventListener('click',async()=>{
-    dd.classList.remove('open');
-    const el=card.querySelector('.toggle-status'),cur=el.dataset.status,nxt=cur==='public'?'private':'public';
-    try{await api('/posts/'+el.dataset.id+'/status','PATCH',{status:nxt});el.dataset.status=nxt;const badge=card.querySelector('.post-stat-badge');if(badge){badge.className='post-stat-badge '+nxt;badge.textContent=nxt==='public'?'Public':'Private';}showToast('Post is now '+nxt,'success');}
-    catch(e){showToast(e.message,'error')}
+  // Menu toggle
+  card.querySelector('.post-menu-btn').addEventListener('click',e=>{e.stopPropagation();card.querySelector('.post-dd').classList.toggle('open');});
+  document.addEventListener('click',()=>card.querySelector('.post-dd')?.classList.remove('open'),{once:false});
+  // Like
+  card.querySelector('.like-btn').addEventListener('click',async e=>{
+    const btn=e.currentTarget;const liked=btn.classList.contains('liked');
+    btn.classList.toggle('liked',!liked);const sp=btn.querySelector('svg');sp.setAttribute('fill',liked?'none':'currentColor');
+    const cnt=btn.querySelector('span');cnt.textContent=parseInt(cnt.textContent||'0')+(liked?-1:1);
+    try{await api('/posts/'+btn.dataset.id+'/like',liked?'DELETE':'POST');}
+    catch(_){btn.classList.toggle('liked',liked);sp.setAttribute('fill',liked?'currentColor':'none');cnt.textContent=parseInt(cnt.textContent||'0')+(liked?1:-1);}
   });
-  card.querySelector('.delete-post')?.addEventListener('click',()=>{
-    dd.classList.remove('open');
-    showConfirm('Delete post?','Meal log stays in history.','Delete',async()=>{
-      try{await api('/posts/'+card.querySelector('.delete-post').dataset.id,'DELETE');card.remove();showToast('Deleted');}
-      catch(e){showToast(e.message,'error')}
-    });
+  // Save
+  card.querySelector('.save-btn').addEventListener('click',async e=>{
+    const btn=e.currentTarget;const saved=btn.classList.contains('saved');
+    btn.classList.toggle('saved',!saved);btn.querySelector('svg').setAttribute('fill',saved?'none':'currentColor');
+    try{await api('/posts/'+btn.dataset.id+'/save',saved?'DELETE':'POST');showToast(saved?'Unsaved':'Saved','success');}
+    catch(_){btn.classList.toggle('saved',saved);btn.querySelector('svg').setAttribute('fill',saved?'currentColor':'none');}
   });
-  card.querySelector('.like-btn').addEventListener('click',async function(){
-    const liked=this.dataset.liked==='1';
-    try{const res=await api('/posts/'+this.dataset.id+'/like',liked?'DELETE':'POST');this.dataset.liked=res.liked?'1':'0';this.classList.toggle('liked',res.liked);this.querySelector('svg').setAttribute('fill',res.liked?'currentColor':'none');this.childNodes[this.childNodes.length-1].textContent=res.like_count;}
-    catch(e){showToast(e.message,'error')}
-  });
-  card.querySelector('.save-btn').addEventListener('click',async function(){
-    const saved=this.dataset.saved==='1';
-    try{const res=await api('/posts/'+this.dataset.id+'/save',saved?'DELETE':'POST');this.dataset.saved=res.saved?'1':'0';this.classList.toggle('saved',res.saved);this.querySelector('svg').setAttribute('fill',res.saved?'currentColor':'none');this.lastChild.textContent=res.saved?'Saved':'Save';}
-    catch(e){showToast(e.message,'error')}
-  });
+  // Delete
+  if(isOwner){card.querySelector('.del-btn')?.addEventListener('click',()=>{showConfirm('Delete post?','This cannot be undone.','Delete',async()=>{try{await api('/posts/'+p.id,'DELETE');card.remove();showToast('Post deleted','success');}catch(err){showToast(err.message,'error');}});});}
+  // Author tap → profile panel
+  card.querySelector('.post-author').addEventListener('click',()=>openUserPanel(p.user_id||p.author_id,author));
   return card;
 }
 
 // ── Feed ──
 async function loadFeed(){
   const c=document.getElementById('feed-list');
-  c.innerHTML='<div class="empty-state"><div class="empty-title">Loading...</div></div>';
+  c.innerHTML='<div class="empty-state"><div class="empty-title">Loading feed...</div></div>';
   try{
-    const data=await api('/posts/feed?limit=20');
-    if(!data.posts?.length){c.innerHTML='<div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="empty-title">Feed is empty</div><div class="empty-sub">Log a meal and share it, or explore what others are eating.</div><button class="btn btn-primary" onclick="switchPage(\'explore\')">Browse Explore</button></div>';return}
+    const data=await api('/posts/feed');
+    if(!data.posts?.length){c.innerHTML='<div class="empty-state"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><div class="empty-title">No posts yet</div><div class="empty-sub">Follow people to see their meals here.</div></div>';return;}
     c.innerHTML='';data.posts.forEach(p=>c.appendChild(buildPost(p)));
-  }catch(e){c.innerHTML=`<div class="empty-state"><div class="empty-title">Could not load</div><div class="empty-sub">${e.message}</div><button class="btn btn-ghost" onclick="loadFeed()">Try again</button></div>`;}
+  }catch(e){c.innerHTML=`<div class="empty-state"><div class="empty-title">Error</div><div class="empty-sub">${e.message}</div></div>`;}
 }
 
 // ── Explore ──
-async function loadExplore(filter,search){
+async function loadExplore(filter='',q=''){
+  xFilter=filter;
   const grid=document.getElementById('explore-grid');
   grid.innerHTML='<div class="empty-state"><div class="empty-title">Loading...</div></div>';
-  let url='/posts/explore?limit=30';
-  if(filter==='low-cal') url+='&max_cal=400';
-  else if(filter&&!['low-cal','high-protein'].includes(filter)) url+=`&meal_type=${encodeURIComponent(filter)}`;
-  if(search) url+=`&search=${encodeURIComponent(search)}`;
   try{
-    const data=await api(url);
-    if(!data.posts?.length){grid.innerHTML='<div class="empty-state"><div class="empty-title">No posts found</div><div class="empty-sub">Try a different filter or share your next meal!</div></div>';return}
-    grid.innerHTML='';
-    let posts=data.posts;
-    if(filter==='high-protein') posts=posts.sort((a,b)=>b.total_protein-a.total_protein);
-    posts.forEach(p=>grid.appendChild(buildPost(p)));
-  }catch(e){grid.innerHTML=`<div class="empty-state"><div class="empty-title">Could not load</div><div class="empty-sub">${e.message}</div></div>`;}
+    const params=new URLSearchParams();if(filter)params.set('filter',filter);if(q)params.set('q',q);
+    const data=await api('/posts/explore'+(params.toString()?'?'+params:''));
+    if(!data.posts?.length){grid.innerHTML='<div class="empty-state"><div class="empty-title">Nothing here</div><div class="empty-sub">Try a different filter.</div></div>';return;}
+    grid.innerHTML='';data.posts.forEach(p=>grid.appendChild(buildPost(p)));
+  }catch(e){grid.innerHTML=`<div class="empty-state"><div class="empty-title">Error</div><div class="empty-sub">${e.message}</div></div>`;}
 }
+
+// Explore filter chips
 document.querySelectorAll('.filter-chip').forEach(chip=>chip.addEventListener('click',()=>{
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');
-  xFilter=chip.dataset.filter;loadExplore(xFilter,document.getElementById('explore-search')?.value);
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  loadExplore(chip.dataset.filter||'',document.getElementById('explore-search').value.trim());
 }));
-document.getElementById('explore-search')?.addEventListener('input',async e=>{
-  const q=e.target.value.trim();
-  clearTimeout(searchTimer);clearTimeout(xTimer);
-  const ur=document.getElementById('user-results');
+
+// Explore search input
+const ur=document.getElementById('user-results');
+document.getElementById('explore-search').addEventListener('input',()=>{
+  const q=document.getElementById('explore-search').value.trim();
+  if(xTimer)clearTimeout(xTimer);
+  if(!q){ur.style.display='none';ur.innerHTML='';xTimer=setTimeout(()=>loadExplore(xFilter,''),300);return;}
   if(q.startsWith('@')){
-    const term=q.slice(1);
+    const uq=q.slice(1);if(uq.length<2){ur.style.display='none';return;}
+    clearTimeout(searchTimer);
     searchTimer=setTimeout(async()=>{
-      if(!term){ur.style.display='none';return}
       try{
-        const data=await api('/users/search?q='+encodeURIComponent(term));
-        if(!data.users?.length){ur.style.display='none';return}
-        ur.style.display='block';ur.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:8px">Users</div>';
+        const data=await api('/users/search?q='+encodeURIComponent(uq));
+        if(!data.users?.length){ur.style.display='none';return;}
+        ur.innerHTML='';
         data.users.forEach(u=>{
-          const uname=u.username||u.email.split('@')[0];
           const row=document.createElement('div');row.className='user-card';
-          row.innerHTML=`<div style="display:flex;align-items:center;gap:11px"><div class="user-card-av">${uname[0].toUpperCase()}</div><div><div style="font-size:14px;font-weight:700;color:var(--t1)">@${uname}</div><div style="font-size:12px;color:var(--t3);margin-top:2px">${u.followers_count||0} followers</div></div></div><button class="follow-btn ${u.following?'following':''}" data-uid="${u.id}" data-following="${u.following?'1':'0'}">${u.following?'Following':'Follow'}</button>`;
-          row.querySelector('.user-card-av').parentElement.parentElement.addEventListener('click',()=>openUserPanel(u.id,uname));
-          row.querySelector('.follow-btn').addEventListener('click',async function(ev){ev.stopPropagation();const following=this.dataset.following==='1';try{await api('/follow/'+this.dataset.uid,following?'DELETE':'POST');this.dataset.following=following?'0':'1';this.className='follow-btn '+(following?'':'following');this.textContent=following?'Follow':'Following';showToast(following?'Unfollowed':'Now following','success');}catch(err){showToast(err.message,'error')}});
+          row.innerHTML=`<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0"><div class="user-av">${(u.username[0]||'U').toUpperCase()}</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700;color:var(--t1)">@${u.username}</div></div></div><button class="follow-btn${u.following?' following':''}" data-uid="${u.id}" data-following="${u.following?'1':'0'}">${u.following?'Following':'Follow'}</button>`;
+          row.querySelector('.follow-btn').addEventListener('click',async function(e){e.stopPropagation();const following=this.dataset.following==='1';try{await api('/follow/'+this.dataset.uid,following?'DELETE':'POST');this.dataset.following=following?'0':'1';this.textContent=following?'Follow':'Following';this.classList.toggle('following',!following);}catch(err){showToast(err.message,'error');}});
+          row.addEventListener('click',()=>openUserPanel(u.id,u.username));
           ur.appendChild(row);
         });
-      }catch(_){}
-    },400);return;
+        ur.style.display='block';
+      }catch(_){ur.style.display='none';}
+    },400);
+    return;
   }
-  ur.style.display='none';xTimer=setTimeout(()=>loadExplore(xFilter,q),500);
+  ur.style.display='none';
+  xTimer=setTimeout(()=>loadExplore(xFilter,q),500);
 });
 
 // Profile tabs
@@ -905,7 +949,7 @@ async function loadHistory(){
     sessions.forEach(s=>{
       if(new Date(s.created_at).toDateString()!==todayStr)return;
       const t=s.meal_type in meals?s.meal_type:'snacks';
-      (s.items||[]).forEach(item=>meals[t].foods.push({name:item.food_name,kcal:item.calories,carbs:item.carbs||0,fat:item.fat||0,protein:item.protein||0,serving:item.serving,photoUrl:null}));
+      (s.items||[]).forEach((item,i)=>meals[t].foods.push({name:item.food_name,kcal:item.calories,carbs:item.carbs||0,fat:item.fat||0,protein:item.protein||0,serving:item.serving,photoUrl:i===0?s.photo_url||null:null}));
     });
     ['breakfast','lunch','dinner','snacks'].forEach(t=>{recalc(t);renderMeal(t)});
     updateRing();buildWeekStrip();

@@ -219,8 +219,12 @@ document.getElementById('log-overlay').addEventListener('click',e=>{if(e.target.
 document.getElementById('log-confirm').addEventListener('click',async()=>{
   if(!lastResult)return;
   const btn=document.getElementById('log-confirm');setLoading(btn,true);
-  setTimeout(()=>{document.getElementById('log-overlay').classList.remove('show');showToast('"'+lastResult.name+'" saved!','success');setLoading(btn,false);
-  const pending=JSON.parse(localStorage.getItem('ical_pending_log')||'[]');pending.push({name:lastResult.name,kcal:lastResult.macros?.kcal||0,carbs:lastResult.macros?.carbs||0,fat:lastResult.macros?.fat||0,protein:lastResult.macros?.protein||0,meal_type:'other',timestamp:new Date().toISOString()});localStorage.setItem('ical_pending_log',JSON.stringify(pending));},700);
+  try{
+    await api('/log','POST',{meal_type:'other',foods:[{name:lastResult.name,kcal:lastResult.macros?.kcal||0,carbs:lastResult.macros?.carbs||0,fat:lastResult.macros?.fat||0,protein:lastResult.macros?.protein||0,serving:'1 serving'}]});
+    document.getElementById('log-overlay').classList.remove('show');
+    showToast('"'+lastResult.name+'" logged!','success');
+  }catch(e){showToast('Failed to log: '+e.message,'error');}
+  finally{setLoading(btn,false);}
 });
 document.getElementById('regen-btn').addEventListener('click',generate);
 document.getElementById('generate-btn').addEventListener('click',generate);

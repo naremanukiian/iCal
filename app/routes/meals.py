@@ -34,7 +34,7 @@ def analyze(current_user: dict):
         return _err("No image uploaded.")
 
     file      = request.files["image"]
-    meal_type = request.form.get("meal_type", "other")
+    meal_type = request.form.get("meal_type") or request.args.get("meal_type", "other")
     ct        = (file.content_type or "").lower()
 
     if ct not in ALLOWED_TYPES:
@@ -233,3 +233,67 @@ def suggest_meal(current_user: dict):
 
     result = resp.json()["choices"][0]["message"]["content"]
     return _ok({"result": result})
+
+# ── Direct food log (no image, e.g. from AI suggestions) ─────────────────────
+
+@meals_bp.post("/log")
+@require_auth
+def log_foods(current_user: dict):
+    body      = request.get_json(silent=True) or {}
+    foods     = body.get("foods", [])
+    meal_type = body.get("meal_type", "other")
+
+    if not foods:
+        return _err("No foods provided.")
+    if meal_type not in {"breakfast","lunch","dinner","snacks","other"}:
+        meal_type = "other"
+
+    items = []
+    for f in foods[:10]:
+        try:
+            name    = str(f.get("name", "Food")).strip()[:255]
+            kcal    = max(int(f.get("kcal", 0)), 0)
+            carbs   = round(max(float(f.get("carbs", 0)), 0), 1)
+            fat     = round(max(float(f.get("fat",   0)), 0), 1)
+            protein = round(max(float(f.get("protein",0)), 0), 1)
+            serving = str(f.get("serving", "1 serving"))[:100]
+            items.append({"name":name,"kcal":kcal,"carbs":carbs,"fat":fat,"protein":protein,"serving":serving})
+        except Exception:
+            continue
+
+    if not items:
+        return _err("No valid food items.")
+
+    uid           = int(current_user["sub"])
+    total_kcal    = sum(f["kcal"]    for f in items)
+    total_carbs   = round(sum(f["carbs"]   for f in items), 1)
+    total_fat     = round(sum(f["fat"]     for f in items), 1)
+    total_protein = round(sum(f["protein"] for f in items), 1)
+    food_summary  = ", ".join(f["name"] for f in items)
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO meal_sessions
+                   (user_id,meal_type,total_calories,total_carbs,total_fat,total_protein,food_summary)
+                   VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING id""",
+                (uid, meal_type, total_kcal, total_carbs, total_fat, total_protein, food_summary)
+            )
+            session_id = cur.fetchone()[0]
+            for f in items:
+                cur.execute(
+                    """INSERT INTO food_logs
+                       (user_id,session_id,food_name,calories,carbs,fat,protein,serving)
+                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
+                    (uid, session_id, f["name"], f["kcal"],
+                     f["carbs"], f["fat"], f["protein"], f["serving"])
+                )
+
+    return _ok({
+        "session_id":    session_id,
+        "total_kcal":    total_kcal,
+        "total_carbs":   total_carbs,
+        "total_fat":     total_fat,
+        "total_protein": total_protein,
+        "foods":         items,
+    }, 201)
