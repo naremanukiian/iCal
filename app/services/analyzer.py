@@ -157,12 +157,12 @@ def _lookup(name: str) -> Optional[dict]:
     if n in FOOD_DB: return FOOD_DB[n]
     # 2. Exact match in fallback
     if n in FALLBACK: return {**FALLBACK[n], "serving": "1 serving"}
-    # 3. Substring match in big DB
-    for key, val in FOOD_DB.items():
-        if key in n or n in key: return val
-    # 4. Substring match in fallback
+    # 3. Substring match in curated fallback first (reliable values)
     for key, val in FALLBACK.items():
         if key in n or n in key: return {**val, "serving": "1 serving"}
+    # 4. Substring match in big DB (only if no fallback match)
+    for key, val in FOOD_DB.items():
+        if key in n or n in key: return val
     # 5. Word match
     for word in n.split():
         if len(word) < 4: continue
@@ -181,7 +181,7 @@ For each item return realistic calorie + macro estimates based on visible portio
 
 Return ONLY a valid JSON array — no markdown, no explanation:
 [
-  {"name": "Grilled Chicken Breast", "kcal": 165, "carbs": 0, "fat": 3.6, "protein": 31, "serving": "150g"},
+  {"name": "Grilled Chicken Breast", "kcal": 165, "carbs": 0, "fat": 3.6, "protein": 31, "serving": "100g"},
   {"name": "Steamed White Rice",     "kcal": 206, "carbs": 44.5, "fat": 0.4, "protein": 4.3, "serving": "1 cup"},
   {"name": "Steamed Broccoli",       "kcal": 55,  "carbs": 11, "fat": 0.6, "protein": 3.7, "serving": "1 cup"}
 ]
@@ -278,13 +278,19 @@ async def analyze_food_image(image_bytes: bytes, content_type: str = "image/jpeg
         db = _lookup(name)
 
         if db:
+            ai_kcal = int(item.get("kcal", 0))
+            db_kcal = db["kcal"]
+            # Prefer AI portion-aware kcal; fall back to DB only if AI value is implausible
+            kcal = ai_kcal if 30 <= ai_kcal <= 3000 else db_kcal
+            # Scale DB macro ratios proportionally to the chosen kcal
+            ratio = kcal / db_kcal if db_kcal > 0 else 1.0
             results.append({
                 "name":    name,
-                "kcal":    db["kcal"],
-                "carbs":   db["carbs"],
-                "fat":     db["fat"],
-                "protein": db["protein"],
-                "serving": db.get("serving", serving),
+                "kcal":    kcal,
+                "carbs":   round(db["carbs"] * ratio, 1),
+                "fat":     round(db["fat"]   * ratio, 1),
+                "protein": round(db["protein"] * ratio, 1),
+                "serving": serving,
             })
         else:
             # Trust AI values if they're reasonable
